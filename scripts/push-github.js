@@ -16,6 +16,7 @@ const files = [
   "data/.gitkeep",
   "index.html",
   "package.json",
+  "scripts/push-github.js",
   "server.js",
   "styles.css",
 ];
