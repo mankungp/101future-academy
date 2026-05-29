@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="th">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>101 Future Admin</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body class="admin-body">
+    <header class="topbar">
+      <a class="brand" href="/" aria-label="101 Future Academy">
+        <span class="brand-mark">101</span>
+        <span class="brand-name">Future Admin</span>
+      </a>
+      <nav class="nav" aria-label="Admin navigation">
+        <a href="/">Website</a>
+        <a href="/api/leads.csv" id="exportLink">Export CSV</a>
+      </nav>
+    </header>
+
+    <main class="admin-main">
+      <section id="loginPanel" class="login-card">
+        <div>
+          <p class="eyebrow">Admin</p>
+          <h2>Lead CRM</h2>
+        </div>
+        <label>
+          Admin token
+          <input id="tokenInput" type="password" autocomplete="current-password" />
+        </label>
+        <button id="loginButton" class="button primary">เข้าสู่ระบบ</button>
+        <p id="loginStatus" role="status"></p>
+      </section>
+
+      <section id="adminPanel" class="admin-shell hidden">
+        <div class="admin-toolbar">
+          <div>
+            <p class="eyebrow">Dashboard</p>
+            <h2>ผู้สมัครเรียน</h2>
+          </div>
+          <button id="refreshButton" class="button secondary">Refresh</button>
+        </div>
+
+        <div id="metrics" class="metric-grid"></div>
+        <div id="leadList" class="lead-list"></div>
+      </section>
+    </main>
+    <script src="/admin.js" defer></script>
+  </body>
+</html>
