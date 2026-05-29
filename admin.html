@@ -38,10 +38,20 @@
             <p class="eyebrow">Dashboard</p>
             <h2>ผู้สมัครเรียน</h2>
           </div>
-          <button id="refreshButton" class="button secondary">Refresh</button>
+          <div class="toolbar-actions">
+            <button id="runAutomationButton" class="button secondary">Run automation</button>
+            <button id="refreshButton" class="button secondary">Refresh</button>
+          </div>
         </div>
 
         <div id="metrics" class="metric-grid"></div>
+        <section class="automation-panel" aria-labelledby="automationTitle">
+          <div>
+            <p class="eyebrow">Automation</p>
+            <h3 id="automationTitle">คิวที่ต้องตามต่อ</h3>
+          </div>
+          <div id="automationList" class="automation-grid"></div>
+        </section>
         <div id="leadList" class="lead-list"></div>
       </section>
     </main>
