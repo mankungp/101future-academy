@@ -3,6 +3,7 @@ const accessStatus = document.querySelector("#accessStatus");
 const lessonPanel = document.querySelector("#lessonPanel");
 const lessonList = document.querySelector("#lessonList");
 const courseTitle = document.querySelector("#courseTitle");
+const expiryText = document.querySelector("#expiryText");
 
 accessForm.addEventListener("submit", async (event) => {
   event.preventDefault();
@@ -24,6 +25,7 @@ accessForm.addEventListener("submit", async (event) => {
     if (!response.ok) throw new Error(data.message || data.error || "ยังไม่สามารถเข้าเรียนได้");
 
     courseTitle.textContent = `${data.enrollment.course} ของ ${data.enrollment.name}`;
+    expiryText.textContent = `สิทธิ์เรียนถึง ${formatDate(data.enrollment.expiresAt)}`;
     lessonList.innerHTML = data.lessons.map(renderLesson).join("");
     lessonPanel.classList.remove("hidden");
     accessStatus.textContent = "เปิดบทเรียนแล้ว";
@@ -34,6 +36,11 @@ accessForm.addEventListener("submit", async (event) => {
     submit.disabled = false;
   }
 });
+
+function formatDate(value) {
+  if (!value) return "-";
+  return new Date(value).toLocaleDateString("th-TH", { dateStyle: "medium" });
+}
 
 function renderLesson(lesson, index) {
   return `
