@@ -342,7 +342,41 @@ h3 {
   box-shadow: var(--shadow);
 }
 
+.payment-box {
+  display: grid;
+  gap: 18px;
+  max-width: 980px;
+  margin-top: 18px;
+  padding: 24px;
+  background: #fff;
+  border: 1px solid rgba(23, 107, 77, 0.24);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+}
+
+.payment-box h3 {
+  margin-bottom: 8px;
+}
+
+.payment-box p {
+  color: var(--muted);
+}
+
+.payment-box strong,
+.payment-box a {
+  color: var(--green);
+}
+
+.payment-form,
+.access-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
 .lead-form label,
+.payment-form label,
+.access-form label,
 .login-card label {
   display: grid;
   gap: 8px;
@@ -354,6 +388,9 @@ h3 {
 .lead-form input,
 .lead-form select,
 .lead-form textarea,
+.payment-form input,
+.payment-form textarea,
+.access-form input,
 .login-card input,
 .lead-card select,
 .lead-card textarea {
@@ -368,6 +405,7 @@ h3 {
 }
 
 .lead-form textarea,
+.payment-form textarea,
 .lead-card textarea {
   resize: vertical;
 }
@@ -375,6 +413,9 @@ h3 {
 .lead-form input:focus,
 .lead-form select:focus,
 .lead-form textarea:focus,
+.payment-form input:focus,
+.payment-form textarea:focus,
+.access-form input:focus,
 .login-card input:focus,
 .lead-card select:focus,
 .lead-card textarea:focus {
@@ -399,8 +440,17 @@ h3 {
   font-weight: 750;
 }
 
-#formStatus.error {
+#formStatus.error,
+#paymentStatus.error,
+#accessStatus.error {
   color: #b42318;
+}
+
+#paymentStatus,
+#accessStatus {
+  margin: 0;
+  color: var(--green);
+  font-weight: 750;
 }
 
 .split {
@@ -515,7 +565,9 @@ h3 {
   gap: 12px;
 }
 
-.automation-panel {
+.automation-panel,
+.payment-panel,
+.lesson-panel {
   display: grid;
   gap: 16px;
   padding: 20px;
@@ -524,18 +576,23 @@ h3 {
   border-radius: 8px;
 }
 
-.automation-panel h3 {
+.automation-panel h3,
+.payment-panel h3 {
   margin-bottom: 0;
   font-size: 24px;
 }
 
-.automation-grid {
+.automation-grid,
+.payment-grid,
+.lesson-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px;
 }
 
-.automation-card {
+.automation-card,
+.payment-card,
+.lesson-card {
   display: grid;
   align-content: space-between;
   gap: 16px;
@@ -546,18 +603,27 @@ h3 {
   border-radius: 8px;
 }
 
-.automation-card.due {
+.automation-card.due,
+.payment-card.due {
   background: #fff7ed;
   border-color: rgba(240, 184, 77, 0.6);
 }
 
 .automation-card strong,
 .automation-card span,
-.automation-card a {
+.automation-card a,
+.payment-card strong,
+.payment-card span,
+.payment-card a,
+.lesson-card strong,
+.lesson-card span,
+.lesson-card a {
   overflow-wrap: anywhere;
 }
 
-.automation-card p {
+.automation-card p,
+.payment-card p,
+.lesson-card p {
   margin: 8px 0 0;
   color: var(--muted);
   line-height: 1.45;
@@ -583,6 +649,21 @@ h3 {
 
 .automation-links a {
   color: var(--green);
+}
+
+.queue-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.learn-main {
+  display: grid;
+  gap: 18px;
+}
+
+.access-card {
+  max-width: 720px;
 }
 
 .lead-card {
@@ -666,7 +747,9 @@ h3 {
 
   .program-grid,
   .metric-grid,
-  .automation-grid {
+  .automation-grid,
+  .payment-grid,
+  .lesson-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
@@ -713,8 +796,12 @@ h3 {
 
   .program-grid,
   .lead-form,
+  .payment-form,
+  .access-form,
   .metric-grid,
   .automation-grid,
+  .payment-grid,
+  .lesson-grid,
   .lead-meta {
     grid-template-columns: 1fr;
   }
