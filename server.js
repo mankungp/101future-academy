@@ -13,6 +13,67 @@ const LEAD_WEBHOOK_URL = process.env.LEAD_WEBHOOK_URL || process.env.NOTIFY_WEBH
 const LEAD_WEBHOOK_SECRET = process.env.LEAD_WEBHOOK_SECRET || process.env.NOTIFY_WEBHOOK_SECRET || "";
 const DEFAULT_OWNER = process.env.DEFAULT_LEAD_OWNER || "";
 const DUPLICATE_WINDOW_DAYS = Number(process.env.DUPLICATE_WINDOW_DAYS || 90);
+const EASYSLIP_API_KEY = process.env.EASYSLIP_API_KEY || "";
+const EASYSLIP_VERIFY_URL = process.env.EASYSLIP_VERIFY_URL || "https://api.easyslip.com/v2/verify/bank";
+const EASYSLIP_MATCH_ACCOUNT = process.env.EASYSLIP_MATCH_ACCOUNT === "true";
+const COURSE_PRICES = parseJsonEnv("COURSE_PRICES_JSON", {});
+const DEFAULT_COURSE_PRICE = Number(process.env.DEFAULT_COURSE_PRICE || 0);
+
+const COURSE_CONTENT = {
+  "AI 101": [
+    {
+      title: "AI Starter Kit",
+      duration: "18 นาที",
+      summary: "เข้าใจว่า AI ช่วยเรียนและทำงานตรงไหนได้บ้าง พร้อมกติกาการใช้แบบปลอดภัย",
+    },
+    {
+      title: "Prompt Lab",
+      duration: "32 นาที",
+      summary: "ฝึกเขียน prompt สำหรับสรุป อ่าน คิด และสร้างชิ้นงาน",
+    },
+    {
+      title: "Mini Project",
+      duration: "45 นาที",
+      summary: "ทำโปรเจกต์เล็กจากปัญหาจริง แล้วเตรียมส่งงานให้ครูตรวจ",
+    },
+  ],
+  "English for Future": [
+    {
+      title: "Future Conversation",
+      duration: "24 นาที",
+      summary: "ประโยคใช้งานจริงสำหรับแนะนำตัว ถามตอบ และคุยเรื่องเป้าหมาย",
+    },
+    {
+      title: "Presentation Basics",
+      duration: "30 นาที",
+      summary: "จัดโครงเรื่องและพูดนำเสนอแบบสั้นให้เข้าใจง่าย",
+    },
+  ],
+  "Code & Create": [
+    {
+      title: "Web Basics",
+      duration: "28 นาที",
+      summary: "รู้จัก HTML, CSS, JavaScript ผ่านหน้าเว็บชิ้นแรก",
+    },
+    {
+      title: "Automation Basics",
+      duration: "36 นาที",
+      summary: "สร้าง workflow ง่าย ๆ เพื่อลดงานซ้ำ",
+    },
+  ],
+  "Future Skills": [
+    {
+      title: "Thinking System",
+      duration: "22 นาที",
+      summary: "แยกปัญหา ตั้งคำถาม และออกแบบทางเลือกก่อนลงมือ",
+    },
+    {
+      title: "Portfolio Sprint",
+      duration: "34 นาที",
+      summary: "เปลี่ยนสิ่งที่เรียนเป็นผลงานสั้น ๆ สำหรับใช้ต่อ",
+    },
+  ],
+};
 
 const MIME_TYPES = {
   ".css": "text/css; charset=utf-8",
@@ -29,19 +90,25 @@ const STATIC_ROUTES = new Map([
   ["/index.html", "index.html"],
   ["/styles.css", "styles.css"],
   ["/app.js", "app.js"],
+  ["/learn", "learn.html"],
+  ["/learn.html", "learn.html"],
+  ["/learn.js", "learn.js"],
   ["/admin", "admin.html"],
   ["/admin.html", "admin.html"],
   ["/admin.js", "admin.js"],
 ]);
 
 const VALID_STATUSES = new Set([
+  "pending-payment",
+  "payment-review",
+  "paid",
+  "payment-rejected",
+  "archived",
   "new",
   "contacted",
   "trial",
   "enrolled",
-  "paid",
   "not-fit",
-  "archived",
 ]);
 
 const WORKFLOWS = {
@@ -145,6 +212,17 @@ async function handleRequest(request, response) {
     return;
   }
 
+  const paymentMatch = url.pathname.match(/^\/api\/enrollments\/([^/]+)\/payment$/);
+  if (request.method === "POST" && paymentMatch) {
+    await submitPayment(paymentMatch[1], request, response);
+    return;
+  }
+
+  if (request.method === "POST" && url.pathname === "/api/access") {
+    await unlockContent(request, response);
+    return;
+  }
+
   if (request.method === "GET" && url.pathname === "/api/leads") {
     requireAdmin(request, url);
     const leads = await readLeads();
@@ -208,6 +286,7 @@ async function createLead(request, response) {
   const duplicate = findDuplicateLead(leads, lead, now);
 
   if (duplicate) {
+    ensureEnrollmentArtifacts(duplicate);
     const changes = mergeLeadData(duplicate, lead);
     duplicate.updatedAt = nowIso;
     duplicate.lastSubmittedAt = nowIso;
@@ -218,29 +297,40 @@ async function createLead(request, response) {
       action: "duplicate-submission",
       note: changes.length ? `อัปเดตข้อมูล: ${changes.join(", ")}` : "ผู้สมัครส่งฟอร์มซ้ำ",
     });
-    duplicate.automation = nextAutomationPlan(duplicate, now, "duplicate");
     await writeLeads(leads);
-    await notifyLeadEvent("lead.duplicate", duplicate, request, { changes });
+    await notifyLeadEvent("enrollment.duplicate", duplicate, request, { changes });
     sendJson(response, 200, { lead: publicLead(duplicate), duplicate: true });
     return;
   }
 
   lead.id = createId();
-  lead.status = "new";
+  lead.status = "pending-payment";
   lead.createdAt = nowIso;
   lead.updatedAt = lead.createdAt;
   lead.lastSubmittedAt = lead.createdAt;
   lead.duplicateCount = 0;
+  lead.payment = {
+    status: "unpaid",
+    amount: "",
+    reference: "",
+    payerName: "",
+    note: "",
+    submittedAt: "",
+    reviewedAt: "",
+  };
+  lead.access = {
+    code: createAccessCode(),
+    unlockedAt: "",
+  };
   lead.source = {
     ip: request.headers["x-forwarded-for"] || request.socket.remoteAddress || "",
     userAgent: request.headers["user-agent"] || "",
   };
-  lead.timeline = [{ at: lead.createdAt, action: "created", note: lead.note || "" }];
-  lead.automation = nextAutomationPlan(lead, now, "created");
+  lead.timeline = [{ at: lead.createdAt, action: "enrolled", note: lead.note || "" }];
 
   leads.push(lead);
   await writeLeads(leads);
-  await notifyLeadEvent("lead.created", lead, request);
+  await notifyLeadEvent("enrollment.created", lead, request);
   sendJson(response, 201, { lead: publicLead(lead) });
 }
 
@@ -255,6 +345,7 @@ async function updateLead(id, request, response) {
   }
 
   lead.timeline = ensureTimeline(lead);
+  ensureEnrollmentArtifacts(lead);
   const now = new Date().toISOString();
   const nextStatus = String(body.status || lead.status).trim();
   if (!VALID_STATUSES.has(nextStatus)) {
@@ -265,6 +356,7 @@ async function updateLead(id, request, response) {
   if (lead.status !== nextStatus) {
     lead.timeline.push({ at: now, action: "status", from: lead.status, to: nextStatus });
     lead.status = nextStatus;
+    syncEnrollmentStatus(lead, nextStatus, now);
   }
 
   const note = String(body.note || "").trim();
@@ -274,10 +366,135 @@ async function updateLead(id, request, response) {
   }
 
   lead.updatedAt = now;
-  lead.automation = nextAutomationPlan(lead, new Date(now), "status-update");
   await writeLeads(leads);
-  await notifyLeadEvent("lead.updated", lead, request);
+  await notifyLeadEvent("enrollment.updated", lead, request);
   sendJson(response, 200, { lead });
+}
+
+async function submitPayment(id, request, response) {
+  const body = await readJsonBody(request);
+  const leads = await readLeads();
+  const lead = leads.find((item) => item.id === decodeURIComponent(id));
+
+  if (!lead) {
+    sendJson(response, 404, { error: "ไม่พบเลขสมัครนี้" });
+    return;
+  }
+
+  const phone = normalizePhone(body.phone);
+  if (!phone || phone !== normalizePhone(lead.phone)) {
+    sendJson(response, 403, { error: "เบอร์โทรไม่ตรงกับใบสมัคร" });
+    return;
+  }
+
+  const slipImageBase64 = String(body.slipImageBase64 || "");
+  const slipPayload = String(body.slipPayload || "").trim();
+  const paymentNote = clean(body.paymentNote);
+  if (!slipImageBase64 && !slipPayload) {
+    sendJson(response, 400, { error: "กรุณาแนบรูปสลิปหรือส่ง QR payload จากสลิป" });
+    return;
+  }
+
+  const now = new Date().toISOString();
+  ensureEnrollmentArtifacts(lead);
+  const expectedAmount = expectedAmountForCourse(lead.course);
+  const verification = await verifyThaiBankSlip({
+    base64: slipImageBase64,
+    payload: slipPayload,
+    enrollmentId: lead.id,
+    expectedAmount,
+  });
+
+  if (!verification.ok) {
+    lead.status = "payment-rejected";
+    lead.payment = {
+      ...lead.payment,
+      status: "rejected",
+      amount: clean(body.amount),
+      reference: "",
+      payerName: clean(body.payerName),
+      paidAt: "",
+      note: verification.message || paymentNote,
+      submittedAt: now,
+      reviewedAt: now,
+      verification,
+    };
+    lead.updatedAt = now;
+    lead.timeline = ensureTimeline(lead);
+    lead.timeline.push({ at: now, action: "payment-rejected", note: verification.message });
+    await writeLeads(leads);
+    await notifyLeadEvent("payment.rejected", lead, request, { verification });
+    sendJson(response, 422, { error: verification.message || "ตรวจสลิปไม่ผ่าน", lead: publicLead(lead) });
+    return;
+  }
+
+  lead.status = "paid";
+  lead.payment = {
+    ...lead.payment,
+    status: "approved",
+    amount: String(verification.amount || expectedAmount || clean(body.amount) || ""),
+    reference: verification.transRef || "",
+    payerName: clean(body.payerName),
+    paidAt: verification.paidAt || "",
+    note: paymentNote,
+    submittedAt: now,
+    reviewedAt: now,
+    verification,
+  };
+  lead.access.unlockedAt = now;
+  lead.updatedAt = now;
+  lead.timeline = ensureTimeline(lead);
+  lead.timeline.push({
+    at: now,
+    action: "payment-verified",
+    note: `ตรวจสลิปผ่าน${verification.transRef ? `: ${verification.transRef}` : ""}`,
+  });
+  lead.timeline.push({ at: now, action: "content-unlocked", note: "เปิดบทเรียนอัตโนมัติ" });
+
+  await writeLeads(leads);
+  await notifyLeadEvent("payment.verified", lead, request, { verification });
+  sendJson(response, 200, { lead: publicLead(lead), unlocked: true, lessons: lessonsForCourse(lead.course) });
+}
+
+async function unlockContent(request, response) {
+  const body = await readJsonBody(request);
+  const enrollmentId = clean(body.enrollmentId).toUpperCase();
+  const phone = normalizePhone(body.phone);
+  const accessCode = clean(body.accessCode).toUpperCase();
+  const leads = await readLeads();
+  const lead = leads.find((item) => String(item.id || "").toUpperCase() === enrollmentId);
+
+  if (!lead) {
+    sendJson(response, 404, { error: "ไม่พบเลขสมัครนี้" });
+    return;
+  }
+
+  ensureEnrollmentArtifacts(lead);
+  if (!phone || phone !== normalizePhone(lead.phone) || accessCode !== String(lead.access.code || "").toUpperCase()) {
+    sendJson(response, 403, { error: "ข้อมูลเข้าเรียนไม่ถูกต้อง" });
+    return;
+  }
+
+  if (lead.status !== "paid" || lead.payment?.status !== "approved") {
+    sendJson(response, 403, {
+      unlocked: false,
+      status: lead.status,
+      paymentStatus: lead.payment?.status || "unpaid",
+      message: accessPendingMessage(lead.status),
+    });
+    return;
+  }
+
+  sendJson(response, 200, {
+    unlocked: true,
+    enrollment: {
+      id: lead.id,
+      name: lead.name,
+      course: lead.course,
+      unlockedAt: lead.access.unlockedAt,
+    },
+    lessons: lessonsForCourse(lead.course),
+  });
 }
 
 async function runAutomation(request, response) {
@@ -321,6 +538,7 @@ function normalizeLead(body) {
   return {
     name: clean(body.name),
     phone: clean(body.phone),
+    email: clean(body.email),
     lineId: clean(body.lineId),
     ageGroup: clean(body.ageGroup),
     course: clean(body.course),
@@ -330,7 +548,7 @@ function normalizeLead(body) {
 }
 
 function mergeLeadData(existing, incoming) {
-  const fields = ["name", "phone", "lineId", "ageGroup", "course", "preferredSchedule", "note"];
+  const fields = ["name", "phone", "email", "lineId", "ageGroup", "course", "preferredSchedule", "note"];
   const changes = [];
   for (const field of fields) {
     if (!incoming[field] || incoming[field] === existing[field]) continue;
@@ -346,14 +564,26 @@ function validateLead(lead) {
   const errors = [];
   if (!lead.name) errors.push("กรุณากรอกชื่อ");
   if (!lead.phone) errors.push("กรุณากรอกเบอร์โทร");
+  if (!lead.email) errors.push("กรุณากรอกอีเมล");
   if (!lead.course) errors.push("กรุณาเลือกหลักสูตร");
   if (lead.name.length > 120) errors.push("ชื่อยาวเกินไป");
   if (lead.phone.length > 40) errors.push("เบอร์โทรยาวเกินไป");
+  if (lead.email.length > 160) errors.push("อีเมลยาวเกินไป");
   return errors;
 }
 
 function clean(value) {
   return String(value || "").trim().slice(0, 1000);
+}
+
+function parseJsonEnv(name, fallback) {
+  if (!process.env[name]) return fallback;
+  try {
+    return JSON.parse(process.env[name]);
+  } catch {
+    console.warn(`${name} is not valid JSON`);
+    return fallback;
+  }
 }
 
 function findDuplicateLead(leads, lead, now) {
@@ -381,6 +611,161 @@ function ensureTimeline(lead) {
   if (Array.isArray(lead.timeline)) return lead.timeline;
   lead.timeline = [];
   return lead.timeline;
+}
+
+function ensureEnrollmentArtifacts(lead) {
+  if (!lead.payment) {
+    lead.payment = {
+      status: lead.status === "paid" ? "approved" : "unpaid",
+      amount: "",
+      reference: "",
+      payerName: "",
+      note: "",
+      submittedAt: "",
+      reviewedAt: "",
+    };
+  }
+  if (!lead.access) {
+    lead.access = {
+      code: createAccessCode(),
+      unlockedAt: lead.status === "paid" ? lead.updatedAt || lead.createdAt || "" : "",
+    };
+  }
+  if (!lead.access.code) lead.access.code = createAccessCode();
+  return lead;
+}
+
+function syncEnrollmentStatus(lead, status, now) {
+  ensureEnrollmentArtifacts(lead);
+  if (status === "paid") {
+    lead.payment.status = "approved";
+    lead.payment.reviewedAt = now;
+    lead.access.unlockedAt = lead.access.unlockedAt || now;
+    lead.timeline.push({ at: now, action: "content-unlocked", note: "อนุมัติชำระเงินและเปิดบทเรียน" });
+    return;
+  }
+  if (status === "payment-review") {
+    lead.payment.status = lead.payment.status === "approved" ? "approved" : "review";
+    return;
+  }
+  if (status === "payment-rejected") {
+    lead.payment.status = "rejected";
+    lead.payment.reviewedAt = now;
+    lead.access.unlockedAt = "";
+    return;
+  }
+  if (status === "pending-payment") {
+    lead.payment.status = "unpaid";
+    lead.access.unlockedAt = "";
+  }
+}
+
+function accessPendingMessage(status) {
+  if (status === "payment-review") return "ได้รับแจ้งชำระแล้ว รอตรวจสอบ";
+  if (status === "payment-rejected") return "การชำระยังไม่ผ่าน กรุณาส่งข้อมูลใหม่";
+  return "ยังรอชำระเงิน";
+}
+
+function expectedAmountForCourse(course) {
+  const value = COURSE_PRICES[course] ?? COURSE_PRICES.default ?? DEFAULT_COURSE_PRICE;
+  const amount = Number(value || 0);
+  return Number.isFinite(amount) && amount > 0 ? amount : 0;
+}
+
+async function verifyThaiBankSlip({ base64, payload, enrollmentId, expectedAmount }) {
+  if (!EASYSLIP_API_KEY) {
+    return {
+      ok: false,
+      provider: "easyslip",
+      code: "SLIP_API_NOT_CONFIGURED",
+      message: "ยังไม่ได้ตั้งค่า EASYSLIP_API_KEY สำหรับตรวจสลิปอัตโนมัติ",
+    };
+  }
+
+  const requestBody = {
+    checkDuplicate: true,
+    remark: enrollmentId,
+  };
+  if (base64) requestBody.base64 = base64;
+  if (payload) requestBody.payload = payload;
+  if (expectedAmount) requestBody.matchAmount = expectedAmount;
+  if (EASYSLIP_MATCH_ACCOUNT) requestBody.matchAccount = true;
+
+  try {
+    const verificationResponse = await fetch(EASYSLIP_VERIFY_URL, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${EASYSLIP_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(requestBody),
+    });
+    const result = await verificationResponse.json().catch(() => ({}));
+
+    if (!verificationResponse.ok || !result.success) {
+      return {
+        ok: false,
+        provider: "easyslip",
+        status: verificationResponse.status,
+        code: result.error?.code || "SLIP_VERIFY_FAILED",
+        message: result.error?.message || "ตรวจสลิปไม่ผ่าน",
+      };
+    }
+
+    const data = result.data || {};
+    const amount = slipAmount(data);
+    if (data.isDuplicate) {
+      return {
+        ok: false,
+        provider: "easyslip",
+        code: "DUPLICATE_SLIP",
+        message: "สลิปนี้เคยถูกใช้แล้ว",
+        transRef: slipTransRef(data),
+        amount,
+      };
+    }
+    if (expectedAmount && Math.abs(Number(amount || 0) - expectedAmount) > 0.01) {
+      return {
+        ok: false,
+        provider: "easyslip",
+        code: "AMOUNT_NOT_MATCHED",
+        message: `ยอดโอนในสลิปไม่ตรงกับยอดหลักสูตร (${expectedAmount} บาท)`,
+        transRef: slipTransRef(data),
+        amount,
+      };
+    }
+
+    return {
+      ok: true,
+      provider: "easyslip",
+      transRef: slipTransRef(data),
+      amount,
+      paidAt: data.rawSlip?.date || "",
+      isDuplicate: Boolean(data.isDuplicate),
+      isAmountMatched: expectedAmount ? amount === expectedAmount || data.isAmountMatched === true : undefined,
+      receiver: data.rawSlip?.receiver?.account?.name?.th || data.rawSlip?.receiver?.account?.name?.en || "",
+      sender: data.rawSlip?.sender?.account?.name?.th || data.rawSlip?.sender?.account?.name?.en || "",
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      provider: "easyslip",
+      code: "SLIP_VERIFY_ERROR",
+      message: error.message || "ระบบตรวจสลิปขัดข้อง",
+    };
+  }
+}
+
+function slipAmount(data) {
+  return Number(data.amountInSlip ?? data.rawSlip?.amount?.amount ?? data.amount?.amount ?? 0);
+}
+
+function slipTransRef(data) {
+  return data.rawSlip?.transRef || data.transRef || "";
+}
+
+function lessonsForCourse(course) {
+  return COURSE_CONTENT[course] || COURSE_CONTENT["AI 101"];
 }
 
 function nextAutomationPlan(lead, now = new Date(), reason = "workflow") {
@@ -446,14 +831,18 @@ function buildAutomationSummary(leads) {
 }
 
 function adminLead(lead) {
+  ensureEnrollmentArtifacts(lead);
   return {
     id: lead.id,
     name: lead.name,
     phone: lead.phone,
+    email: lead.email,
     lineId: lead.lineId,
     course: lead.course,
     status: lead.status,
     createdAt: lead.createdAt,
+    payment: lead.payment,
+    access: lead.access,
     automation: lead.automation || null,
   };
 }
@@ -463,12 +852,16 @@ function createId() {
   return `LEAD-${date}-${crypto.randomBytes(3).toString("hex").toUpperCase()}`;
 }
 
+function createAccessCode() {
+  return crypto.randomBytes(4).toString("hex").toUpperCase();
+}
+
 async function readJsonBody(request) {
   const chunks = [];
   let size = 0;
   for await (const chunk of request) {
     size += chunk.length;
-    if (size > 1_000_000) throw new HttpError(413, "Payload too large");
+    if (size > 8_000_000) throw new HttpError(413, "Payload too large");
     chunks.push(chunk);
   }
   if (!chunks.length) return {};
@@ -493,12 +886,17 @@ function sortLeads(leads) {
 }
 
 function publicLead(lead) {
+  ensureEnrollmentArtifacts(lead);
   return {
     id: lead.id,
     name: lead.name,
     course: lead.course,
+    status: lead.status,
+    paymentStatus: lead.payment?.status || "unpaid",
+    accessCode: lead.access?.code || "",
+    learnUrl: "/learn",
     createdAt: lead.createdAt,
-    nextAction: lead.automation?.nextAction || "",
+    nextAction: lead.status === "paid" ? "เข้าเรียนได้ทันที" : "แนบสลิปเพื่อเปิดบทเรียนอัตโนมัติ",
   };
 }
 
@@ -564,12 +962,15 @@ function toCsv(leads) {
     "createdAt",
     "updatedAt",
     "status",
-    "priority",
-    "nextAction",
-    "nextFollowUpAt",
+    "paymentStatus",
+    "paymentAmount",
+    "paymentReference",
+    "accessCode",
+    "unlockedAt",
     "duplicateCount",
     "name",
     "phone",
+    "email",
     "lineId",
     "ageGroup",
     "course",
@@ -581,9 +982,15 @@ function toCsv(leads) {
 }
 
 function csvValue(lead, key) {
+  ensureEnrollmentArtifacts(lead);
   if (key === "priority") return lead.automation?.priority || "";
   if (key === "nextAction") return lead.automation?.nextAction || "";
   if (key === "nextFollowUpAt") return lead.automation?.nextFollowUpAt || "";
+  if (key === "paymentStatus") return lead.payment?.status || "";
+  if (key === "paymentAmount") return lead.payment?.amount || "";
+  if (key === "paymentReference") return lead.payment?.reference || "";
+  if (key === "accessCode") return lead.access?.code || "";
+  if (key === "unlockedAt") return lead.access?.unlockedAt || "";
   return lead[key];
 }
 
