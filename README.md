@@ -2,6 +2,8 @@
 
 Standalone enrollment, slip verification, and gated learning portal for 101future.com.
 
+Roadmap: see [EDTECH_10_PHASES.md](./EDTECH_10_PHASES.md).
+
 ## Local
 
 ```bash
