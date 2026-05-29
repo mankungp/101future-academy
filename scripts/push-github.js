@@ -15,6 +15,8 @@ const files = [
   "assets/hero-learning-lab.png",
   "data/.gitkeep",
   "index.html",
+  "learn.html",
+  "learn.js",
   "package.json",
   "scripts/push-github.js",
   "server.js",
