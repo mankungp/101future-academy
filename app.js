@@ -28,7 +28,9 @@ form.addEventListener("submit", async (event) => {
     if (!response.ok) throw new Error(data.error || "ส่งใบสมัครไม่สำเร็จ");
 
     form.reset();
-    statusEl.textContent = `รับใบสมัครแล้ว รหัส ${data.lead.id}`;
+    statusEl.textContent = data.duplicate
+      ? `มีข้อมูลอยู่แล้ว ระบบอัปเดตคิวติดตามให้ รหัส ${data.lead.id}`
+      : `รับใบสมัครแล้ว รหัส ${data.lead.id}`;
   } catch (error) {
     statusEl.textContent = error.message;
     statusEl.classList.add("error");
