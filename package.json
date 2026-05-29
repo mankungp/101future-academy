@@ -1,0 +1,12 @@
+{
+  "name": "101future-enrollment",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "start": "node server.js",
+    "check": "node --check server.js && node --check app.js && node --check admin.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
