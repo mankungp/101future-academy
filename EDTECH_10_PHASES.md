@@ -9,8 +9,9 @@ Goal: Make 101 Future Academy understandable and trustworthy in the first visit.
 Status: In progress
 
 - Domain and hosting are live.
-- Landing page, programs, and enrollment form exist.
-- Needs final copy, course prices, teacher/team details, and local Roi Et proof.
+- Landing page now focuses on English Speaking + Grammar for M.1-M.3.
+- Course expansion order is documented: English, Math, Science, Thai, high school, primary, kindergarten.
+- Needs final teacher/team details and local Roi Et proof.
 
 ## Phase 2: Enrollment and Payment Gate
 
@@ -19,10 +20,11 @@ Goal: Let a student apply, pay, verify payment, and unlock learning without manu
 Status: In progress
 
 - Enrollment ID and access code are generated after signup.
-- Slip upload flow exists.
-- EasySlip-compatible server verification is wired.
+- Package and order APIs exist.
+- Payment webhook verification scaffold exists.
+- EasySlip-compatible slip verification remains available as fallback.
 - `/learn` unlocks only after paid status.
-- Needs production `EASYSLIP_API_KEY`, course prices, receiver-account matching, and real slip test.
+- Needs production payment provider adapter, webhook secret, and real PromptPay QR test.
 
 ## Phase 3: Student Learning Portal
 
