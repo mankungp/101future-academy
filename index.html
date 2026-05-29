@@ -19,6 +19,7 @@
       <nav class="nav" aria-label="Main navigation">
         <a href="#programs">Programs</a>
         <a href="#apply">Apply</a>
+        <a href="/learn">Learn</a>
         <a href="#why">Why 101</a>
         <a href="/admin">Admin</a>
       </nav>
@@ -36,7 +37,7 @@
           <p class="eyebrow">Roi Et Future Skills Institute</p>
           <h1>101 Future Academy</h1>
           <p class="lead">
-            สถาบันทักษะอนาคตจากร้อยเอ็ด สำหรับ AI, English, Coding และทักษะใหม่ที่ใช้ได้จริง
+            สมัคร เลือกคอร์ส แนบสลิปที่โอนจริง แล้วระบบตรวจสลิปเพื่อเปิดบทเรียนให้อัตโนมัติ
           </p>
           <div class="hero-actions">
             <a class="button primary" href="#apply">สมัครเรียนรุ่นแรก</a>
@@ -93,7 +94,7 @@
           <p class="eyebrow">Enrollment</p>
           <h2>สมัครเรียนรุ่นแรก</h2>
           <p>
-            ทีมงานจะติดต่อกลับเพื่อแนะนำหลักสูตร ตารางเรียน และรอบทดลองเรียนที่เหมาะกับผู้เรียน
+            หลังสมัคร ระบบจะให้เลขสมัครและ access code สำหรับเข้าเรียน เมื่อแนบสลิปและตรวจผ่านจะปลดล็อกเนื้อหาทันที
           </p>
         </div>
         <form id="leadForm" class="lead-form">
@@ -104,6 +105,10 @@
           <label>
             เบอร์โทร
             <input name="phone" inputmode="tel" autocomplete="tel" required />
+          </label>
+          <label>
+            อีเมลสำหรับเข้าเรียน
+            <input name="email" type="email" autocomplete="email" required />
           </label>
           <label>
             LINE ID
@@ -148,9 +153,40 @@
           </label>
           <div class="form-footer wide">
             <p id="formStatus" role="status"></p>
-            <button class="button primary" type="submit">ส่งใบสมัคร</button>
+            <button class="button primary" type="submit">สมัครและรับเลขชำระ</button>
           </div>
         </form>
+
+        <section id="paymentPanel" class="payment-box hidden" aria-live="polite">
+          <div>
+            <p class="eyebrow">Payment Verification</p>
+            <h3>แนบสลิปเพื่อเปิดบทเรียน</h3>
+            <p id="paymentIntro"></p>
+          </div>
+          <form id="paymentForm" class="payment-form">
+            <input type="hidden" name="enrollmentId" />
+            <label>
+              เบอร์โทรที่ใช้สมัคร
+              <input name="phone" inputmode="tel" autocomplete="tel" required />
+            </label>
+            <label>
+              ชื่อผู้โอน
+              <input name="payerName" autocomplete="name" />
+            </label>
+            <label class="wide">
+              รูปสลิปจากธนาคาร
+              <input name="slipImage" type="file" accept="image/png,image/jpeg,image/webp" required />
+            </label>
+            <label class="wide">
+              หมายเหตุ
+              <textarea name="paymentNote" rows="3" placeholder="เช่น โอนจากบัญชีผู้ปกครอง"></textarea>
+            </label>
+            <div class="form-footer wide">
+              <p id="paymentStatus" role="status"></p>
+              <button class="button primary" type="submit">ตรวจสลิปและเปิดเรียน</button>
+            </div>
+          </form>
+        </section>
       </section>
 
       <section id="why" class="section split">
