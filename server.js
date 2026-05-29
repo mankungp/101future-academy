@@ -6,6 +6,7 @@ const path = require("node:path");
 const ROOT = __dirname;
 const DATA_DIR = process.env.DATA_DIR || path.join(ROOT, "data");
 const LEADS_FILE = path.join(DATA_DIR, "leads.json");
+const ORDERS_FILE = path.join(DATA_DIR, "orders.json");
 const TOKEN_FILE = path.join(DATA_DIR, "admin-token.txt");
 const PORT = Number(process.env.PORT || 4173);
 const HOST = process.env.HOST || "127.0.0.1";
@@ -18,8 +19,51 @@ const EASYSLIP_VERIFY_URL = process.env.EASYSLIP_VERIFY_URL || "https://api.easy
 const EASYSLIP_MATCH_ACCOUNT = process.env.EASYSLIP_MATCH_ACCOUNT === "true";
 const COURSE_PRICES = parseJsonEnv("COURSE_PRICES_JSON", {});
 const DEFAULT_COURSE_PRICE = Number(process.env.DEFAULT_COURSE_PRICE || 0);
+const PAYMENT_PROVIDER = process.env.PAYMENT_PROVIDER || "";
+const PAYMENT_PROVIDER_API_KEY = process.env.PAYMENT_PROVIDER_API_KEY || "";
+const PAYMENT_WEBHOOK_SECRET = process.env.PAYMENT_WEBHOOK_SECRET || "";
+const SITE_ORIGIN = process.env.SITE_ORIGIN || "https://www.101future.com";
+const ACCESS_DAYS = Number(process.env.ACCESS_DAYS || 30);
+
+const PACKAGES = [
+  {
+    id: "eng-m1-m3-speaking-grammar-30d",
+    name: "English Speaking + Grammar ม.1-ม.3",
+    subject: "English",
+    level: "ม.1-ม.3",
+    durationDays: 30,
+    price: Number(COURSE_PRICES["English Speaking + Grammar ม.1-ม.3"] || COURSE_PRICES.english || 1290),
+    description: "ฝึกพูดเป็นประโยค ใช้ grammar ให้ถูก และมั่นใจขึ้นสำหรับเด็กมัธยมต้น",
+  },
+  {
+    id: "eng-m1-m3-intensive-30d",
+    name: "English Intensive ม.ต้น",
+    subject: "English",
+    level: "ม.1-ม.3",
+    durationDays: 30,
+    price: Number(COURSE_PRICES["English Intensive ม.ต้น"] || COURSE_PRICES.englishIntensive || 1990),
+    description: "เพิ่มแบบฝึก grammar, speaking drills, และงานส่งท้ายบทสำหรับคนที่อยากเร่งผล",
+  },
+];
 
 const COURSE_CONTENT = {
+  "English Speaking + Grammar ม.1-ม.3": [
+    {
+      title: "Speaking Starter",
+      duration: "20 นาที",
+      summary: "ฝึกแนะนำตัว ตอบคำถามพื้นฐาน และพูดเป็นประโยคเต็ม",
+    },
+    {
+      title: "Grammar Foundation",
+      duration: "34 นาที",
+      summary: "ทบทวน tense, subject-verb agreement และโครงประโยคที่ใช้บ่อย",
+    },
+    {
+      title: "Conversation Lab",
+      duration: "40 นาที",
+      summary: "ฝึกบทสนทนาสถานการณ์จริง พร้อม pattern สำหรับพูดต่อยอด",
+    },
+  ],
   "AI 101": [
     {
       title: "AI Starter Kit",
@@ -174,6 +218,11 @@ async function ensureDataFiles() {
   } catch {
     await fs.writeFile(LEADS_FILE, "[]\n", "utf8");
   }
+  try {
+    await fs.access(ORDERS_FILE);
+  } catch {
+    await fs.writeFile(ORDERS_FILE, "[]\n", "utf8");
+  }
 }
 
 async function getAdminToken() {
@@ -204,6 +253,27 @@ async function handleRequest(request, response) {
 
   if (request.method === "HEAD" && url.pathname === "/api/health") {
     sendHead(response, 200, "application/json; charset=utf-8");
+    return;
+  }
+
+  if (request.method === "GET" && url.pathname === "/api/packages") {
+    sendJson(response, 200, { packages: PACKAGES });
+    return;
+  }
+
+  if (request.method === "POST" && url.pathname === "/api/orders") {
+    await createOrder(request, response);
+    return;
+  }
+
+  const orderMatch = url.pathname.match(/^\/api\/orders\/([^/]+)$/);
+  if (request.method === "GET" && orderMatch) {
+    await getOrder(orderMatch[1], request, response);
+    return;
+  }
+
+  if (request.method === "POST" && url.pathname === "/api/payment/webhook") {
+    await handlePaymentWebhook(request, response);
     return;
   }
 
@@ -332,6 +402,164 @@ async function createLead(request, response) {
   await writeLeads(leads);
   await notifyLeadEvent("enrollment.created", lead, request);
   sendJson(response, 201, { lead: publicLead(lead) });
+}
+
+async function createOrder(request, response) {
+  const body = await readJsonBody(request);
+  const packageItem = PACKAGES.find((item) => item.id === clean(body.packageId));
+  if (!packageItem) {
+    sendJson(response, 400, { error: "ไม่พบแพ็กที่เลือก" });
+    return;
+  }
+
+  const lead = normalizeLead({ ...body, course: packageItem.name, ageGroup: body.ageGroup || packageItem.level });
+  const errors = validateLead(lead);
+  if (errors.length) {
+    sendJson(response, 400, { error: errors.join(", ") });
+    return;
+  }
+
+  const now = new Date();
+  const nowIso = now.toISOString();
+  const leads = await readLeads();
+  const orders = await readOrders();
+  const duplicate = findDuplicateLead(leads, lead, now);
+  const enrollment = duplicate || {
+    ...lead,
+    id: createId(),
+    createdAt: nowIso,
+    duplicateCount: 0,
+    source: {
+      ip: request.headers["x-forwarded-for"] || request.socket.remoteAddress || "",
+      userAgent: request.headers["user-agent"] || "",
+    },
+    timeline: [{ at: nowIso, action: "enrolled", note: packageItem.name }],
+  };
+
+  ensureEnrollmentArtifacts(enrollment);
+  enrollment.status = enrollment.status === "paid" ? "paid" : "pending-payment";
+  enrollment.course = packageItem.name;
+  enrollment.email = lead.email;
+  enrollment.phone = lead.phone;
+  enrollment.lineId = lead.lineId;
+  enrollment.ageGroup = lead.ageGroup;
+  enrollment.preferredSchedule = lead.preferredSchedule;
+  enrollment.note = lead.note;
+  enrollment.updatedAt = nowIso;
+  enrollment.lastSubmittedAt = nowIso;
+
+  if (duplicate) {
+    duplicate.duplicateCount = Number(duplicate.duplicateCount || 0) + 1;
+    duplicate.timeline = ensureTimeline(duplicate);
+    duplicate.timeline.push({ at: nowIso, action: "order-created-repeat", note: packageItem.name });
+  } else {
+    leads.push(enrollment);
+  }
+
+  const order = {
+    id: createOrderId(),
+    enrollmentId: enrollment.id,
+    packageId: packageItem.id,
+    packageName: packageItem.name,
+    amount: packageItem.price,
+    currency: "THB",
+    status: "pending",
+    provider: PAYMENT_PROVIDER || "unconfigured",
+    providerReference: "",
+    paymentUrl: "",
+    qrImageUrl: "",
+    qrPayload: "",
+    createdAt: nowIso,
+    updatedAt: nowIso,
+    paidAt: "",
+    expiresAt: addMinutes(now, 30).toISOString(),
+  };
+
+  const paymentSession = await createPaymentSession(order, enrollment);
+  order.provider = paymentSession.provider || order.provider;
+  order.providerReference = paymentSession.providerReference || "";
+  order.paymentUrl = paymentSession.paymentUrl || "";
+  order.qrImageUrl = paymentSession.qrImageUrl || "";
+  order.qrPayload = paymentSession.qrPayload || "";
+  order.paymentStatusMessage = paymentSession.message || "";
+  orders.push(order);
+
+  await writeLeads(leads);
+  await writeOrders(orders);
+  await notifyLeadEvent("order.created", enrollment, request, { order: publicOrder(order), paymentSession });
+  sendJson(response, 201, { enrollment: publicLead(enrollment), order: publicOrder(order), payment: paymentSession });
+}
+
+async function getOrder(id, request, response) {
+  const url = new URL(request.url, `http://${request.headers.host || "localhost"}`);
+  const orders = await readOrders();
+  const order = orders.find((item) => item.id === decodeURIComponent(id));
+  if (!order) {
+    sendJson(response, 404, { error: "ไม่พบ order" });
+    return;
+  }
+  const leads = await readLeads();
+  const enrollment = leads.find((lead) => lead.id === order.enrollmentId);
+  const phone = normalizePhone(url.searchParams.get("phone"));
+  if (enrollment && phone && phone !== normalizePhone(enrollment.phone)) {
+    sendJson(response, 403, { error: "เบอร์โทรไม่ตรงกับ order" });
+    return;
+  }
+  sendJson(response, 200, { order: publicOrder(order), enrollment: enrollment ? publicLead(enrollment) : null });
+}
+
+async function handlePaymentWebhook(request, response) {
+  const rawBody = await readRawBody(request);
+  if (!verifyPaymentSignature(request, rawBody)) {
+    sendJson(response, 401, { error: "Invalid webhook signature" });
+    return;
+  }
+
+  let payload;
+  try {
+    payload = JSON.parse(rawBody || "{}");
+  } catch {
+    throw new HttpError(400, "Invalid JSON");
+  }
+
+  const reference = clean(payload.orderId || payload.order_id || payload.reference || payload.external_id);
+  const providerReference = clean(payload.providerReference || payload.payment_id || payload.charge_id || payload.id);
+  const status = String(payload.status || payload.event || "").toLowerCase();
+  const paid = status.includes("paid") || status.includes("complete") || status.includes("succeeded");
+  const paidAmount = Number(payload.amount || payload.paid_amount || payload.data?.amount || 0);
+  const now = new Date();
+
+  const leads = await readLeads();
+  const orders = await readOrders();
+  const order = orders.find((item) => item.id === reference || item.providerReference === providerReference);
+  if (!order) {
+    sendJson(response, 404, { error: "Order not found" });
+    return;
+  }
+  if (!paid) {
+    sendJson(response, 202, { ok: true, ignored: true, status });
+    return;
+  }
+  if (Number(order.amount) !== Number(paidAmount)) {
+    order.status = "amount-mismatch";
+    order.updatedAt = now.toISOString();
+    order.lastWebhook = { status, paidAmount, at: order.updatedAt };
+    await writeOrders(orders);
+    sendJson(response, 422, { error: "Amount mismatch" });
+    return;
+  }
+
+  const lead = leads.find((item) => item.id === order.enrollmentId);
+  if (!lead) {
+    sendJson(response, 404, { error: "Enrollment not found" });
+    return;
+  }
+
+  markOrderPaid(order, lead, now, providerReference);
+  await writeOrders(orders);
+  await writeLeads(leads);
+  await notifyLeadEvent("order.paid", lead, request, { order: publicOrder(order) });
+  sendJson(response, 200, { ok: true, order: publicOrder(order), enrollment: publicLead(lead) });
 }
 
 async function updateLead(id, request, response) {
@@ -475,11 +703,12 @@ async function unlockContent(request, response) {
     return;
   }
 
-  if (lead.status !== "paid" || lead.payment?.status !== "approved") {
+  if (!isAccessActive(lead)) {
     sendJson(response, 403, {
       unlocked: false,
       status: lead.status,
       paymentStatus: lead.payment?.status || "unpaid",
+      expiresAt: lead.access?.expiresAt || "",
       message: accessPendingMessage(lead.status),
     });
     return;
@@ -492,6 +721,7 @@ async function unlockContent(request, response) {
       name: lead.name,
       course: lead.course,
       unlockedAt: lead.access.unlockedAt,
+      expiresAt: lead.access.expiresAt,
     },
     lessons: lessonsForCourse(lead.course),
   });
@@ -629,9 +859,11 @@ function ensureEnrollmentArtifacts(lead) {
     lead.access = {
       code: createAccessCode(),
       unlockedAt: lead.status === "paid" ? lead.updatedAt || lead.createdAt || "" : "",
+      expiresAt: lead.status === "paid" ? addDays(new Date(lead.updatedAt || lead.createdAt || Date.now()), ACCESS_DAYS).toISOString() : "",
     };
   }
   if (!lead.access.code) lead.access.code = createAccessCode();
+  if (!("expiresAt" in lead.access)) lead.access.expiresAt = "";
   return lead;
 }
 
@@ -641,6 +873,7 @@ function syncEnrollmentStatus(lead, status, now) {
     lead.payment.status = "approved";
     lead.payment.reviewedAt = now;
     lead.access.unlockedAt = lead.access.unlockedAt || now;
+    lead.access.expiresAt = lead.access.expiresAt || addDays(new Date(now), ACCESS_DAYS).toISOString();
     lead.timeline.push({ at: now, action: "content-unlocked", note: "อนุมัติชำระเงินและเปิดบทเรียน" });
     return;
   }
@@ -652,11 +885,13 @@ function syncEnrollmentStatus(lead, status, now) {
     lead.payment.status = "rejected";
     lead.payment.reviewedAt = now;
     lead.access.unlockedAt = "";
+    lead.access.expiresAt = "";
     return;
   }
   if (status === "pending-payment") {
     lead.payment.status = "unpaid";
     lead.access.unlockedAt = "";
+    lead.access.expiresAt = "";
   }
 }
 
@@ -765,7 +1000,7 @@ function slipTransRef(data) {
 }
 
 function lessonsForCourse(course) {
-  return COURSE_CONTENT[course] || COURSE_CONTENT["AI 101"];
+  return COURSE_CONTENT[course] || COURSE_CONTENT["English Speaking + Grammar ม.1-ม.3"];
 }
 
 function nextAutomationPlan(lead, now = new Date(), reason = "workflow") {
@@ -788,6 +1023,81 @@ function addDays(date, days) {
   const next = new Date(date);
   next.setDate(next.getDate() + days);
   return next;
+}
+
+function addMinutes(date, minutes) {
+  const next = new Date(date);
+  next.setMinutes(next.getMinutes() + minutes);
+  return next;
+}
+
+function createOrderId() {
+  const date = new Date().toISOString().slice(0, 10).replaceAll("-", "");
+  return `ORDER-${date}-${crypto.randomBytes(4).toString("hex").toUpperCase()}`;
+}
+
+async function createPaymentSession(order) {
+  if (!PAYMENT_PROVIDER || !PAYMENT_PROVIDER_API_KEY) {
+    return {
+      provider: PAYMENT_PROVIDER || "unconfigured",
+      status: "provider_not_configured",
+      message: "ยังไม่ได้ตั้งค่า payment provider สำหรับสร้าง PromptPay QR อัตโนมัติ",
+      checkoutUrl: `${SITE_ORIGIN}/#apply`,
+    };
+  }
+
+  return {
+    provider: PAYMENT_PROVIDER,
+    status: "adapter_ready",
+    message: "ตั้งค่า provider แล้ว แต่ยังต้องใส่ adapter เฉพาะเจ้า เช่น Opn หรือ Xendit",
+    checkoutUrl: `${SITE_ORIGIN}/#apply`,
+  };
+}
+
+function markOrderPaid(order, lead, now = new Date(), providerReference = "") {
+  ensureEnrollmentArtifacts(lead);
+  const nowIso = now.toISOString();
+  const expiresAt = addDays(now, order.durationDays || ACCESS_DAYS).toISOString();
+  order.status = "paid";
+  order.providerReference = providerReference || order.providerReference || "";
+  order.paidAt = order.paidAt || nowIso;
+  order.updatedAt = nowIso;
+  lead.status = "paid";
+  lead.payment = {
+    ...lead.payment,
+    status: "approved",
+    amount: String(order.amount || ""),
+    reference: order.id,
+    reviewedAt: nowIso,
+    provider: order.provider,
+  };
+  lead.access.unlockedAt = lead.access.unlockedAt || nowIso;
+  lead.access.expiresAt = expiresAt;
+  lead.entitlement = {
+    orderId: order.id,
+    packageId: order.packageId,
+    packageName: order.packageName,
+    startsAt: lead.access.unlockedAt,
+    expiresAt,
+    status: "active",
+  };
+  lead.timeline = ensureTimeline(lead);
+  lead.timeline.push({ at: nowIso, action: "order-paid", note: order.id });
+  lead.timeline.push({ at: nowIso, action: "content-unlocked", note: `เปิดสิทธิ์ ${ACCESS_DAYS} วัน` });
+}
+
+function verifyPaymentSignature(request, rawBody) {
+  if (!PAYMENT_WEBHOOK_SECRET) return false;
+  const signature = String(request.headers["x-signature"] || request.headers["x-callback-token"] || "");
+  if (!signature) return false;
+  const expected = crypto.createHmac("sha256", PAYMENT_WEBHOOK_SECRET).update(rawBody).digest("hex");
+  return timingSafeEqual(signature.replace(/^sha256=/, ""), expected);
+}
+
+function timingSafeEqual(a, b) {
+  const left = Buffer.from(String(a));
+  const right = Buffer.from(String(b));
+  return left.length === right.length && crypto.timingSafeEqual(left, right);
 }
 
 function leadPriority(lead) {
@@ -857,6 +1167,16 @@ function createAccessCode() {
 }
 
 async function readJsonBody(request) {
+  const raw = await readRawBody(request);
+  if (!raw) return {};
+  try {
+    return JSON.parse(raw);
+  } catch {
+    throw new HttpError(400, "Invalid JSON");
+  }
+}
+
+async function readRawBody(request) {
   const chunks = [];
   let size = 0;
   for await (const chunk of request) {
@@ -864,12 +1184,7 @@ async function readJsonBody(request) {
     if (size > 8_000_000) throw new HttpError(413, "Payload too large");
     chunks.push(chunk);
   }
-  if (!chunks.length) return {};
-  try {
-    return JSON.parse(Buffer.concat(chunks).toString("utf8"));
-  } catch {
-    throw new HttpError(400, "Invalid JSON");
-  }
+  return chunks.length ? Buffer.concat(chunks).toString("utf8") : "";
 }
 
 async function readLeads() {
@@ -877,8 +1192,17 @@ async function readLeads() {
   return JSON.parse(raw);
 }
 
+async function readOrders() {
+  const raw = await fs.readFile(ORDERS_FILE, "utf8");
+  return JSON.parse(raw);
+}
+
 async function writeLeads(leads) {
   await fs.writeFile(LEADS_FILE, `${JSON.stringify(leads, null, 2)}\n`, "utf8");
+}
+
+async function writeOrders(orders) {
+  await fs.writeFile(ORDERS_FILE, `${JSON.stringify(orders, null, 2)}\n`, "utf8");
 }
 
 function sortLeads(leads) {
@@ -887,6 +1211,7 @@ function sortLeads(leads) {
 
 function publicLead(lead) {
   ensureEnrollmentArtifacts(lead);
+  const accessActive = isAccessActive(lead);
   return {
     id: lead.id,
     name: lead.name,
@@ -894,10 +1219,37 @@ function publicLead(lead) {
     status: lead.status,
     paymentStatus: lead.payment?.status || "unpaid",
     accessCode: lead.access?.code || "",
+    accessActive,
+    accessExpiresAt: lead.access?.expiresAt || "",
     learnUrl: "/learn",
     createdAt: lead.createdAt,
-    nextAction: lead.status === "paid" ? "เข้าเรียนได้ทันที" : "แนบสลิปเพื่อเปิดบทเรียนอัตโนมัติ",
+    nextAction: accessActive ? "เข้าเรียนได้ทันที" : "เลือกแพ็กและชำระเงินเพื่อเปิดบทเรียน",
   };
+}
+
+function publicOrder(order) {
+  return {
+    id: order.id,
+    enrollmentId: order.enrollmentId,
+    packageId: order.packageId,
+    packageName: order.packageName,
+    amount: order.amount,
+    currency: order.currency,
+    status: order.status,
+    provider: order.provider,
+    paymentUrl: order.paymentUrl,
+    qrImageUrl: order.qrImageUrl,
+    qrPayload: order.qrPayload,
+    paymentStatusMessage: order.paymentStatusMessage || "",
+    createdAt: order.createdAt,
+    expiresAt: order.expiresAt,
+    paidAt: order.paidAt,
+  };
+}
+
+function isAccessActive(lead) {
+  const expiresAt = Date.parse(lead.access?.expiresAt || lead.entitlement?.expiresAt || "");
+  return lead.status === "paid" && lead.payment?.status === "approved" && Number.isFinite(expiresAt) && expiresAt > Date.now();
 }
 
 function requireAdmin(request, url) {
