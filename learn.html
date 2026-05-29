@@ -23,7 +23,7 @@
         <div>
           <p class="eyebrow">Student Access</p>
           <h2>เข้าเรียน</h2>
-          <p>กรอกเลขสมัคร เบอร์โทร และ access code หลังสลิปผ่าน ระบบจะเปิดบทเรียนให้ทันที</p>
+          <p>กรอกเลขสมัคร เบอร์โทร และ access code หลัง payment webhook ยืนยันแล้ว ระบบจะเปิดบทเรียนตามสิทธิ์ 30 วัน</p>
         </div>
         <form id="accessForm" class="access-form">
           <label>
@@ -47,6 +47,7 @@
         <div>
           <p class="eyebrow">Unlocked Course</p>
           <h2 id="courseTitle">บทเรียน</h2>
+          <p id="expiryText"></p>
         </div>
         <div id="lessonList" class="lesson-grid"></div>
       </section>
