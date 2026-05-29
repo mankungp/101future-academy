@@ -1,6 +1,6 @@
 # 101 Future Academy
 
-Standalone enrollment and lead CRM for 101future.com.
+Standalone enrollment, slip verification, and gated learning portal for 101future.com.
 
 ## Local
 
@@ -30,12 +30,17 @@ Optional:
 - `LEAD_WEBHOOK_SECRET`: optional secret sent as `X-Webhook-Secret`
 - `DEFAULT_LEAD_OWNER`: optional owner label shown on automated lead plans
 - `DUPLICATE_WINDOW_DAYS`: duplicate detection window, defaults to `90`
+- `EASYSLIP_API_KEY`: EasySlip API key used to verify Thai bank slips server-side
+- `EASYSLIP_MATCH_ACCOUNT`: set to `true` to require EasySlip receiver account matching
+- `COURSE_PRICES_JSON`: JSON object for server-side amount matching, for example `{"AI 101":2900,"Code & Create":3200}`
+- `DEFAULT_COURSE_PRICE`: fallback amount if a course is not in `COURSE_PRICES_JSON`
 
 ## Enrollment Automation
 
-The CRM automatically:
+The enrollment system automatically:
 
 - prevents duplicate active leads by matching phone or LINE ID
-- creates the next follow-up action and due time for each status
-- shows due follow-ups in the admin dashboard
-- sends lead events to `LEAD_WEBHOOK_URL` when configured
+- verifies uploaded Thai bank slips through EasySlip when configured
+- rejects duplicate slips and mismatched amounts
+- unlocks `/learn` content immediately after payment verification
+- keeps admin for exceptions, rejected slips, and exports
