@@ -34,58 +34,52 @@ async function gh(pathname, options = {}) {
   const text = await response.text();
   const data = text ? JSON.parse(text) : null;
   if (!response.ok) {
-    throw new Error(`${options.method || "GET"} ${pathname} failed ${response.status}: ${text}`);
+    const error = new Error(`${options.method || "GET"} ${pathname} failed ${response.status}: ${text}`);
+    error.status = response.status;
+    error.data = data;
+    throw error;
   }
   return data;
 }
 
+async function existingSha(file) {
+  try {
+    const data = await gh(`/repos/${owner}/${repo}/contents/${encodeURIComponentPath(file)}?ref=${branch}`);
+    return data.sha;
+  } catch (error) {
+    if (error.status === 404 || error.status === 409) return null;
+    throw error;
+  }
+}
+
+async function putFile(file) {
+  const buffer = await fs.readFile(path.join(root, file));
+  const sha = await existingSha(file);
+  const body = {
+    message: `${sha ? "Update" : "Add"} ${file}`,
+    content: buffer.toString("base64"),
+    branch,
+  };
+  if (sha) body.sha = sha;
+
+  await gh(`/repos/${owner}/${repo}/contents/${encodeURIComponentPath(file)}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  console.log(`${sha ? "Updated" : "Added"} ${file}`);
+}
+
+function encodeURIComponentPath(file) {
+  return file.split("/").map(encodeURIComponent).join("/");
+}
+
 async function main() {
   if (!process.env.GITHUB_TOKEN) throw new Error("GITHUB_TOKEN is required");
-
-  const tree = [];
   for (const file of files) {
-    const buffer = await fs.readFile(path.join(root, file));
-    const blob = await gh(`/repos/${owner}/${repo}/git/blobs`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        content: buffer.toString("base64"),
-        encoding: "base64",
-      }),
-    });
-    tree.push({ path: file, mode: "100644", type: "blob", sha: blob.sha });
+    await putFile(file);
   }
-
-  const treeResult = await gh(`/repos/${owner}/${repo}/git/trees`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ tree }),
-  });
-
-  const commit = await gh(`/repos/${owner}/${repo}/git/commits`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      message: "Initial 101 Future enrollment app",
-      tree: treeResult.sha,
-    }),
-  });
-
-  try {
-    await gh(`/repos/${owner}/${repo}/git/ref/heads/${branch}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ sha: commit.sha, force: true }),
-    });
-  } catch (error) {
-    await gh(`/repos/${owner}/${repo}/git/refs`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ref: `refs/heads/${branch}`, sha: commit.sha }),
-    });
-  }
-
-  console.log(`Pushed ${commit.sha} to ${owner}/${repo}:${branch}`);
+  console.log(`Published ${files.length} files to https://github.com/${owner}/${repo}`);
 }
 
 main().catch((error) => {
