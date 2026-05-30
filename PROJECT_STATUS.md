@@ -53,6 +53,7 @@ Done:
 - Mission object visuals are local SVG assets, not CSS-only shapes, so book, pencil, ruler, and eraser are easier for young learners to recognize.
 - Wrong-answer feedback now tells the child what they tapped and what the prompt asked for.
 - Correct answers now show a short animated popup and the next prompt is read automatically, while the Listen button remains for replay.
+- Mission speech now uses more natural classroom phrases: wrong answers say "No, this is a/an ...", correct answers say "Yes, correct", and restart reads the first prompt again.
 
 ## Learning UX References
 
