@@ -36,7 +36,7 @@ const ACCESS_DAYS = Number(process.env.ACCESS_DAYS || 30);
 const PACKAGES = [
   {
     id: "eng-m1-m3-speaking-grammar-30d",
-    name: "English Monthly",
+    name: "อังกฤษรายเดือน",
     subject: "English",
     level: "ม.1-ม.3",
     durationDays: 30,
@@ -51,7 +51,7 @@ const PACKAGES = [
   },
   {
     id: "eng-math-m1-m3-30d",
-    name: "English + Math",
+    name: "อังกฤษ + คณิต",
     subject: "English, Math",
     level: "ม.1-ม.3",
     durationDays: 30,
@@ -60,12 +60,12 @@ const PACKAGES = [
   },
   {
     id: "all-core-m1-m3-30d",
-    name: "All ม.ต้น",
+    name: "ครบวิชา ม.ต้น",
     subject: "English, Math, Science, Thai",
     level: "ม.1-ม.3",
     durationDays: 30,
     price: Number(COURSE_PRICES["All ม.ต้น"] || COURSE_PRICES.allCore || 599),
-    description: "แพ็กเตรียมเปิดสำหรับวิชาหลัก ม.ต้น: English, Math, Science และ Thai",
+    description: "แพ็กเตรียมเปิดสำหรับวิชาหลัก ม.ต้น: อังกฤษ คณิต วิทย์ และไทย",
   },
 ];
 
