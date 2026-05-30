@@ -116,6 +116,7 @@ function chooseItem(word, item) {
     item.classList.add("wrong");
     playUiSound("wrong");
     showWrongBubble(item, selected);
+    recordAttempt({ correct: false, selected, target });
     const selectedPhrase = `No, this is ${withArticle(selected.word)}.`;
     feedback.innerHTML = `
       <strong>${escapeHtml(selectedPhrase)}</strong>
@@ -136,6 +137,7 @@ function chooseItem(word, item) {
   addPackedItem(target);
   showCorrectBurst(target);
   lockMission();
+  recordAttempt({ correct: true, selected: target, target });
   currentIndex += 1;
   score += 1;
   saveProgress();
@@ -402,6 +404,29 @@ function loadVoices() {
     englishVoices.find((voice) => voice.lang === "en-US") ||
     englishVoices[0] ||
     null;
+}
+
+function recordAttempt({ correct, selected, target }) {
+  const attempts = readAttempts();
+  attempts.push({
+    mission: "english-p1-unit1-school-bag",
+    target: target.word,
+    targetThai: target.thai,
+    selected: selected.word,
+    selectedThai: selected.thai,
+    correct,
+    createdAt: new Date().toISOString(),
+  });
+  localStorage.setItem("101future.learningAttempts", JSON.stringify(attempts.slice(-80)));
+}
+
+function readAttempts() {
+  try {
+    const parsed = JSON.parse(localStorage.getItem("101future.learningAttempts") || "[]");
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
 }
 
 function setSpeaking(isSpeaking) {
