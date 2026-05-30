@@ -349,6 +349,7 @@ h3 {
 .contact p,
 .trust-card p,
 .course-grid p,
+.system-grid p,
 .policy-card p,
 .site-footer p,
 .policy-document p,
@@ -364,7 +365,8 @@ h3 {
 
 .trust-grid,
 .course-grid,
-.policy-grid {
+.policy-grid,
+.system-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 14px;
@@ -372,7 +374,8 @@ h3 {
 
 .trust-card,
 .course-grid article,
-.policy-card {
+.policy-card,
+.system-grid article {
   display: grid;
   align-content: start;
   gap: 12px;
@@ -386,7 +389,8 @@ h3 {
 }
 
 .trust-card span,
-.policy-card span {
+.policy-card span,
+.system-grid span {
   color: var(--coral);
   font-size: 13px;
   font-weight: 900;
@@ -395,8 +399,37 @@ h3 {
 
 .trust-card h3,
 .course-grid h3,
-.policy-card h3 {
+.policy-card h3,
+.system-grid h3 {
   margin-bottom: 0;
+}
+
+.system-section {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(238, 244, 255, 0.7)),
+    var(--paper);
+  border-top: 1px solid var(--line);
+}
+
+.system-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.system-grid article {
+  min-height: 250px;
+  border-top: 4px solid var(--primary);
+}
+
+.system-grid article:nth-child(2) {
+  border-top-color: var(--cyan);
+}
+
+.system-grid article:nth-child(3) {
+  border-top-color: var(--teal);
+}
+
+.system-grid article:nth-child(4) {
+  border-top-color: var(--coral);
 }
 
 .course-section {
@@ -990,6 +1023,7 @@ h3 {
   .program-grid,
   .trust-grid,
   .course-grid,
+  .system-grid,
   .policy-grid,
   .metric-grid,
   .automation-grid,
@@ -1053,14 +1087,15 @@ h3 {
   }
 
   .program-grid,
-    .lead-form,
-    .payment-form,
-    .access-form,
-    .trust-grid,
-    .course-grid,
-    .policy-grid,
-    .metric-grid,
-    .automation-grid,
+  .lead-form,
+  .payment-form,
+  .access-form,
+  .trust-grid,
+  .course-grid,
+  .system-grid,
+  .policy-grid,
+  .metric-grid,
+  .automation-grid,
   .payment-grid,
   .lesson-grid,
   .lead-meta {
