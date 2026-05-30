@@ -8,7 +8,7 @@
       name="description"
       content="101 Future Academy คอร์สอังกฤษ ม.ต้น ผสาน American English กับหลักสูตรไทย เพื่อฝึกพูดและเตรียมสอบ"
     />
-    <link rel="stylesheet" href="/styles.css" />
+    <link rel="stylesheet" href="/styles.css?v=20260530-line-login" />
   </head>
   <body>
     <header class="topbar">
@@ -22,7 +22,7 @@
         <a href="#system">วิธีเรียน</a>
         <a href="#course">รายละเอียดคอร์ส</a>
         <a href="#apply">สมัครเรียน</a>
-        <a href="/learn">เข้าเรียน</a>
+        <a class="nav-line-login" href="/auth/line?next=/learn">LINE Login</a>
         <a href="#policies">นโยบาย</a>
         <a href="#contact">ติดต่อ</a>
       </nav>
@@ -44,6 +44,7 @@
           </p>
           <div class="hero-actions">
             <a class="button primary" href="#apply">เลือกแพ็กเรียน</a>
+            <a class="button line-button" href="/auth/line?next=/learn">เข้าเรียนด้วย LINE</a>
             <a class="button secondary" href="#roadmap">ดูแผนขยายคอร์ส</a>
           </div>
           <div class="hero-stats" aria-label="101 Future core plan">
