@@ -32,9 +32,10 @@ Optional:
 - `LEAD_WEBHOOK_SECRET`: optional secret sent as `X-Webhook-Secret`
 - `DEFAULT_LEAD_OWNER`: optional owner label shown on automated lead plans
 - `DUPLICATE_WINDOW_DAYS`: duplicate detection window, defaults to `90`
-- `PAYMENT_PROVIDER`: payment provider key such as `opn` or `xendit`
+- `PAYMENT_PROVIDER`: payment provider key, use `xendit` for PromptPay QR
 - `PAYMENT_PROVIDER_API_KEY`: provider secret key used by the payment adapter
-- `PAYMENT_WEBHOOK_SECRET`: HMAC secret required for payment webhook verification
+- `PAYMENT_WEBHOOK_SECRET`: webhook verification secret; for Xendit this is the `x-callback-token`
+- `XENDIT_API_VERSION`: Xendit Payment Request API version, defaults to `2024-11-11`
 - `SITE_ORIGIN`: public site URL, defaults to `https://www.101future.com`
 - `ACCESS_DAYS`: learning entitlement length, defaults to `30`
 - `EASYSLIP_API_KEY`: EasySlip API key used to verify Thai bank slips server-side
@@ -49,6 +50,7 @@ The enrollment system automatically:
 - prevents duplicate active leads by matching phone or LINE ID
 - exposes English M.1-M.3 packages through `/api/packages`
 - creates orders through `/api/orders`
+- creates Xendit PromptPay QR payment requests when `PAYMENT_PROVIDER=xendit`
 - verifies payment webhooks with `PAYMENT_WEBHOOK_SECRET`
 - checks paid amount against the locked order amount
 - unlocks `/learn` content for 30 days after payment confirmation
