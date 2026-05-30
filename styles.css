@@ -1201,32 +1201,44 @@ h3 {
   .topbar {
     align-items: flex-start;
     flex-direction: column;
-    padding-top: 14px;
-    padding-bottom: 14px;
+    gap: 9px;
+    min-height: auto;
+    padding-top: 12px;
+    padding-bottom: 10px;
   }
 
   .nav {
     width: 100%;
     flex-wrap: wrap;
-    gap: 10px 16px;
+    align-items: center;
+    gap: 8px 12px;
     overflow-x: visible;
     padding-bottom: 0;
-    font-size: 13px;
+    font-size: 12px;
+    line-height: 1.1;
   }
 
   .nav a {
     flex: 0 1 auto;
   }
 
+  .nav a[href="#system"],
+  .nav a[href="#course"],
+  .nav a[href="#apply"],
+  .nav a[href="#policies"],
+  .nav a[href="#contact"] {
+    display: none;
+  }
+
   .nav .nav-line-login {
-    min-height: 32px;
-    padding-inline: 10px;
+    min-height: 30px;
+    padding-inline: 11px;
   }
 
   .hero {
-    min-height: 690px;
-    padding-top: 42px;
-    padding-bottom: 42px;
+    min-height: auto;
+    padding-top: 24px;
+    padding-bottom: 30px;
   }
 
   .hero-copy {
@@ -1245,20 +1257,24 @@ h3 {
   }
 
   h1 {
-    font-size: 34px;
-    line-height: 1.12;
+    margin-bottom: 12px;
+    font-size: 30px;
+    line-height: 1.08;
   }
 
   h2 {
-    font-size: 30px;
+    font-size: 26px;
+    line-height: 1.14;
   }
 
   h3 {
-    font-size: 22px;
+    font-size: 20px;
   }
 
   .lead {
-    font-size: 18px;
+    margin-bottom: 0;
+    font-size: 15.5px;
+    line-height: 1.48;
   }
 
   .lead-desktop {
@@ -1274,7 +1290,21 @@ h3 {
     display: grid;
     grid-template-columns: 1fr;
     width: 100%;
-    max-width: 340px;
+    max-width: 310px;
+  }
+
+  .hero-actions {
+    gap: 9px;
+    margin-top: 20px;
+  }
+
+  .hero-actions .button.secondary {
+    display: none;
+  }
+
+  .hero-stats {
+    gap: 8px;
+    margin-top: 18px;
   }
 
   .hero-actions .button,
@@ -1284,8 +1314,48 @@ h3 {
   }
 
   .button {
-    min-height: 46px;
+    min-height: 42px;
     padding-inline: 14px;
+    font-size: 14px;
+  }
+
+  .hero-stats span {
+    min-height: 38px;
+    padding: 7px 10px;
+    font-size: 12px;
+  }
+
+  .hero-stats strong {
+    font-size: 15px;
+  }
+
+  .eyebrow {
+    margin-bottom: 10px;
+    font-size: 11px;
+  }
+
+  .strip {
+    padding: 14px 5vw;
+  }
+
+  .strip p {
+    font-size: 16px;
+    line-height: 1.35;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
+  .section {
+    padding: 48px 5vw;
+  }
+
+  .section-head {
+    margin-bottom: 22px;
+  }
+
+  .section-head p:not(.eyebrow) {
+    font-size: 15.5px;
+    line-height: 1.5;
   }
 
   .program-grid,
@@ -1307,7 +1377,35 @@ h3 {
   }
 
   .program {
-    min-height: 240px;
+    min-height: auto;
+    padding: 20px;
+  }
+
+  .trust-card,
+  .course-grid article,
+  .policy-card,
+  .system-grid article,
+  .line-signup-copy,
+  .payment-box {
+    min-height: auto;
+    padding: 20px;
+  }
+
+  .program p,
+  .why-list p,
+  .contact p,
+  .trust-card p,
+  .course-grid p,
+  .system-grid p,
+  .policy-card p,
+  .site-footer p,
+  .policy-document p,
+  .policy-document li {
+    font-size: 15.5px;
+  }
+
+  .price-line {
+    font-size: 16px;
   }
 
   .form-footer,
