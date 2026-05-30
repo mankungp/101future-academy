@@ -570,6 +570,64 @@ h3 {
   color: var(--primary);
 }
 
+.line-signup-panel {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: 18px;
+  max-width: 980px;
+}
+
+.line-signup-copy,
+.signup-steps article {
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(221, 229, 241, 0.95);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+}
+
+.line-signup-copy {
+  display: grid;
+  align-content: start;
+  gap: 12px;
+  padding: 24px;
+}
+
+.line-signup-copy h3 {
+  margin-bottom: 0;
+}
+
+.line-signup-copy p {
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.signup-steps {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.signup-steps article {
+  padding: 18px;
+}
+
+.signup-steps span {
+  color: #06c755;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.signup-steps h3 {
+  margin-top: 8px;
+  font-size: 20px;
+}
+
+.signup-steps p {
+  margin-bottom: 0;
+  color: var(--muted);
+  line-height: 1.45;
+}
+
 .share-link {
   display: grid;
   gap: 10px;
@@ -1067,12 +1125,14 @@ h3 {
   .metric-grid,
   .automation-grid,
   .payment-grid,
-  .lesson-grid {
+  .lesson-grid,
+  .line-signup-panel {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .split,
-  .lead-card {
+  .lead-card,
+  .signup-steps {
     grid-template-columns: 1fr;
   }
 }
@@ -1137,6 +1197,8 @@ h3 {
   .automation-grid,
   .payment-grid,
   .lesson-grid,
+  .line-signup-panel,
+  .signup-steps,
   .lead-meta {
     grid-template-columns: 1fr;
   }
