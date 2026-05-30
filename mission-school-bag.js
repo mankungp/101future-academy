@@ -13,11 +13,17 @@ const packedItems = document.querySelector("#packedItems");
 const feedback = document.querySelector("#missionFeedback");
 const completeBox = document.querySelector("#missionComplete");
 const soundButton = document.querySelector("#missionSoundButton");
+const missionScreen = document.querySelector(".mission-screen");
+const correctBurst = document.querySelector("#correctBurst");
+const correctBurstWord = document.querySelector("#correctBurstWord");
 const resetRequested = new URLSearchParams(window.location.search).get("reset") === "1";
 
 let currentIndex = Number(localStorage.getItem("101future.schoolBagMission.index") || 0);
 let score = Number(localStorage.getItem("101future.schoolBagMission.score") || 0);
 let draggedWord = "";
+let isTransitioning = false;
+let correctBurstTimer = 0;
+let nextPromptTimer = 0;
 
 if (resetRequested) {
   localStorage.removeItem("101future.schoolBagMission.index");
@@ -82,7 +88,7 @@ function renderMission() {
 }
 
 function chooseItem(word, item) {
-  if (!word || !item || currentIndex >= missionItems.length) return;
+  if (isTransitioning || !word || !item || currentIndex >= missionItems.length) return;
 
   const target = currentTarget();
   if (word !== target.word) {
@@ -105,6 +111,8 @@ function chooseItem(word, item) {
   item.dataset.packed = "1";
   item.disabled = true;
   addPackedItem(target);
+  showCorrectBurst(target);
+  lockMission();
   currentIndex += 1;
   score += 1;
   saveProgress();
@@ -112,11 +120,20 @@ function chooseItem(word, item) {
   speakText(target.word);
 
   if (currentIndex >= missionItems.length) {
-    completeMission();
+    window.clearTimeout(nextPromptTimer);
+    nextPromptTimer = window.setTimeout(() => {
+      unlockMission();
+      completeMission();
+    }, 950);
     return;
   }
 
-  window.setTimeout(renderMission, 650);
+  window.clearTimeout(nextPromptTimer);
+  nextPromptTimer = window.setTimeout(() => {
+    renderMission();
+    unlockMission();
+    speakPrompt();
+  }, 950);
 }
 
 function highlightTarget(word) {
@@ -138,6 +155,29 @@ function addPackedItem(item) {
   bag?.classList.add("bag-pop");
 }
 
+function lockMission() {
+  isTransitioning = true;
+  missionScreen?.classList.add("is-transitioning");
+}
+
+function unlockMission() {
+  isTransitioning = false;
+  missionScreen?.classList.remove("is-transitioning");
+}
+
+function showCorrectBurst(item) {
+  if (!correctBurst) return;
+  if (correctBurstWord) correctBurstWord.textContent = `${item.word} = ${item.thai}`;
+  window.clearTimeout(correctBurstTimer);
+  correctBurst.classList.remove("hidden", "burst-running");
+  void correctBurst.offsetWidth;
+  correctBurst.classList.add("burst-running");
+  correctBurstTimer = window.setTimeout(() => {
+    correctBurst.classList.add("hidden");
+    correctBurst.classList.remove("burst-running");
+  }, 900);
+}
+
 function restorePackedItems() {
   itemsBox?.querySelectorAll(".mission-item").forEach((node, index) => {
     if (index < currentIndex) {
@@ -151,6 +191,7 @@ function completeMission() {
   stars.textContent = `${score}/${missionItems.length}`;
   promptText.textContent = "Great job!";
   feedback.innerHTML = `<strong>Mission complete</strong><span>เก็บของใส่กระเป๋าครบแล้ว</span>`;
+  speakText("Great job!");
   completeBox?.classList.remove("hidden");
   if (completeBox) {
     completeBox.innerHTML = `
@@ -166,10 +207,14 @@ function completeMission() {
 }
 
 function restartMission() {
+  window.clearTimeout(correctBurstTimer);
+  window.clearTimeout(nextPromptTimer);
+  unlockMission();
   currentIndex = 0;
   score = 0;
   saveProgress();
   if (packedItems) packedItems.innerHTML = "";
+  correctBurst?.classList.add("hidden");
   completeBox?.classList.add("hidden");
   itemsBox?.querySelectorAll(".mission-item").forEach((item) => {
     item.disabled = false;
