@@ -548,6 +548,23 @@ h3 {
   color: var(--primary);
 }
 
+.share-link {
+  display: grid;
+  gap: 10px;
+  padding: 16px;
+  background: var(--soft);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.share-link input {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 1px solid #cfd8e6;
+  border-radius: 8px;
+}
+
 .payment-form,
 .access-form {
   display: grid;
