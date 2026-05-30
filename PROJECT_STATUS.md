@@ -56,6 +56,8 @@ Done:
 - Mission speech now uses more natural classroom phrases: wrong answers say "No, this is a/an ...", correct answers say "Yes, correct", and restart reads the first prompt again.
 - Correct-answer timing now keeps the reward popup longer and waits before reading the next prompt. Mission speech is slower for primary students. Final production voice must be selected before replacing the current browser speech prototype.
 - Mission entry now starts with a prominent Start Mission button. After the first click, the button becomes Listen Again for replay.
+- Mission 1 now has a first sound-design layer: start chime, prompt cue, wrong-answer tone, correct ding, bag-drop sound, and complete fanfare using Web Audio while final human TTS is still pending.
+- Added more visible interaction animation: listening state on the prompt card, wrong-answer object bubble, and a correct item flying into the school bag.
 
 ## Learning UX References
 
@@ -83,7 +85,7 @@ Learning product:
 
 - Need a real grade-by-grade curriculum map, starting with English ป.1.
 - Current English sample lesson is a prototype, not the final ป.1 lesson design.
-- Need more animation polish: bag open/close, stronger success reward, and completion badge.
+- Need the next animation polish pass: bag open/close, stronger completion badge, and a more finished lesson-end screen.
 - Need first real lessons for English ป.1, then expand grade by grade.
 - Need first real lessons for Math, Science, and Thai later.
 - Need progress tracking.
