@@ -25,6 +25,7 @@ let isTransitioning = false;
 let correctBurstTimer = 0;
 let nextPromptTimer = 0;
 let preferredEnglishVoice = null;
+let missionStarted = false;
 
 loadVoices();
 if ("speechSynthesis" in window) {
@@ -47,9 +48,13 @@ if (currentIndex >= missionItems.length) {
 }
 
 restorePackedItems();
-renderMission();
+renderStartScreen();
 
 soundButton?.addEventListener("click", () => {
+  if (!missionStarted) {
+    startMission();
+    return;
+  }
   speakPrompt();
 });
 
@@ -84,9 +89,11 @@ function currentTarget() {
 
 function renderMission() {
   const target = currentTarget();
+  setSoundButtonReplay();
   promptText.textContent = `Tap the ${target.word}.`;
   stars.textContent = `${score}/${missionItems.length}`;
   feedback.textContent = `โจทย์คือ ${target.word} (${target.thai})`;
+  missionScreen?.classList.remove("awaiting-start");
   itemsBox?.querySelectorAll(".mission-item").forEach((item) => {
     const packed = Number(item.dataset.packed || 0) === 1;
     item.disabled = packed;
@@ -95,7 +102,7 @@ function renderMission() {
 }
 
 function chooseItem(word, item) {
-  if (isTransitioning || !word || !item || currentIndex >= missionItems.length) return;
+  if (!missionStarted || isTransitioning || !word || !item || currentIndex >= missionItems.length) return;
 
   const target = currentTarget();
   if (word !== target.word) {
@@ -155,6 +162,43 @@ function advanceMission() {
   window.setTimeout(speakPrompt, 280);
 }
 
+function renderStartScreen() {
+  const hasProgress = currentIndex > 0;
+  missionStarted = false;
+  stars.textContent = `${score}/${missionItems.length}`;
+  promptText.textContent = hasProgress ? "Ready to continue?" : "Ready to pack your school bag?";
+  feedback.innerHTML = hasProgress
+    ? "<strong>Resume Mission</strong><span>กดเริ่มต่อ แล้วฟังโจทย์ถัดไป</span>"
+    : "<strong>Start Mission</strong><span>กดเริ่ม แล้วฟังคำสั่งแรก</span>";
+  missionScreen?.classList.add("awaiting-start");
+  setSoundButtonStart(hasProgress);
+  itemsBox?.querySelectorAll(".mission-item").forEach((item) => {
+    const packed = Number(item.dataset.packed || 0) === 1;
+    item.disabled = packed;
+    item.classList.remove("target-hint", "target-hint-strong", "correct", "wrong");
+  });
+}
+
+function startMission() {
+  missionStarted = true;
+  renderMission();
+  window.setTimeout(speakPrompt, 120);
+}
+
+function setSoundButtonStart(isResume = false) {
+  if (!soundButton) return;
+  soundButton.textContent = isResume ? "Resume Mission" : "Start Mission";
+  soundButton.setAttribute("aria-label", isResume ? "เล่น Mission ต่อ" : "เริ่ม Mission");
+  soundButton.classList.add("start-button");
+}
+
+function setSoundButtonReplay() {
+  if (!soundButton) return;
+  soundButton.textContent = "Listen Again";
+  soundButton.setAttribute("aria-label", "ฟังคำสั่งอีกครั้ง");
+  soundButton.classList.remove("start-button");
+}
+
 function highlightTarget(word) {
   itemsBox?.querySelectorAll(".mission-item").forEach((node) => {
     node.classList.toggle("target-hint-strong", node.dataset.word === word);
@@ -207,6 +251,7 @@ function restorePackedItems() {
 }
 
 function completeMission() {
+  missionStarted = false;
   stars.textContent = `${score}/${missionItems.length}`;
   promptText.textContent = "Great job!";
   feedback.innerHTML = `<strong>Mission complete</strong><span>เก็บของใส่กระเป๋าครบแล้ว</span>`;
@@ -235,6 +280,7 @@ function restartMission() {
   if (packedItems) packedItems.innerHTML = "";
   correctBurst?.classList.add("hidden");
   completeBox?.classList.add("hidden");
+  missionStarted = true;
   itemsBox?.querySelectorAll(".mission-item").forEach((item) => {
     item.disabled = false;
     item.dataset.packed = "0";
