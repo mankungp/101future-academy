@@ -9,6 +9,11 @@ const lineLoginButton = document.querySelector("#lineLoginButton");
 const profileForm = document.querySelector("#profileForm");
 const logoutButton = document.querySelector("#logoutButton");
 const selectedPackageBox = document.querySelector("#selectedPackageBox");
+const accountSummary = document.querySelector("#accountSummary");
+const interestSummary = document.querySelector("#interestSummary");
+const accessSummary = document.querySelector("#accessSummary");
+const interestPanel = document.querySelector("#interestPanel");
+const interestList = document.querySelector("#interestList");
 
 const params = new URLSearchParams(location.search);
 const selectedPackageId = params.get("package") || "";
@@ -79,11 +84,15 @@ async function loadLineAccount() {
     const data = await response.json();
     if (!data.lineConfigured) {
       lineStatus.textContent = "การเข้าสู่ระบบด้วย LINE ยังไม่พร้อมใช้งาน";
+      accountSummary.textContent = "LINE ยังไม่พร้อม";
       lineLoginButton?.classList.add("hidden");
       return;
     }
     if (!data.account) {
       currentAccount = null;
+      accountSummary.textContent = "ยังไม่ได้เข้าสู่ระบบ";
+      interestSummary.textContent = selectedPackageItem ? "รอบันทึกหลังเข้าสู่ระบบ" : "-";
+      accessSummary.textContent = "ยังไม่มีสิทธิ์เรียน";
       if (!lineStatus.dataset.authMessage) {
         lineStatus.textContent = "เข้าสู่ระบบด้วย LINE เพื่อดูแพ็กที่สนใจและสิทธิ์เรียน";
       }
@@ -92,6 +101,8 @@ async function loadLineAccount() {
       return;
     }
     currentAccount = data.account;
+    accountSummary.textContent = data.account.displayName || "บัญชี LINE";
+    renderMyInterests(data.account.interests || []);
     lineLoginButton?.classList.add("hidden");
     logoutButton?.classList.remove("hidden");
     profileForm?.classList.remove("hidden");
@@ -179,12 +190,63 @@ async function loadMyEnrollments() {
   const data = await response.json();
   if (!response.ok) return;
   const active = (data.enrollments || []).find((item) => item.accessActive);
-  if (!active) return;
+  const pending = (data.enrollments || []).find((item) => !item.accessActive);
+  if (!active) {
+    accessSummary.textContent = pending ? statusLabel(pending.status, pending.paymentStatus) : "ยังไม่มีสิทธิ์เรียน";
+    return;
+  }
+  accessSummary.textContent = `${active.course} ถึง ${formatDate(active.accessExpiresAt)}`;
   courseTitle.textContent = `${active.course} ของ ${active.name}`;
   expiryText.textContent = `สิทธิ์เรียนถึง ${formatDate(active.accessExpiresAt)}`;
   lessonList.innerHTML = (active.lessons || []).map(renderLesson).join("");
   lessonPanel.classList.remove("hidden");
   accessStatus.textContent = "เปิดบทเรียนจากบัญชี LINE แล้ว";
+}
+
+function renderMyInterests(interests = []) {
+  if (!interestPanel || !interestList) return;
+  const list = interests.filter((item) => item.packageName);
+  interestSummary.textContent = list.length ? `${list.length} แพ็ก` : "ยังไม่มี";
+  if (!list.length) {
+    interestPanel.classList.add("hidden");
+    return;
+  }
+  interestPanel.classList.remove("hidden");
+  interestList.innerHTML = list.map(renderInterest).join("");
+}
+
+function renderInterest(item) {
+  return `
+    <article class="lesson-card">
+      <span class="mini-label">${escapeHtml(interestStatusLabel(item.status))}</span>
+      <h3>${escapeHtml(item.packageName)}</h3>
+      <p>${money(item.price)} / ${item.durationDays || 30} วัน · ${escapeHtml(item.level || "ป.1-ป.6")}</p>
+      <p>${escapeHtml(interestNextText(item))}</p>
+      ${item.lastOrderId ? `<a class="button primary" href="/pay?order=${encodeURIComponent(item.lastOrderId)}">ดูหน้าชำระเงิน</a>` : `<a class="button secondary" href="/#packages">ดูแพ็กเรียน</a>`}
+    </article>
+  `;
+}
+
+function interestStatusLabel(status) {
+  return {
+    interested: "ลงชื่อสนใจแล้ว",
+    payment_ready: "มีรายการชำระแล้ว",
+    paid: "เปิดสิทธิ์แล้ว",
+  }[status] || "ลงชื่อสนใจแล้ว";
+}
+
+function interestNextText(item) {
+  if (item.status === "paid") return "แพ็กนี้เปิดสิทธิ์เรียนแล้ว กลับมาดูบทเรียนได้ในหน้านี้";
+  if (item.lastOrderId || item.status === "payment_ready") return "ทีมงานเตรียมรายการชำระเงินแล้ว สามารถเปิดหน้าชำระเงินเพื่อตรวจสอบได้";
+  return "บันทึกไว้แล้ว ระหว่างรอระบบชำระเงินพร้อมใช้งาน";
+}
+
+function statusLabel(status, paymentStatus) {
+  if (status === "pending-payment") return "รอชำระเงิน";
+  if (status === "payment-review") return "รอตรวจสอบการชำระเงิน";
+  if (status === "payment-rejected") return "การชำระเงินยังไม่ผ่าน";
+  if (paymentStatus === "approved") return "รอเปิดสิทธิ์เรียน";
+  return "ยังไม่มีสิทธิ์เรียน";
 }
 
 function formatDate(value) {
