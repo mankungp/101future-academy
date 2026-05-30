@@ -71,26 +71,31 @@ async function loadPackages() {
       packages.map((item) => `<option value="${item.id}">${escapeHtml(item.name)} - ${money(item.price)}</option>`).join("");
   }
 
-  packageGrid.querySelectorAll("[data-package]").forEach((button) => {
+packageGrid.querySelectorAll("[data-package]").forEach((button) => {
     button.addEventListener("click", () => {
+      if (button.disabled) return;
       if (packageSelect) {
         packageSelect.value = button.dataset.package;
         document.querySelector("#apply")?.scrollIntoView({ behavior: "smooth", block: "start" });
         return;
       }
-      window.location.href = "/auth/line?next=/learn";
+      const next = `/learn?package=${encodeURIComponent(button.dataset.package || "")}`;
+      window.location.href = `/auth/line?next=${encodeURIComponent(next)}`;
     });
   });
 }
 
 function renderPackage(item) {
+  const isOpen = item.id === "eng-m1-m3-speaking-grammar-30d";
+  const status = isOpen ? "เปิดให้แจ้งความสนใจ" : "เร็ว ๆ นี้";
+  const action = isOpen ? "แจ้งความสนใจผ่าน LINE" : "ยังไม่เปิดสมัคร";
   return `
-    <article class="program">
-      <span class="program-tag">${escapeHtml(item.level)}</span>
+    <article class="program ${isOpen ? "" : "program-disabled"}">
+      <span class="program-tag">${escapeHtml(item.level)} · ${status}</span>
       <h3>${escapeHtml(item.name)}</h3>
       <p>${escapeHtml(item.description)}</p>
       <strong class="price-line">${money(item.price)} / ${item.durationDays} วัน</strong>
-      <button class="text-button" data-package="${item.id}">สมัครผ่าน LINE</button>
+      <button class="text-button" data-package="${item.id}" ${isOpen ? "" : "disabled"}>${action}</button>
     </article>
   `;
 }
