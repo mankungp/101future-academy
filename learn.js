@@ -8,10 +8,16 @@ const lineStatus = document.querySelector("#lineStatus");
 const lineLoginButton = document.querySelector("#lineLoginButton");
 const profileForm = document.querySelector("#profileForm");
 const logoutButton = document.querySelector("#logoutButton");
+const selectedPackageBox = document.querySelector("#selectedPackageBox");
 
+const params = new URLSearchParams(location.search);
+const selectedPackageId = params.get("package") || "";
+
+showAuthMessage();
+loadSelectedPackage();
 loadLineAccount();
 
-accessForm.addEventListener("submit", async (event) => {
+accessForm?.addEventListener("submit", async (event) => {
   event.preventDefault();
   const submit = accessForm.querySelector("button[type='submit']");
   const payload = Object.fromEntries(new FormData(accessForm).entries());
@@ -75,7 +81,9 @@ async function loadLineAccount() {
       return;
     }
     if (!data.account) {
-      lineStatus.textContent = "เข้าสู่ระบบด้วย LINE เพื่อดูสิทธิ์เรียนที่ผูกกับบัญชี";
+      if (!lineStatus.dataset.authMessage) {
+        lineStatus.textContent = "เข้าสู่ระบบด้วย LINE เพื่อผูกบัญชีและดูสิทธิ์เรียน";
+      }
       lineLoginButton?.classList.remove("hidden");
       return;
     }
@@ -85,10 +93,44 @@ async function loadLineAccount() {
     profileForm.elements.role.value = data.account.role || "student";
     profileForm.elements.phone.value = data.account.phone || "";
     profileForm.elements.email.value = data.account.email || "";
-    lineStatus.textContent = `เข้าสู่ระบบแล้ว: ${data.account.displayName || "บัญชี LINE"}`;
+    lineStatus.textContent = `เข้าสู่ระบบแล้ว: ${data.account.displayName || "บัญชี LINE"} ระหว่างรอ KBank อนุมัติ ระบบจะใช้หน้านี้สำหรับติดตามแพ็กและสิทธิ์เรียน`;
     await loadMyEnrollments();
   } catch (error) {
     lineStatus.textContent = error.message || "ตรวจสอบ LINE Login ไม่สำเร็จ";
+  }
+}
+
+async function loadSelectedPackage() {
+  if (!selectedPackageBox || !selectedPackageId) return;
+  try {
+    const response = await fetch("/api/packages");
+    const data = await response.json();
+    const item = (data.packages || []).find((pkg) => pkg.id === selectedPackageId);
+    if (!item) return;
+    selectedPackageBox.classList.remove("hidden");
+    selectedPackageBox.innerHTML = `
+      <span class="mini-label">แพ็กที่สนใจ</span>
+      <strong>${escapeHtml(item.name)} · ${money(item.price)} / ${item.durationDays} วัน</strong>
+      <p>บันทึกไว้ก่อนระหว่างรอ KBank อนุมัติ เมื่อระบบชำระเงินพร้อมจะเปิดขั้นตอนชำระจากหน้านี้</p>
+    `;
+  } catch {
+    selectedPackageBox?.classList.add("hidden");
+  }
+}
+
+function showAuthMessage() {
+  if (!lineStatus) return;
+  const auth = params.get("auth") || "";
+  const messages = {
+    "line-not-configured": "LINE Login ยังไม่ได้เปิดใช้งาน",
+    "line-error": "เข้าสู่ระบบ LINE ไม่สำเร็จ กรุณาลองใหม่",
+    "line-expired": "เวลาล็อกอินหมดอายุ กรุณากด LINE Login ใหม่",
+    "line-token-error": "LINE ยืนยันตัวตนไม่สำเร็จ กรุณาลองใหม่",
+    "line-profile-error": "อ่านข้อมูล LINE profile ไม่สำเร็จ กรุณาลองใหม่",
+  };
+  if (messages[auth]) {
+    lineStatus.textContent = messages[auth];
+    lineStatus.dataset.authMessage = "true";
   }
 }
 
@@ -108,6 +150,14 @@ async function loadMyEnrollments() {
 function formatDate(value) {
   if (!value) return "-";
   return new Date(value).toLocaleDateString("th-TH", { dateStyle: "medium" });
+}
+
+function money(value) {
+  return Number(value || 0).toLocaleString("th-TH", {
+    style: "currency",
+    currency: "THB",
+    maximumFractionDigits: 0,
+  });
 }
 
 function renderLesson(lesson, index) {
