@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>เข้าเรียน | 101 Future Academy</title>
-    <link rel="stylesheet" href="/styles.css?v=20260530-mission-1" />
+    <link rel="stylesheet" href="/styles.css?v=20260530-mission-page-1" />
   </head>
   <body class="admin-body">
     <header class="topbar">
@@ -93,48 +93,13 @@
           <h2 id="englishPreviewTitle">English Skill Starter สำหรับ ป.1-ป.6</h2>
           <p>ตัวอย่างบทเรียนอังกฤษ: เรียนคำศัพท์ อ่านเรื่องสั้น ทำแบบฝึกหัด และดูสรุปผลหลังเรียน</p>
         </div>
-        <div id="schoolBagMission" class="mission-card" aria-live="polite">
-          <div class="mission-head">
-            <div>
-              <span class="mini-label">Mission 1 · ป.1</span>
-              <h3>Pack My School Bag</h3>
-              <p>ฟังคำสั่ง แล้วแตะหรือหยิบของใส่กระเป๋าให้ถูก</p>
-            </div>
-            <div class="mission-score">
-              <span id="missionStars">0/4</span>
-              <strong>stars</strong>
-            </div>
+        <div class="mission-preview-card">
+          <div>
+            <span class="mini-label">Mission 1 · ป.1</span>
+            <h3>Pack My School Bag</h3>
+            <p>เปิดเป็นหน้าจอเต็ม ให้เด็กฟังคำสั่ง แตะของให้ถูก และถ้าตอบผิดจะเห็นทันทีว่ากดอะไรผิด</p>
           </div>
-          <div class="mission-prompt">
-            <button id="missionSoundButton" class="sound-button" type="button" aria-label="ฟังคำสั่ง">Listen</button>
-            <p id="missionPromptText">Tap the book.</p>
-          </div>
-          <div class="mission-stage">
-            <div id="missionBag" class="school-bag" aria-label="school bag">
-              <span>school bag</span>
-              <div id="packedItems" class="packed-items"></div>
-            </div>
-            <div id="missionItems" class="mission-items" aria-label="school items">
-              <button class="mission-item" type="button" draggable="true" data-word="book">
-                <span class="item-emoji">📘</span>
-                <strong>book</strong>
-              </button>
-              <button class="mission-item" type="button" draggable="true" data-word="pencil">
-                <span class="item-emoji">✏️</span>
-                <strong>pencil</strong>
-              </button>
-              <button class="mission-item" type="button" draggable="true" data-word="ruler">
-                <span class="item-emoji">📏</span>
-                <strong>ruler</strong>
-              </button>
-              <button class="mission-item" type="button" draggable="true" data-word="eraser">
-                <span class="item-emoji">⬜</span>
-                <strong>eraser</strong>
-              </button>
-            </div>
-          </div>
-          <div id="missionFeedback" class="mission-feedback">เริ่มจากคำว่า book</div>
-          <div id="missionComplete" class="result-card hidden"></div>
+          <a class="button primary" href="/mission/school-bag">เริ่ม Mission</a>
         </div>
         <div class="lesson-workspace">
           <article class="lesson-reader">
@@ -211,6 +176,6 @@
         <div id="lessonList" class="lesson-grid"></div>
       </section>
     </main>
-    <script src="/learn.js?v=20260530-mission-1" defer></script>
+    <script src="/learn.js?v=20260530-mission-page-1" defer></script>
   </body>
 </html>
