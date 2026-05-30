@@ -1,3 +1,5 @@
+node_modules/
+.env
 data/*.json
 data/admin-token.txt
 !data/.gitkeep
