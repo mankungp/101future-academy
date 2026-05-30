@@ -91,8 +91,11 @@ function encodeURIComponentPath(file) {
 
 async function main() {
   if (!process.env.GITHUB_TOKEN) throw new Error("GITHUB_TOKEN is required");
+  const targetFiles = process.argv.slice(2);
+  const publishFiles = targetFiles.length ? targetFiles : files;
   let changed = 0;
-  for (const file of files) {
+  for (const file of publishFiles) {
+    if (!files.includes(file)) throw new Error(`Unknown publish file: ${file}`);
     if (await putFile(file)) changed += 1;
   }
   console.log(`Published ${changed} changed file(s) to https://github.com/${owner}/${repo}`);
