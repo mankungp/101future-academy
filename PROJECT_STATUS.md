@@ -43,8 +43,10 @@ Done:
 - Payment order, parent payment link, KBank QR adapter scaffold, and entitlement unlock structure exist.
 - `/pay?order=...` page exists for parent payment links.
 - Access-code fallback login exists.
-- English sample lesson exists on `/learn`:
-  - `English Skill Starter สำหรับ ป.1-ป.6`
+- English ป.1 Unit 1 exists on `/learn`:
+  - Unit title: `My School Bag`
+  - Mission 1: `/mission/school-bag` for listening to single words and tapping the correct object
+  - Mission 2: `/mission/this-is` for listening to `This is a/an ...` sentences and tapping the matching object
   - Story: `My School Bag`
   - Vocabulary: school bag, book, pencil, ruler
   - 3-question exercise
@@ -58,6 +60,8 @@ Done:
 - Mission entry now starts with a prominent Start Mission button. After the first click, the button becomes Listen Again for replay.
 - Mission 1 now has a first sound-design layer: start chime, prompt cue, wrong-answer tone, correct ding, bag-drop sound, and complete fanfare using Web Audio while final human TTS is still pending.
 - Added more visible interaction animation: listening state on the prompt card, wrong-answer object bubble, and a correct item flying into the school bag.
+- English ป.1 Unit 1 source doc exists at `ENGLISH_P1_UNIT1.md`.
+- Mission attempts now start saving locally in `localStorage` under `101future.learningAttempts` so repeated mistakes can become parent/AI feedback later.
 
 ## Learning UX References
 
@@ -83,13 +87,13 @@ Payment:
 
 Learning product:
 
-- Need a real grade-by-grade curriculum map, starting with English ป.1.
-- Current English sample lesson is a prototype, not the final ป.1 lesson design.
+- Need a real grade-by-grade curriculum map beyond English ป.1 Unit 1.
+- English ป.1 Unit 1 is now partially structured, but still needs Mission 3 speaking and parent summary output.
 - Need the next animation polish pass: bag open/close, stronger completion badge, and a more finished lesson-end screen.
 - Need first real lessons for English ป.1, then expand grade by grade.
 - Need first real lessons for Math, Science, and Thai later.
-- Need progress tracking.
-- Need speaking/answer attempt records.
+- Need server-side progress tracking tied to LINE accounts.
+- Need speaking attempt records.
 - Need AI feedback pipeline.
 - Need parent/student dashboard.
 
@@ -130,13 +134,14 @@ LINE_CALLBACK_URL=https://www.101future.com/auth/line/callback
 3. From Admin, create a payment order from a LINE interest.
 4. Test parent payment page with that order link.
 5. Test KBank callback unlocks learning access.
-6. Design English ป.1 curriculum map from Thai indicators: classroom commands, letters/sounds, concrete vocabulary, picture matching, short sentences, listening and speaking.
-7. Polish animation-first English Mission 1: `Pack My School Bag`.
-8. Add progress tracking for mission completion and score.
-9. Add AI feedback pipeline later, after scripted missions are stable.
-10. Build first real ป.1 lessons for other subjects later.
-11. Add parent/student dashboard.
-12. Move JSON storage to a durable database before real paid users.
+6. Build English ป.1 Mission 3: speaking practice for `This is a/an ...`.
+7. Generate/select real human TTS voice samples before replacing browser speech.
+8. Create Canva collateral for Unit 1: cover, flashcards, sentence cards, parent summary, completion badge.
+9. Add server-side progress tracking for mission completion and score.
+10. Add AI feedback pipeline later, after scripted missions are stable.
+11. Build first real ป.1 lessons for other subjects later.
+12. Add parent/student dashboard.
+13. Move JSON storage to a durable database before real paid users.
 
 ## Rule For Future Codex Chats
 
