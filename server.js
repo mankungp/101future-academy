@@ -1628,7 +1628,7 @@ async function createPaymentSession(order, enrollment) {
     return {
       provider: PAYMENT_PROVIDER || "unconfigured",
       status: "provider_not_configured",
-      message: "ยังไม่ได้ตั้งค่าระบบรับชำระเงินอัตโนมัติ",
+      message: "ระบบชำระเงินอยู่ระหว่างเตรียมเปิดใช้งาน รายการนี้ถูกบันทึกไว้แล้ว",
       checkoutUrl: `${SITE_ORIGIN}/#apply`,
     };
   }
@@ -1644,7 +1644,7 @@ async function createPaymentSession(order, enrollment) {
   return {
     provider: PAYMENT_PROVIDER,
     status: "adapter_ready",
-    message: "ตั้งค่าผู้ให้บริการรับชำระเงินแล้ว แต่ยังไม่ได้เปิดใช้งานกับระบบนี้",
+    message: "ระบบชำระเงินถูกตั้งค่าแล้ว แต่ยังไม่ได้เปิดใช้งานกับเว็บนี้",
     checkoutUrl: `${SITE_ORIGIN}/#apply`,
   };
 }
