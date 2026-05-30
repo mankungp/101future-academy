@@ -17,26 +17,46 @@ async function loadOrder() {
     if (!response.ok) throw new Error(data.error || "โหลดรายการไม่สำเร็จ");
 
     payStatus.innerHTML = `
-      รายการ <strong>${escapeHtml(data.order.id)}</strong><br />
-      แพ็ก <strong>${escapeHtml(data.order.packageName)}</strong><br />
-      นักเรียน <strong>${escapeHtml(data.enrollment?.name || "-")}</strong><br />
-      ยอดชำระ <strong>${money(data.order.amount)}</strong>
+      <span class="mini-label">${escapeHtml(orderStatusText(data.order.status))}</span>
+      <strong>${escapeHtml(data.order.packageName)}</strong>
+      <span>เลขรายการ ${escapeHtml(data.order.id)}</span>
+      <span>ชื่อบัญชี ${escapeHtml(data.enrollment?.name || "-")}</span>
+      <span>ยอดชำระ <strong>${money(data.order.amount)}</strong></span>
     `;
 
     if (data.order.status === "paid") {
-      payQrBox.innerHTML = `<p>รายการนี้ชำระแล้ว นักเรียนเข้าเรียนได้ทันที</p>`;
+      payQrBox.innerHTML = `
+        <div class="selected-package">
+          <strong>ชำระเงินแล้ว</strong>
+          <p>สิทธิ์เรียนถูกเปิดแล้ว กลับไปหน้าเข้าเรียนเพื่อตรวจสอบบทเรียนได้</p>
+          <a class="button primary" href="/learn">ไปหน้าเข้าเรียน</a>
+        </div>
+      `;
       return;
     }
     if (data.order.qrImageUrl) {
-      payQrBox.innerHTML = `<img class="qr-image" src="${escapeHtml(data.order.qrImageUrl)}" alt="Thai QR payment" />`;
+      payQrBox.innerHTML = `
+        <img class="qr-image" src="${escapeHtml(data.order.qrImageUrl)}" alt="Thai QR payment" />
+        <p>หลังชำระเงิน ระบบจะตรวจสอบและเปิดสิทธิ์เรียนให้อัตโนมัติ</p>
+      `;
     } else if (data.order.qrPayload) {
       payQrBox.innerHTML = `<pre>${escapeHtml(data.order.qrPayload)}</pre>`;
     } else {
-      payQrBox.innerHTML = `<p>${escapeHtml(data.order.paymentStatusMessage || "ระบบกำลังรอเปิด QR ชำระเงิน")}</p>`;
+      payQrBox.innerHTML = `
+        <div class="selected-package">
+          <strong>ยังไม่เปิดชำระเงิน</strong>
+          <p>${escapeHtml(data.order.paymentStatusMessage || "ระบบ KBank อยู่ระหว่างรอพร้อมใช้งาน รายการนี้ถูกเตรียมไว้แล้ว")}</p>
+          <a class="button secondary" href="/learn">กลับไปดูสถานะบัญชี</a>
+        </div>
+      `;
     }
   } catch (error) {
     payStatus.textContent = error.message;
   }
+}
+
+function orderStatusText(status) {
+  return status === "paid" ? "ชำระเงินแล้ว" : "รอชำระเงิน";
 }
 
 function money(value) {
