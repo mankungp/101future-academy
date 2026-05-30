@@ -15,7 +15,7 @@ let currentEnrollment = null;
 resetInitialScrollPosition();
 loadPackages();
 
-form.addEventListener("submit", async (event) => {
+form?.addEventListener("submit", async (event) => {
   event.preventDefault();
   const submit = form.querySelector("button[type='submit']");
   const payload = Object.fromEntries(new FormData(form).entries());
@@ -44,7 +44,7 @@ form.addEventListener("submit", async (event) => {
   }
 });
 
-refreshOrderButton.addEventListener("click", refreshOrderStatus);
+refreshOrderButton?.addEventListener("click", refreshOrderStatus);
 
 function resetInitialScrollPosition() {
   if (window.location.hash) return;
@@ -60,18 +60,25 @@ function resetInitialScrollPosition() {
 }
 
 async function loadPackages() {
+  if (!packageGrid) return;
   const response = await fetch("/api/packages");
   const data = await response.json();
   packages = data.packages || [];
   packageGrid.innerHTML = packages.map(renderPackage).join("");
-  packageSelect.innerHTML =
-    `<option value="">เลือกแพ็กเรียน</option>` +
-    packages.map((item) => `<option value="${item.id}">${escapeHtml(item.name)} - ${money(item.price)}</option>`).join("");
+  if (packageSelect) {
+    packageSelect.innerHTML =
+      `<option value="">เลือกแพ็กเรียน</option>` +
+      packages.map((item) => `<option value="${item.id}">${escapeHtml(item.name)} - ${money(item.price)}</option>`).join("");
+  }
 
   packageGrid.querySelectorAll("[data-package]").forEach((button) => {
     button.addEventListener("click", () => {
-      packageSelect.value = button.dataset.package;
-      document.querySelector("#apply").scrollIntoView({ behavior: "smooth", block: "start" });
+      if (packageSelect) {
+        packageSelect.value = button.dataset.package;
+        document.querySelector("#apply")?.scrollIntoView({ behavior: "smooth", block: "start" });
+        return;
+      }
+      window.location.href = "/auth/line?next=/learn";
     });
   });
 }
@@ -83,12 +90,13 @@ function renderPackage(item) {
       <h3>${escapeHtml(item.name)}</h3>
       <p>${escapeHtml(item.description)}</p>
       <strong class="price-line">${money(item.price)} / ${item.durationDays} วัน</strong>
-      <button class="text-button" data-package="${item.id}">สมัครแพ็กนี้</button>
+      <button class="text-button" data-package="${item.id}">สมัครผ่าน LINE</button>
     </article>
   `;
 }
 
 function showOrder(order, enrollment, payment) {
+  if (!orderPanel || !orderIntro || !qrBox || !orderStatusEl || !statusEl) return;
   orderPanel.classList.remove("hidden");
   orderIntro.innerHTML = `
     เลขสมัคร <strong>${escapeHtml(order.id)}</strong>
@@ -124,7 +132,7 @@ function showOrder(order, enrollment, payment) {
 }
 
 async function refreshOrderStatus() {
-  if (!currentOrder?.id) return;
+  if (!currentOrder?.id || !orderStatusEl || !form) return;
   orderStatusEl.textContent = "กำลังเช็คสถานะ...";
   orderStatusEl.classList.remove("error");
 
