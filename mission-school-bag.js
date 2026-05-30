@@ -95,7 +95,7 @@ function chooseItem(word, item) {
       <span>แต่โจทย์ถามหา ${escapeHtml(target.word)} (${escapeHtml(target.thai)}) ลองแตะคำว่า ${escapeHtml(target.word)} อีกครั้ง</span>
     `;
     highlightTarget(target.word);
-    speakText(target.word);
+    speakText(selected.word);
     return;
   }
 
