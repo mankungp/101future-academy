@@ -14,6 +14,9 @@ const interestSummary = document.querySelector("#interestSummary");
 const accessSummary = document.querySelector("#accessSummary");
 const interestPanel = document.querySelector("#interestPanel");
 const interestList = document.querySelector("#interestList");
+const englishExercise = document.querySelector("#englishExercise");
+const englishExerciseStatus = document.querySelector("#englishExerciseStatus");
+const englishResult = document.querySelector("#englishResult");
 
 const params = new URLSearchParams(location.search);
 const selectedPackageId = params.get("package") || "";
@@ -76,6 +79,22 @@ profileForm?.addEventListener("submit", async (event) => {
 logoutButton?.addEventListener("click", async () => {
   await fetch("/api/auth/logout", { method: "POST" });
   location.reload();
+});
+
+englishExercise?.addEventListener("submit", (event) => {
+  event.preventDefault();
+  const formData = new FormData(englishExercise);
+  const answers = ["q1", "q2", "q3"].map((key) => formData.get(key));
+  if (answers.some((answer) => !answer)) {
+    englishExerciseStatus.textContent = "กรุณาตอบให้ครบ 3 ข้อก่อนดูสรุปผล";
+    englishExerciseStatus.classList.add("error");
+    return;
+  }
+
+  const score = answers.filter((answer) => answer === "correct").length;
+  englishExerciseStatus.textContent = "";
+  englishExerciseStatus.classList.remove("error");
+  renderEnglishResult(score);
 });
 
 async function loadLineAccount() {
@@ -264,9 +283,31 @@ function renderLesson(lesson, index) {
       <span class="mini-label">Lesson ${index + 1} · ${escapeHtml(lesson.duration)}</span>
       <h3>${escapeHtml(lesson.title)}</h3>
       <p>${escapeHtml(lesson.summary)}</p>
-      <button class="button secondary" type="button">เริ่มเรียน</button>
+      <a class="button secondary" href="#englishPreview">${lesson.title.includes("Daily") || lesson.title.includes("คำศัพท์") ? "ดูบทเรียนตัวอย่าง" : "ดูโครงบทเรียน"}</a>
     </article>
   `;
+}
+
+function renderEnglishResult(score) {
+  if (!englishResult) return;
+  const level = score === 3 ? "เข้าใจบทเรียนดี" : score === 2 ? "เข้าใจเกือบครบ" : "ควรทบทวนเพิ่ม";
+  const next = score === 3
+    ? "ลองฝึกแต่งประโยคเพิ่ม เช่น I have a red pencil."
+    : score === 2
+      ? "กลับไปดูคำศัพท์และสีของสิ่งของอีกครั้ง แล้วลองตอบใหม่"
+      : "เริ่มจากจำคำศัพท์ book, pencil, ruler แล้วอ่านเรื่องสั้นซ้ำอีก 1 รอบ";
+  englishResult.classList.remove("hidden");
+  englishResult.innerHTML = `
+    <span class="mini-label">สรุปผลหลังเรียน</span>
+    <h3>${score}/3 · ${escapeHtml(level)}</h3>
+    <p>${escapeHtml(next)}</p>
+    <div class="result-tags">
+      <span>Vocabulary</span>
+      <span>Reading</span>
+      <span>Simple sentence</span>
+    </div>
+  `;
+  englishResult.scrollIntoView({ behavior: "smooth", block: "nearest" });
 }
 
 function escapeHtml(value) {
