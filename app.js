@@ -87,8 +87,8 @@ async function loadPackages() {
 
 function renderPackage(item) {
   const isOpen = item.status !== "coming_soon";
-  const status = isOpen ? "เปิดให้แจ้งความสนใจ" : "เร็ว ๆ นี้";
-  const action = isOpen ? "แจ้งความสนใจผ่าน LINE" : "ยังไม่เปิดสมัคร";
+  const status = isOpen ? "เปิดให้ลงชื่อสนใจ" : "เร็ว ๆ นี้";
+  const action = isOpen ? "ลงชื่อสนใจผ่าน LINE" : "ยังไม่เปิดสมัคร";
   return `
     <article class="program ${isOpen ? "" : "program-disabled"}">
       <span class="program-tag">${escapeHtml(item.level)} · ${status}</span>
@@ -110,7 +110,7 @@ function showOrder(order, enrollment, payment) {
   `;
 
   if (order.qrImageUrl) {
-    qrBox.innerHTML = `<img class="qr-image" src="${escapeHtml(order.qrImageUrl)}" alt="KBank Thai QR" />`;
+    qrBox.innerHTML = `<img class="qr-image" src="${escapeHtml(order.qrImageUrl)}" alt="Thai QR สำหรับชำระค่าเรียน" />`;
   } else if (order.qrPayload) {
     qrBox.innerHTML = `<pre>${escapeHtml(order.qrPayload)}</pre>`;
   } else {
@@ -168,11 +168,7 @@ function statusLabel(status) {
 }
 
 function money(value) {
-  return Number(value || 0).toLocaleString("th-TH", {
-    style: "currency",
-    currency: "THB",
-    maximumFractionDigits: 0,
-  });
+  return `${Number(value || 0).toLocaleString("th-TH", { maximumFractionDigits: 0 })} บาท`;
 }
 
 function formatDate(value) {
