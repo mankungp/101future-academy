@@ -1058,6 +1058,14 @@ h3 {
   line-height: 1.45;
 }
 
+.lesson-panel p,
+.lesson-reader p,
+.exercise-card p,
+.result-card p {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
 .mini-label {
   display: inline-block;
   margin-bottom: 8px;
@@ -1266,6 +1274,93 @@ h3 {
   height: auto;
   border: 1px solid var(--line);
   border-radius: 8px;
+}
+
+.english-preview {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(238, 244, 255, 0.72)),
+    #fff;
+}
+
+.lesson-workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: 14px;
+}
+
+.lesson-reader,
+.exercise-card,
+.result-card {
+  display: grid;
+  gap: 14px;
+  padding: 20px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.story-text {
+  padding: 16px;
+  color: var(--ink);
+  background: var(--soft);
+  border: 1px solid rgba(49, 87, 255, 0.16);
+  border-radius: 8px;
+  font-size: 20px;
+  line-height: 1.55;
+}
+
+.vocab-list,
+.result-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.vocab-list span,
+.result-tags span {
+  padding: 8px 10px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.exercise-card fieldset {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.exercise-card legend {
+  padding-inline: 4px;
+  color: var(--ink);
+  font-weight: 900;
+}
+
+.exercise-card label {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+.exercise-card input {
+  margin-top: 4px;
+}
+
+#englishExerciseStatus {
+  margin: 0;
+  color: var(--primary);
+  font-weight: 800;
+}
+
+#englishExerciseStatus.error {
+  color: #b42318;
 }
 
 .hidden {
@@ -1506,6 +1601,7 @@ h3 {
   .automation-grid,
   .payment-grid,
   .lesson-grid,
+  .lesson-workspace,
   .line-signup-panel,
   .signup-steps,
   .learn-summary-grid,
@@ -1524,9 +1620,22 @@ h3 {
   .faq-grid article,
   .system-grid article,
   .line-signup-copy,
-  .payment-box {
+  .payment-box,
+  .lesson-panel,
+  .lesson-reader,
+  .exercise-card,
+  .result-card {
     min-height: auto;
     padding: 20px;
+  }
+
+  .lesson-panel p,
+  .lesson-reader p,
+  .exercise-card p,
+  .result-card p {
+    max-width: 100%;
+    font-size: 14.5px;
+    line-height: 1.5;
   }
 
   .program p,
