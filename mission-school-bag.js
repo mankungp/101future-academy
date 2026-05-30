@@ -24,6 +24,13 @@ let draggedWord = "";
 let isTransitioning = false;
 let correctBurstTimer = 0;
 let nextPromptTimer = 0;
+let preferredEnglishVoice = null;
+
+loadVoices();
+if ("speechSynthesis" in window) {
+  window.speechSynthesis.addEventListener?.("voiceschanged", loadVoices);
+  window.speechSynthesis.onvoiceschanged = loadVoices;
+}
 
 if (resetRequested) {
   localStorage.removeItem("101future.schoolBagMission.index");
@@ -96,12 +103,13 @@ function chooseItem(word, item) {
     item.classList.remove("wrong");
     void item.offsetWidth;
     item.classList.add("wrong");
+    const selectedPhrase = `No, this is ${withArticle(selected.word)}.`;
     feedback.innerHTML = `
-      <strong>อันนี้คือ ${escapeHtml(selected.word)} (${escapeHtml(selected.thai)})</strong>
+      <strong>${escapeHtml(selectedPhrase)}</strong>
       <span>แต่โจทย์ถามหา ${escapeHtml(target.word)} (${escapeHtml(target.thai)}) ลองแตะคำว่า ${escapeHtml(target.word)} อีกครั้ง</span>
     `;
     highlightTarget(target.word);
-    speakText(selected.word);
+    speakText(selectedPhrase);
     return;
   }
 
@@ -116,8 +124,8 @@ function chooseItem(word, item) {
   currentIndex += 1;
   score += 1;
   saveProgress();
-  feedback.innerHTML = `<strong>ถูกต้อง</strong><span>${escapeHtml(target.word)} แปลว่า ${escapeHtml(target.thai)}</span>`;
-  speakText(target.word);
+  feedback.innerHTML = `<strong>Yes, correct!</strong><span>${escapeHtml(target.word)} แปลว่า ${escapeHtml(target.thai)}</span>`;
+  speakText(`Yes, correct. ${target.word}.`);
 
   if (currentIndex >= missionItems.length) {
     window.clearTimeout(nextPromptTimer);
@@ -222,6 +230,7 @@ function restartMission() {
     item.classList.remove("correct", "wrong", "target-hint", "target-hint-strong");
   });
   renderMission();
+  window.setTimeout(speakPrompt, 180);
 }
 
 function speakPrompt() {
@@ -233,8 +242,38 @@ function speakText(text) {
   window.speechSynthesis.cancel();
   const utterance = new SpeechSynthesisUtterance(text);
   utterance.lang = "en-US";
-  utterance.rate = 0.82;
+  utterance.rate = 0.9;
+  utterance.pitch = 1.04;
+  if (preferredEnglishVoice) utterance.voice = preferredEnglishVoice;
   window.speechSynthesis.speak(utterance);
+}
+
+function loadVoices() {
+  if (!("speechSynthesis" in window)) return;
+  const voices = window.speechSynthesis.getVoices();
+  const englishVoices = voices.filter((voice) => voice.lang?.toLowerCase().startsWith("en"));
+  const preferredNames = [
+    "ava",
+    "samantha",
+    "google us english",
+    "microsoft jenny",
+    "microsoft aria",
+    "natural",
+    "premium",
+    "enhanced",
+    "neural",
+    "alex",
+  ];
+  preferredEnglishVoice =
+    preferredNames.map((name) => englishVoices.find((voice) => voice.name.toLowerCase().includes(name))).find(Boolean) ||
+    englishVoices.find((voice) => voice.lang === "en-US") ||
+    englishVoices[0] ||
+    null;
+}
+
+function withArticle(word) {
+  const article = /^[aeiou]/i.test(word) ? "an" : "a";
+  return `${article} ${word}`;
 }
 
 function saveProgress() {
