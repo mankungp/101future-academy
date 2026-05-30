@@ -1,13 +1,13 @@
 # 101 Future Academy
 
-Standalone Phase 0.5/1 EdTech enrollment, checkout, payment confirmation, and gated learning portal for 101future.com.
+Standalone Phase 0.5/1 EdTech interest capture, checkout, payment confirmation, and gated learning portal for 101future.com.
 
 Current product focus:
 
-- Phase 0.5: lesson engine, monthly payment gate, entitlement unlock, progress-ready data.
-- Phase 1: English Speaking + Grammar for M.1-M.3.
-- Pricing starts at 299 THB / 30 days for English Monthly.
-- Later bundles add Math, Science, Thai, high school, primary, and kindergarten in phase order.
+- Phase 0.5: LINE interest capture, lesson engine, monthly payment gate, entitlement unlock, progress-ready data.
+- Phase 1: primary ป.1-ป.6 courses for Math, Science, English, and Thai.
+- Pricing starts at 299 THB / 30 days per subject.
+- Later bundles add multi-subject, M.ต้น, exam prep, school plans, high school, and kindergarten in phase order.
 
 Project memory:
 
@@ -60,7 +60,7 @@ Optional:
 - `LINE_CALLBACK_URL`: LINE Login callback URL, defaults to `https://www.101future.com/auth/line/callback`
 - `EASYSLIP_API_KEY`: EasySlip API key used to verify Thai bank slips server-side
 - `EASYSLIP_MATCH_ACCOUNT`: set to `true` to require EasySlip receiver account matching
-- `COURSE_PRICES_JSON`: JSON object for server-side amount matching, for example `{"English Monthly":299,"English + Math":399,"All ม.ต้น":599}`
+- `COURSE_PRICES_JSON`: JSON object for server-side amount matching, for example `{"คณิตประถม":299,"วิทย์ประถม":299,"อังกฤษประถม":299,"ไทยประถม":299}`
 - `DEFAULT_COURSE_PRICE`: fallback amount if a course is not in `COURSE_PRICES_JSON`
 
 ## Enrollment Automation
@@ -68,7 +68,10 @@ Optional:
 The enrollment system automatically:
 
 - prevents duplicate active leads by matching phone or LINE ID
-- exposes English M.1-M.3 packages through `/api/packages`
+- exposes primary ป.1-ป.6 packages through `/api/packages`
+- saves LINE package interest through `/api/me/interests`
+- lets admin view LINE interests through `/api/interests`
+- lets admin prepare a payment order from a LINE interest
 - creates orders through `/api/orders`
 - supports LINE Login for student/parent accounts when LINE credentials are configured
 - supports student self-signup and parent payment links through `/pay?order=...`
