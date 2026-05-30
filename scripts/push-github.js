@@ -20,9 +20,12 @@ const files = [
   "learn.js",
   "package-lock.json",
   "package.json",
+  "privacy-policy.html",
+  "refund-policy.html",
   "scripts/push-github.js",
   "server.js",
   "styles.css",
+  "terms.html",
 ];
 
 async function gh(pathname, options = {}) {
