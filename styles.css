@@ -205,10 +205,17 @@ h3 {
 }
 
 .lead {
-  max-width: 620px;
+  max-width: min(620px, 100%);
   color: var(--muted);
   font-size: 21px;
   line-height: 1.55;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  line-break: anywhere;
+}
+
+.lead-mobile {
+  display: none;
 }
 
 .hero-actions {
@@ -1252,6 +1259,14 @@ h3 {
 
   .lead {
     font-size: 18px;
+  }
+
+  .lead-desktop {
+    display: none;
+  }
+
+  .lead-mobile {
+    display: inline;
   }
 
   .hero-actions,
