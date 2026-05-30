@@ -9,6 +9,7 @@ const root = path.resolve(__dirname, "..");
 const files = [
   ".gitignore",
   "EDTECH_10_PHASES.md",
+  "ENGLISH_P1_UNIT1.md",
   "OPEN_THIS_FIRST.md",
   "PROJECT_STATUS.md",
   "README.md",
@@ -26,6 +27,8 @@ const files = [
   "learn.js",
   "mission-school-bag.html",
   "mission-school-bag.js",
+  "mission-this-is.html",
+  "mission-this-is.js",
   "package-lock.json",
   "package.json",
   "pay.html",
