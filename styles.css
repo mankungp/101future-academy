@@ -366,6 +366,20 @@ h3 {
   box-shadow: var(--shadow);
 }
 
+.program-disabled {
+  opacity: 0.76;
+}
+
+.program-disabled::before {
+  background: var(--line);
+}
+
+.program-disabled:hover {
+  transform: none;
+  border-color: var(--line);
+  box-shadow: 0 10px 34px rgba(17, 24, 39, 0.05);
+}
+
 .program p,
 .why-list p,
 .contact p,
@@ -525,6 +539,11 @@ h3 {
   font-weight: 850;
 }
 
+.text-button:disabled {
+  color: var(--muted);
+  cursor: not-allowed;
+}
+
 .apply-section {
   background:
     linear-gradient(115deg, rgba(49, 87, 255, 0.09), rgba(0, 163, 255, 0.06) 45%, rgba(255, 95, 87, 0.08)),
@@ -643,6 +662,25 @@ h3 {
   padding: 10px 12px;
   border: 1px solid #cfd8e6;
   border-radius: 8px;
+}
+
+.selected-package {
+  display: grid;
+  gap: 8px;
+  padding: 14px;
+  background: #fff;
+  border: 1px solid rgba(6, 199, 85, 0.32);
+  border-radius: 8px;
+}
+
+.selected-package strong {
+  color: var(--ink);
+}
+
+.selected-package p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.45;
 }
 
 .payment-form,
@@ -1028,6 +1066,20 @@ h3 {
 
 .access-card {
   max-width: 720px;
+}
+
+.fallback-access {
+  align-content: start;
+}
+
+.fallback-access summary {
+  cursor: pointer;
+  color: var(--ink);
+  font-weight: 900;
+}
+
+.fallback-access[open] summary {
+  margin-bottom: 14px;
 }
 
 .lead-card {
