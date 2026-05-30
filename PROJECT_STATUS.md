@@ -55,6 +55,7 @@ Done:
 - Correct answers now show a short animated popup and the next prompt is read automatically, while the Listen button remains for replay.
 - Mission speech now uses more natural classroom phrases: wrong answers say "No, this is a/an ...", correct answers say "Yes, correct", and restart reads the first prompt again.
 - Correct-answer timing now keeps the reward popup longer and waits before reading the next prompt. Mission speech is slower for primary students. Final production voice must be selected before replacing the current browser speech prototype.
+- Mission entry now starts with a prominent Start Mission button. After the first click, the button becomes Listen Again for replay.
 
 ## Learning UX References
 
