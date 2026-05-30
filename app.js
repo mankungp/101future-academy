@@ -71,7 +71,7 @@ async function loadPackages() {
       packages.map((item) => `<option value="${item.id}">${escapeHtml(item.name)} - ${money(item.price)}</option>`).join("");
   }
 
-packageGrid.querySelectorAll("[data-package]").forEach((button) => {
+  packageGrid.querySelectorAll("[data-package]").forEach((button) => {
     button.addEventListener("click", () => {
       if (button.disabled) return;
       if (packageSelect) {
@@ -86,7 +86,7 @@ packageGrid.querySelectorAll("[data-package]").forEach((button) => {
 }
 
 function renderPackage(item) {
-  const isOpen = item.id === "eng-m1-m3-speaking-grammar-30d";
+  const isOpen = item.status !== "coming_soon";
   const status = isOpen ? "เปิดให้แจ้งความสนใจ" : "เร็ว ๆ นี้";
   const action = isOpen ? "แจ้งความสนใจผ่าน LINE" : "ยังไม่เปิดสมัคร";
   return `
