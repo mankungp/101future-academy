@@ -109,7 +109,7 @@ function chooseItem(word, item) {
       <span>แต่โจทย์ถามหา ${escapeHtml(target.word)} (${escapeHtml(target.thai)}) ลองแตะคำว่า ${escapeHtml(target.word)} อีกครั้ง</span>
     `;
     highlightTarget(target.word);
-    speakText(selectedPhrase);
+    speakText(selectedPhrase, { rate: 0.66, fallbackMs: 2200 });
     return;
   }
 
@@ -125,23 +125,34 @@ function chooseItem(word, item) {
   score += 1;
   saveProgress();
   feedback.innerHTML = `<strong>Yes, correct!</strong><span>${escapeHtml(target.word)} แปลว่า ${escapeHtml(target.thai)}</span>`;
-  speakText(`Yes, correct. ${target.word}.`);
-
-  if (currentIndex >= missionItems.length) {
+  const correctStartedAt = Date.now();
+  const advanceAfterPraise = () => {
+    const waitMs = Math.max(0, 2200 - (Date.now() - correctStartedAt));
     window.clearTimeout(nextPromptTimer);
-    nextPromptTimer = window.setTimeout(() => {
-      unlockMission();
-      completeMission();
-    }, 950);
+    nextPromptTimer = window.setTimeout(advanceMission, waitMs);
+  };
+  const speechStarted = speakText(`Yes, correct. ${target.word}.`, {
+    rate: 0.66,
+    fallbackMs: 2600,
+    onEnd: advanceAfterPraise,
+  });
+
+  if (!speechStarted) {
+    window.clearTimeout(nextPromptTimer);
+    nextPromptTimer = window.setTimeout(advanceMission, 2200);
+  }
+}
+
+function advanceMission() {
+  if (currentIndex >= missionItems.length) {
+    unlockMission();
+    completeMission();
     return;
   }
 
-  window.clearTimeout(nextPromptTimer);
-  nextPromptTimer = window.setTimeout(() => {
-    renderMission();
-    unlockMission();
-    speakPrompt();
-  }, 950);
+  renderMission();
+  unlockMission();
+  window.setTimeout(speakPrompt, 280);
 }
 
 function highlightTarget(word) {
@@ -183,7 +194,7 @@ function showCorrectBurst(item) {
   correctBurstTimer = window.setTimeout(() => {
     correctBurst.classList.add("hidden");
     correctBurst.classList.remove("burst-running");
-  }, 900);
+  }, 1800);
 }
 
 function restorePackedItems() {
@@ -199,7 +210,7 @@ function completeMission() {
   stars.textContent = `${score}/${missionItems.length}`;
   promptText.textContent = "Great job!";
   feedback.innerHTML = `<strong>Mission complete</strong><span>เก็บของใส่กระเป๋าครบแล้ว</span>`;
-  speakText("Great job!");
+  speakText("Great job!", { rate: 0.68, fallbackMs: 1800 });
   completeBox?.classList.remove("hidden");
   if (completeBox) {
     completeBox.innerHTML = `
@@ -230,22 +241,35 @@ function restartMission() {
     item.classList.remove("correct", "wrong", "target-hint", "target-hint-strong");
   });
   renderMission();
-  window.setTimeout(speakPrompt, 180);
+  window.setTimeout(speakPrompt, 350);
 }
 
 function speakPrompt() {
-  speakText(`Tap the ${currentTarget().word}.`);
+  speakText(`Tap the ${currentTarget().word}.`, { rate: 0.64, fallbackMs: 2200 });
 }
 
-function speakText(text) {
-  if (!("speechSynthesis" in window)) return;
+function speakText(text, options = {}) {
+  if (!("speechSynthesis" in window)) return false;
   window.speechSynthesis.cancel();
   const utterance = new SpeechSynthesisUtterance(text);
   utterance.lang = "en-US";
-  utterance.rate = 0.9;
+  utterance.rate = options.rate || 0.68;
   utterance.pitch = 1.04;
   if (preferredEnglishVoice) utterance.voice = preferredEnglishVoice;
+  if (typeof options.onEnd === "function") {
+    let ended = false;
+    const finish = () => {
+      if (ended) return;
+      ended = true;
+      window.clearTimeout(fallbackTimer);
+      options.onEnd();
+    };
+    const fallbackTimer = window.setTimeout(finish, options.fallbackMs || estimateSpeechMs(text, utterance.rate));
+    utterance.onend = finish;
+    utterance.onerror = finish;
+  }
   window.speechSynthesis.speak(utterance);
+  return true;
 }
 
 function loadVoices() {
@@ -269,6 +293,11 @@ function loadVoices() {
     englishVoices.find((voice) => voice.lang === "en-US") ||
     englishVoices[0] ||
     null;
+}
+
+function estimateSpeechMs(text, rate) {
+  const wordCount = String(text).trim().split(/\s+/).filter(Boolean).length || 1;
+  return Math.max(1500, Math.min(3600, (wordCount * 520) / Math.max(rate, 0.5)));
 }
 
 function withArticle(word) {
