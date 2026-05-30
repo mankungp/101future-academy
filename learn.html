@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>เข้าเรียน | 101 Future Academy</title>
-    <link rel="stylesheet" href="/styles.css?v=20260530-public-mobile" />
+    <link rel="stylesheet" href="/styles.css?v=20260530-full-flow-1" />
   </head>
   <body class="admin-body">
     <header class="topbar">
@@ -14,16 +14,42 @@
       </a>
       <nav class="nav" aria-label="Learning navigation">
         <a href="/">หน้าแรก</a>
-        <a href="/#apply">สมัครเรียน</a>
+        <a href="/#packages">แพ็กเรียน</a>
       </nav>
     </header>
 
     <main class="admin-main learn-main">
+      <section class="learn-hero">
+        <div>
+          <p class="eyebrow">พื้นที่ผู้เรียน</p>
+          <h1>
+            <span class="hero-title-desktop">ติดตามแพ็กที่สนใจ สถานะชำระเงิน และสิทธิ์เรียน</span>
+            <span class="hero-title-mobile">ติดตามแพ็กที่สนใจ<br />สถานะชำระเงิน<br />และสิทธิ์เรียน</span>
+          </h1>
+          <p class="lead">เข้าสู่ระบบด้วย LINE เพื่อบันทึกแพ็กที่เลือกไว้<br />และเช็กสถานะได้ง่าย</p>
+        </div>
+      </section>
+
+      <section id="learnSummary" class="learn-summary-grid" aria-label="สถานะบัญชี">
+        <article class="summary-card">
+          <span>บัญชี LINE</span>
+          <strong id="accountSummary">กำลังตรวจสอบ</strong>
+        </article>
+        <article class="summary-card">
+          <span>แพ็กที่สนใจ</span>
+          <strong id="interestSummary">-</strong>
+        </article>
+        <article class="summary-card">
+          <span>สิทธิ์เรียน</span>
+          <strong id="accessSummary">ยังไม่มีสิทธิ์เรียน</strong>
+        </article>
+      </section>
+
       <section class="login-card access-card">
         <div>
           <p class="eyebrow">เข้าเรียนด้วย LINE</p>
-          <h2>ดูบัญชีและสิทธิ์เรียน</h2>
-          <p>ใช้บัญชี LINE เป็นช่องทางหลักสำหรับผู้เรียนหรือผู้ปกครอง ตอนนี้ใช้สำหรับลงชื่อสนใจและติดตามสิทธิ์เรียน</p>
+          <h2>บัญชีสำหรับติดตามการเรียน</h2>
+          <p>ใช้บัญชี LINE เป็นช่องทางหลักสำหรับผู้เรียนหรือผู้ปกครอง เพื่อบันทึกแพ็กที่สนใจและติดตามสิทธิ์เรียน</p>
         </div>
         <div id="lineAccountBox" class="share-link">
           <p id="lineStatus">กำลังตรวจสอบบัญชี...</p>
@@ -50,6 +76,15 @@
           </form>
           <button id="logoutButton" class="button secondary hidden" type="button">ออกจากระบบ</button>
         </div>
+      </section>
+
+      <section id="interestPanel" class="lesson-panel hidden" aria-live="polite">
+        <div>
+          <p class="eyebrow">แพ็กที่สนใจ</p>
+          <h2>รายการที่บันทึกไว้ในบัญชี LINE</h2>
+          <p>เมื่อระบบชำระเงินพร้อม ทีมงานจะใช้รายการนี้สร้างลิงก์หรือ QR สำหรับเปิดสิทธิ์เรียน</p>
+        </div>
+        <div id="interestList" class="lesson-grid"></div>
       </section>
 
       <details class="login-card access-card fallback-access">
@@ -86,6 +121,6 @@
         <div id="lessonList" class="lesson-grid"></div>
       </section>
     </main>
-    <script src="/learn.js?v=20260530-interest-save" defer></script>
+    <script src="/learn.js?v=20260530-full-flow-1" defer></script>
   </body>
 </html>
