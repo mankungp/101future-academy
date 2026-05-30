@@ -947,6 +947,11 @@ h3 {
   padding: 24px;
 }
 
+.login-card p {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
 .admin-toolbar {
   display: flex;
   align-items: center;
