@@ -168,8 +168,8 @@ function renderStartScreen() {
   stars.textContent = `${score}/${missionItems.length}`;
   promptText.textContent = hasProgress ? "Ready to continue?" : "Ready to pack your school bag?";
   feedback.innerHTML = hasProgress
-    ? "<strong>Resume Mission</strong><span>กดเริ่มต่อ แล้วฟังโจทย์ถัดไป</span>"
-    : "<strong>Start Mission</strong><span>กดเริ่ม แล้วฟังคำสั่งแรก</span>";
+    ? "<strong>Mission 1</strong><span>กด Resume Mission แล้วฟังโจทย์ถัดไป</span>"
+    : "<strong>Mission 1</strong><span>แตะของที่ได้ยิน แล้วเก็บใส่กระเป๋า</span>";
   missionScreen?.classList.add("awaiting-start");
   setSoundButtonStart(hasProgress);
   itemsBox?.querySelectorAll(".mission-item").forEach((item) => {
