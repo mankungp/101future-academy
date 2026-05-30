@@ -8,13 +8,45 @@
       name="description"
       content="101 Future Academy คอร์สประถม ป.1-ป.6 เลือกเริ่มจากคณิต วิทย์ อังกฤษ หรือภาษาไทยได้ตามที่เด็กต้องการ"
     />
-    <link rel="stylesheet" href="/styles.css?v=20260530-public-mobile" />
+    <link rel="stylesheet" href="/styles.css?v=20260530-mobile-polish-2" />
     <style>
       .lead-mobile {
         display: none;
       }
 
       @media (max-width: 640px) {
+        .topbar {
+          padding: 12px 5vw 10px;
+        }
+
+        .brand-mark {
+          width: 42px;
+          height: 32px;
+        }
+
+        .nav a[href="#system"],
+        .nav a[href="#course"],
+        .nav a[href="#apply"],
+        .nav a[href="#policies"],
+        .nav a[href="#contact"] {
+          display: none;
+        }
+
+        .hero {
+          min-height: auto;
+          padding-top: 26px;
+          padding-bottom: 34px;
+        }
+
+        .hero-actions .button.secondary {
+          display: none;
+        }
+
+        .strip p {
+          font-size: 16px;
+          line-height: 1.35;
+        }
+
         .lead {
           max-width: min(620px, 100%);
           overflow-wrap: anywhere;
@@ -73,7 +105,7 @@
             </span>
           </p>
           <div class="hero-actions">
-            <a class="button primary" href="#apply">เลือกแพ็กเรียน</a>
+            <a class="button primary" href="#packages">เลือกแพ็กเรียน</a>
             <a class="button line-button" href="/auth/line?next=/learn">ลงชื่อสนใจด้วย LINE</a>
             <a class="button secondary" href="#roadmap">ดูวิชาที่มี</a>
           </div>
@@ -86,7 +118,7 @@
       </section>
 
       <section class="strip" aria-label="Brand idea">
-        <p><strong>101 Future</strong> ให้เด็กประถมเริ่มจากวิชาที่ติดก่อน แล้วค่อยขยายเป็นระบบเรียนครบวิชา</p>
+        <p><strong>101 Future</strong> เริ่มจากวิชาที่ติดก่อน แล้วค่อยเพิ่มวิชาอื่น</p>
       </section>
 
       <section id="curriculum" class="section trust-section">
