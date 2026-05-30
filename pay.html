@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="th">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ชำระเงิน | 101 Future Academy</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body class="admin-body">
+    <header class="topbar">
+      <a class="brand" href="/" aria-label="101 Future Academy">
+        <span class="brand-mark">101</span>
+        <span class="brand-name">Future Academy</span>
+      </a>
+      <nav class="nav" aria-label="Payment navigation">
+        <a href="/">หน้าแรก</a>
+        <a href="/learn">เข้าเรียน</a>
+      </nav>
+    </header>
+
+    <main class="admin-main learn-main">
+      <section class="login-card access-card">
+        <div>
+          <p class="eyebrow">ชำระค่าเรียน</p>
+          <h2>ตรวจสอบแพ็กก่อนชำระเงิน</h2>
+          <p>หน้านี้ใช้สำหรับผู้ปกครองที่ได้รับลิงก์ชำระเงินจากนักเรียน</p>
+        </div>
+        <div id="paymentDetail" class="payment-box">
+          <p id="payStatus">กำลังโหลดรายการ...</p>
+          <div id="payQrBox" class="qr-box"></div>
+        </div>
+      </section>
+    </main>
+    <script src="/pay.js" defer></script>
+  </body>
+</html>
