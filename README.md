@@ -9,7 +9,11 @@ Current product focus:
 - Pricing starts at 299 THB / 30 days for English Monthly.
 - Later bundles add Math, Science, Thai, high school, primary, and kindergarten in phase order.
 
-Roadmap: see [EDTECH_10_PHASES.md](./EDTECH_10_PHASES.md).
+Project memory:
+
+- Start here: [OPEN_THIS_FIRST.md](./OPEN_THIS_FIRST.md)
+- Current status: [PROJECT_STATUS.md](./PROJECT_STATUS.md)
+- Roadmap: [EDTECH_10_PHASES.md](./EDTECH_10_PHASES.md)
 
 ## Local
 
