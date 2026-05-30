@@ -13,21 +13,29 @@ Status: In progress
 - Monthly payment model is selected: KBank Dynamic Thai QR, auto verification callback, and 30-day entitlement unlock.
 - Needs real lesson schema, progress records, speaking attempts, and weakness tags.
 
-## Phase 1: English Speaking MVP
+## Phase 1: English ป.1 Animation-First MVP
 
-Goal: Launch the first sellable product: English Speaking + Grammar for M.1-M.3.
+Goal: Launch the first sellable product direction: English for primary learners, starting at ป.1 with interactive missions.
 
 Status: In progress
 
 - Domain and hosting are live.
-- Landing page now focuses on English Monthly at 299 THB / 30 days.
-- Product uses cached lessons, cached speaking prompts, push-to-talk, STT, AI correction, and weakness tracking.
-- Target operating cost is around 5 THB per 60-minute learning session.
-- Needs final teacher/team details and local Roi Et proof.
+- Landing page now positions 101 Future as skill-building for primary school core subjects.
+- English is the first learning product to make real.
+- ป.1 lessons should not start with long video or text. Use animation-first missions.
+- Mission pattern:
+  - Explore a visual scene.
+  - Tap or drag objects.
+  - Hear/read one word or one short sentence.
+  - Get immediate feedback: bounce, shake, star, badge.
+  - Finish with a parent-friendly summary.
+- First prototype: `Pack My School Bag` / `My School Bag`.
+- Needs grade-by-grade English curriculum map starting from ป.1 indicators.
+- Needs animation MVP: school bag, book, pencil, ruler, tap/drag, stars, completion badge.
 
 ## Phase 2: Paid Beta and English Full System
 
-Goal: Turn English MVP into a paid beta with repeatable learning loops.
+Goal: Turn English ป.1 mission MVP into a paid beta with repeatable learning loops.
 
 Status: In progress
 
@@ -38,7 +46,7 @@ Status: In progress
 - EasySlip-compatible slip verification remains available as fallback.
 - `/learn` unlocks only after paid status.
 - Needs production KBank API Portal credentials, actual QR create endpoint, callback token/signature details, and real Thai QR test.
-- Needs 30-50 English lessons, quiz flow, speaking attempts, progress tracking, and parent report.
+- Needs a set of English ป.1 missions, progress tracking, speaking attempts, and parent report.
 
 ## Phase 3: Add Math M.1-M.3
 
