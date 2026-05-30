@@ -42,7 +42,7 @@ const SESSION_COOKIE_NAME = "future_session";
 const PACKAGES = [
   {
     id: "math-p1-p6-30d",
-    name: "คณิตรายเดือน",
+    name: "คณิต ป.1-ป.6",
     subject: "Math",
     level: "ป.1-ป.6",
     durationDays: 30,
@@ -52,7 +52,7 @@ const PACKAGES = [
   },
   {
     id: "science-p1-p6-30d",
-    name: "วิทย์รายเดือน",
+    name: "วิทย์ ป.1-ป.6",
     subject: "Science",
     level: "ป.1-ป.6",
     durationDays: 30,
@@ -62,7 +62,7 @@ const PACKAGES = [
   },
   {
     id: "english-p1-p6-30d",
-    name: "อังกฤษรายเดือน",
+    name: "อังกฤษ ป.1-ป.6",
     subject: "English",
     level: "ป.1-ป.6",
     durationDays: 30,
@@ -72,7 +72,7 @@ const PACKAGES = [
   },
   {
     id: "thai-p1-p6-30d",
-    name: "ภาษาไทยรายเดือน",
+    name: "ภาษาไทย ป.1-ป.6",
     subject: "Thai",
     level: "ป.1-ป.6",
     durationDays: 30,
@@ -82,7 +82,7 @@ const PACKAGES = [
   },
   {
     id: "all-primary-p1-p6-30d",
-    name: "ครบ 4 วิชาประถม",
+    name: "แพ็กครบ 4 วิชาประถม",
     subject: "Math, Science, English, Thai",
     level: "ป.1-ป.6",
     durationDays: 30,
@@ -93,7 +93,7 @@ const PACKAGES = [
 ];
 
 const COURSE_CONTENT = {
-  "คณิตรายเดือน": [
+  "คณิต ป.1-ป.6": [
     {
       title: "คิดเลขให้มั่นใจ",
       duration: "20 นาที",
@@ -110,7 +110,7 @@ const COURSE_CONTENT = {
       summary: "AI ช่วยสรุปว่าควรกลับไปซ้อมเรื่องคำนวณ ความเข้าใจโจทย์ หรือการเขียนวิธีทำ",
     },
   ],
-  "วิทย์รายเดือน": [
+  "วิทย์ ป.1-ป.6": [
     {
       title: "สังเกตและตั้งคำถาม",
       duration: "18 นาที",
@@ -127,7 +127,7 @@ const COURSE_CONTENT = {
       summary: "ฝึกอธิบายคำตอบด้วยเหตุผล ไม่ใช่ท่องจำอย่างเดียว",
     },
   ],
-  "อังกฤษรายเดือน": [
+  "อังกฤษ ป.1-ป.6": [
     {
       title: "คำศัพท์และประโยคพื้นฐาน",
       duration: "20 นาที",
@@ -144,7 +144,7 @@ const COURSE_CONTENT = {
       summary: "ฝึกตอบคำถามสั้นเกี่ยวกับตัวเอง โรงเรียน ครอบครัว และสิ่งที่ชอบ",
     },
   ],
-  "ภาษาไทยรายเดือน": [
+  "ภาษาไทย ป.1-ป.6": [
     {
       title: "อ่านจับใจความ",
       duration: "22 นาที",
@@ -980,7 +980,7 @@ async function submitPayment(id, request, response) {
 
   const phone = normalizePhone(body.phone);
   if (!phone || phone !== normalizePhone(lead.phone)) {
-    sendJson(response, 403, { error: "เบอร์โทรไม่ตรงกับใบสมัคร" });
+    sendJson(response, 403, { error: "เบอร์โทรไม่ตรงกับรายการเรียน" });
     return;
   }
 
@@ -1379,7 +1379,13 @@ function slipTransRef(data) {
 }
 
 function lessonsForCourse(course) {
-  return COURSE_CONTENT[course] || COURSE_CONTENT["คณิตรายเดือน"];
+  const legacyCourseNames = {
+    คณิตรายเดือน: "คณิต ป.1-ป.6",
+    วิทย์รายเดือน: "วิทย์ ป.1-ป.6",
+    อังกฤษรายเดือน: "อังกฤษ ป.1-ป.6",
+    ภาษาไทยรายเดือน: "ภาษาไทย ป.1-ป.6",
+  };
+  return COURSE_CONTENT[course] || COURSE_CONTENT[legacyCourseNames[course]] || COURSE_CONTENT["คณิต ป.1-ป.6"];
 }
 
 function nextAutomationPlan(lead, now = new Date(), reason = "workflow") {
@@ -1447,7 +1453,7 @@ async function createKbankQrPaymentRequest(order, enrollment) {
       provider: "kbank",
       status: "provider_not_configured",
       providerStatus: "missing_kbank_config",
-      message: "ยังไม่ได้ตั้งค่า KBank QR API URL หรือ merchant id",
+      message: "ระบบชำระเงินอัตโนมัติยังไม่พร้อมใช้งาน",
       checkoutUrl: `${SITE_ORIGIN}/#apply`,
     };
   }
@@ -1532,15 +1538,15 @@ async function createKbankQrPaymentRequest(order, enrollment) {
       qrPayload,
       checkoutUrl: `${SITE_ORIGIN}/#apply`,
       message: qrPayload || qrImageUrl
-        ? "สแกน Thai QR จาก KBank เพื่อชำระเงิน เมื่อธนาคารยืนยันยอดถูกต้องระบบจะเปิดบทเรียนให้อัตโนมัติ"
-        : "สร้างรายการ KBank QR แล้ว แต่ยังไม่พบ QR payload/image ในผลลัพธ์จากธนาคาร",
+        ? "สแกน Thai QR เพื่อชำระเงิน เมื่อธนาคารยืนยันยอดถูกต้องระบบจะเปิดบทเรียนให้อัตโนมัติ"
+        : "สร้างรายการชำระเงินแล้ว แต่ยังไม่พบข้อมูล QR จากระบบธนาคาร",
     };
   } catch (error) {
     return {
       provider: "kbank",
       status: "provider_error",
       providerStatus: "provider_error",
-      message: `เชื่อมต่อ KBank QR API ไม่สำเร็จ: ${error.message}`,
+      message: "เชื่อมต่อระบบชำระเงินอัตโนมัติไม่สำเร็จ",
       checkoutUrl: `${SITE_ORIGIN}/#apply`,
     };
   }
@@ -1775,7 +1781,7 @@ function xenditErrorMessage(data, text, status) {
 }
 
 function kbankErrorMessage(data, text, status) {
-  return clean(data.message || data.error || data.errorCode || data.respMsg || data.respCode || text) || `KBank ตอบกลับ status ${status}`;
+  return clean(data.message || data.error || data.errorCode || data.respMsg || data.respCode || text) || `ระบบชำระเงินตอบกลับ status ${status}`;
 }
 
 function xenditTimestamp(value) {
