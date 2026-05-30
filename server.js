@@ -274,6 +274,7 @@ const MIME_TYPES = {
   ".jpg": "image/jpeg",
   ".jpeg": "image/jpeg",
   ".png": "image/png",
+  ".svg": "image/svg+xml",
   ".webp": "image/webp",
 };
 
@@ -285,6 +286,9 @@ const STATIC_ROUTES = new Map([
   ["/learn", "learn.html"],
   ["/learn.html", "learn.html"],
   ["/learn.js", "learn.js"],
+  ["/mission/school-bag", "mission-school-bag.html"],
+  ["/mission-school-bag.html", "mission-school-bag.html"],
+  ["/mission-school-bag.js", "mission-school-bag.js"],
   ["/pay", "pay.html"],
   ["/pay.html", "pay.html"],
   ["/pay.js", "pay.js"],
