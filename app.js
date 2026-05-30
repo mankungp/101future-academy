@@ -90,6 +90,20 @@ function showOrder(order, enrollment, payment) {
     qrBox.innerHTML = `<p>${escapeHtml(payment?.message || order.paymentStatusMessage || "ยังไม่ได้เปิดระบบสร้าง QR ชำระเงินอัตโนมัติ")}</p>`;
   }
 
+  if (order.payerType === "parent_link" && order.paymentLink) {
+    qrBox.innerHTML += `
+      <div class="share-link">
+        <strong>ลิงก์สำหรับส่งให้ผู้ปกครองชำระเงิน</strong>
+        <input readonly value="${escapeHtml(order.paymentLink)}" />
+        <button class="button secondary" type="button" data-copy-link="${escapeHtml(order.paymentLink)}">คัดลอกลิงก์</button>
+      </div>
+    `;
+    qrBox.querySelector("[data-copy-link]")?.addEventListener("click", async (event) => {
+      await navigator.clipboard?.writeText(event.currentTarget.dataset.copyLink || "");
+      orderStatusEl.textContent = "คัดลอกลิงก์สำหรับผู้ปกครองแล้ว";
+    });
+  }
+
   orderStatusEl.textContent = order.status === "paid" ? "ชำระเงินแล้ว เข้าเรียนได้" : "หลังชำระเงิน ระบบจะตรวจยอดและเปิดบทเรียนให้ 30 วัน";
   statusEl.textContent = `สร้างรายการสมัครแล้ว: ${order.id}`;
   orderPanel.scrollIntoView({ behavior: "smooth", block: "start" });
