@@ -21,9 +21,41 @@
     <main class="admin-main learn-main">
       <section class="login-card access-card">
         <div>
-          <p class="eyebrow">เข้าเรียน</p>
-          <h2>เข้าเรียน</h2>
-          <p>กรอกเลขสมัคร เบอร์โทร และรหัสเข้าเรียนที่ได้รับหลังชำระเงิน ระบบจะตรวจสอบสิทธิ์ก่อนเปิดบทเรียน</p>
+          <p class="eyebrow">LINE Login</p>
+          <h2>เข้าเรียนด้วย LINE</h2>
+          <p>เหมาะสำหรับนักเรียนหรือผู้ปกครองที่สมัครไว้แล้ว ระบบจะเปิดบทเรียนตามสิทธิ์ที่ผูกกับบัญชี LINE</p>
+        </div>
+        <div id="lineAccountBox" class="share-link">
+          <p id="lineStatus">กำลังตรวจสอบบัญชี...</p>
+          <a id="lineLoginButton" class="button primary" href="/auth/line?next=/learn">เข้าสู่ระบบด้วย LINE</a>
+          <form id="profileForm" class="access-form hidden">
+            <label>
+              คุณคือ
+              <select name="role" required>
+                <option value="student">นักเรียน</option>
+                <option value="parent">ผู้ปกครอง</option>
+                <option value="both">ทั้งนักเรียน/ผู้ปกครอง</option>
+              </select>
+            </label>
+            <label>
+              เบอร์โทร
+              <input name="phone" inputmode="tel" autocomplete="tel" />
+            </label>
+            <label>
+              อีเมล
+              <input name="email" type="email" autocomplete="email" />
+            </label>
+            <button class="button secondary" type="submit">บันทึกข้อมูลบัญชี</button>
+          </form>
+          <button id="logoutButton" class="button secondary hidden" type="button">ออกจากระบบ</button>
+        </div>
+      </section>
+
+      <section class="login-card access-card">
+        <div>
+          <p class="eyebrow">รหัสเข้าเรียน</p>
+          <h2>เข้าเรียนด้วยรหัส</h2>
+          <p>ใช้เป็นทางสำรอง กรอกเลขสมัคร เบอร์โทร และรหัสเข้าเรียนที่ได้รับหลังชำระเงิน</p>
         </div>
         <form id="accessForm" class="access-form">
           <label>
