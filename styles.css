@@ -111,6 +111,21 @@ textarea {
   transform: translateY(-1px);
 }
 
+.nav .nav-line-login {
+  display: inline-flex;
+  align-items: center;
+  min-height: 34px;
+  padding: 0 12px;
+  color: #fff;
+  background: #06c755;
+  border-radius: 8px;
+  box-shadow: 0 10px 20px rgba(6, 199, 85, 0.18);
+}
+
+.nav .nav-line-login:hover {
+  color: #fff;
+}
+
 .hero {
   position: relative;
   display: flex;
@@ -231,6 +246,13 @@ h3 {
 .button.secondary {
   color: var(--ink);
   background: rgba(255, 255, 255, 0.92);
+}
+
+.button.line-button {
+  color: #fff;
+  background: #06c755;
+  border-color: #06c755;
+  box-shadow: 0 16px 30px rgba(6, 199, 85, 0.24);
 }
 
 .button:hover {
