@@ -159,6 +159,20 @@
           </p>
         </div>
         <form id="leadForm" class="lead-form">
+          <label>
+            สมัครในฐานะ
+            <select name="applicantRole" required>
+              <option value="student">นักเรียนสมัครเอง</option>
+              <option value="parent">ผู้ปกครองสมัครให้ลูก</option>
+            </select>
+          </label>
+          <label>
+            ผู้ชำระเงิน
+            <select name="payerType" required>
+              <option value="self">ชำระเองในหน้านี้</option>
+              <option value="parent_link">ส่งลิงก์ให้ผู้ปกครองชำระ</option>
+            </select>
+          </label>
           <label class="wide">
             แพ็กเรียน
             <select id="packageSelect" name="packageId" required>
