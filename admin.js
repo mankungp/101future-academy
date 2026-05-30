@@ -86,7 +86,7 @@ function renderMetrics() {
     ["รอตรวจ", counts["payment-review"] || 0],
     ["เปิดเรียน", counts.paid || 0],
     ["ไม่ผ่าน", counts["payment-rejected"] || 0],
-    ["สนใจ LINE", interests.length],
+    ["เลือกแพ็กผ่าน LINE", interests.length],
   ];
 
   metricsEl.innerHTML = items
@@ -100,7 +100,7 @@ function renderInterests() {
     interests.map(renderInterestCard).join("") ||
     `<article class="payment-card empty-state">
       <strong>ยังไม่มีคนลงชื่อสนใจ</strong>
-      <span>เมื่อกดเลือกแพ็กผ่าน LINE รายการจะเข้ามาที่นี่</span>
+      <span>เมื่อผู้ใช้กดเลือกแพ็กและเข้าสู่ระบบด้วย LINE รายการจะเข้ามาที่นี่</span>
     </article>`;
 
   interestList.querySelectorAll("[data-create-order]").forEach((button) => {
@@ -116,8 +116,8 @@ function renderInterestCard(interest) {
   const enrollment = interest.enrollment || null;
   const orderLink = order?.paymentLink || "";
   const statusText = order
-    ? `เตรียมชำระแล้ว: ${statusLabels[enrollment?.status] || order.status}`
-    : "รอเปิดรายการชำระ";
+    ? `มีรายการชำระแล้ว: ${statusLabels[enrollment?.status] || order.status}`
+    : "รอสร้างรายการชำระ";
   const contact = [interest.phone ? `โทร ${escapeHtml(interest.phone)}` : "", interest.email ? escapeHtml(interest.email) : ""]
     .filter(Boolean)
     .join(" · ");
@@ -138,7 +138,7 @@ function renderInterestCard(interest) {
         ${
           orderLink
             ? `<a class="button primary" href="${escapeHtml(orderLink)}" target="_blank" rel="noreferrer">เปิดลิงก์ชำระ</a>`
-            : `<button class="button primary" data-create-order="true" data-account-id="${escapeHtml(interest.accountId)}" data-package-id="${escapeHtml(interest.packageId)}">เตรียมรายการชำระ</button>`
+            : `<button class="button primary" data-create-order="true" data-account-id="${escapeHtml(interest.accountId)}" data-package-id="${escapeHtml(interest.packageId)}">สร้างรายการชำระ</button>`
         }
       </div>
     </article>
