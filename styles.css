@@ -1579,6 +1579,7 @@ h3 {
 }
 
 .mission-prompt-large {
+  align-items: center;
   padding: 16px;
 }
 
@@ -1640,7 +1641,7 @@ h3 {
 }
 
 .burst-running .correct-burst-card {
-  animation: correct-pop 900ms cubic-bezier(0.2, 1.35, 0.22, 1) both;
+  animation: correct-pop 1800ms cubic-bezier(0.2, 1.35, 0.22, 1) both;
 }
 
 .burst-confetti,
@@ -1655,7 +1656,7 @@ h3 {
   height: 18px;
   border-radius: 3px;
   opacity: 0;
-  animation: confetti-pop 820ms ease-out both;
+  animation: confetti-pop 1200ms ease-out both;
 }
 
 .burst-confetti i:nth-child(1) {
@@ -2333,6 +2334,7 @@ h3 {
   .mission-prompt-large {
     align-items: center;
     flex-direction: row;
+    flex-wrap: wrap;
     gap: 10px;
     padding: 10px;
   }
