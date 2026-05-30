@@ -17,15 +17,28 @@ const interestList = document.querySelector("#interestList");
 const englishExercise = document.querySelector("#englishExercise");
 const englishExerciseStatus = document.querySelector("#englishExerciseStatus");
 const englishResult = document.querySelector("#englishResult");
+const missionCard = document.querySelector("#schoolBagMission");
+const missionPromptText = document.querySelector("#missionPromptText");
+const missionStars = document.querySelector("#missionStars");
+const missionItems = document.querySelector("#missionItems");
+const missionBag = document.querySelector("#missionBag");
+const missionFeedback = document.querySelector("#missionFeedback");
+const missionComplete = document.querySelector("#missionComplete");
+const missionSoundButton = document.querySelector("#missionSoundButton");
 
 const params = new URLSearchParams(location.search);
 const selectedPackageId = params.get("package") || "";
 let selectedPackageItem = null;
 let currentAccount = null;
+const missionWords = ["book", "pencil", "ruler", "eraser"];
+let missionIndex = Number(localStorage.getItem("101future.englishMission.index") || 0);
+let missionScore = Number(localStorage.getItem("101future.englishMission.score") || 0);
+let draggedWord = "";
 
 showAuthMessage();
 loadSelectedPackage();
 loadLineAccount();
+setupSchoolBagMission();
 
 accessForm?.addEventListener("submit", async (event) => {
   event.preventDefault();
@@ -95,6 +108,35 @@ englishExercise?.addEventListener("submit", (event) => {
   englishExerciseStatus.textContent = "";
   englishExerciseStatus.classList.remove("error");
   renderEnglishResult(score);
+});
+
+missionSoundButton?.addEventListener("click", () => {
+  speakMissionPrompt();
+});
+
+missionItems?.querySelectorAll(".mission-item").forEach((item) => {
+  item.addEventListener("click", () => handleMissionChoice(item.dataset.word || "", item));
+  item.addEventListener("dragstart", (event) => {
+    draggedWord = item.dataset.word || "";
+    event.dataTransfer?.setData("text/plain", draggedWord);
+  });
+});
+
+missionBag?.addEventListener("dragover", (event) => {
+  event.preventDefault();
+  missionBag.classList.add("bag-ready");
+});
+
+missionBag?.addEventListener("dragleave", () => {
+  missionBag.classList.remove("bag-ready");
+});
+
+missionBag?.addEventListener("drop", (event) => {
+  event.preventDefault();
+  missionBag.classList.remove("bag-ready");
+  const word = event.dataTransfer?.getData("text/plain") || draggedWord;
+  const item = [...(missionItems?.querySelectorAll(".mission-item") || [])].find((node) => node.dataset.word === word);
+  handleMissionChoice(word, item);
 });
 
 async function loadLineAccount() {
@@ -308,6 +350,122 @@ function renderEnglishResult(score) {
     </div>
   `;
   englishResult.scrollIntoView({ behavior: "smooth", block: "nearest" });
+}
+
+function setupSchoolBagMission() {
+  if (!missionCard || !missionPromptText || !missionStars) return;
+  if (missionIndex >= missionWords.length) {
+    missionIndex = 0;
+    missionScore = 0;
+    saveMissionProgress();
+  }
+  renderMissionState();
+}
+
+function currentMissionWord() {
+  return missionWords[missionIndex] || missionWords[0];
+}
+
+function renderMissionState() {
+  const word = currentMissionWord();
+  missionPromptText.textContent = `Tap the ${word}.`;
+  missionStars.textContent = `${missionScore}/${missionWords.length}`;
+  missionFeedback.textContent = `เริ่มจากคำว่า ${word}`;
+  missionItems?.querySelectorAll(".mission-item").forEach((item) => {
+    const packed = Number(item.dataset.packed || 0) === 1;
+    item.disabled = packed;
+  });
+}
+
+function handleMissionChoice(word, item) {
+  if (!word || !item || missionIndex >= missionWords.length) return;
+  const target = currentMissionWord();
+  if (word !== target) {
+    item.classList.remove("wrong");
+    void item.offsetWidth;
+    item.classList.add("wrong");
+    missionFeedback.textContent = `ลองอีกครั้ง ฟังคำว่า ${target}`;
+    speakText(target);
+    return;
+  }
+
+  item.classList.remove("correct");
+  void item.offsetWidth;
+  item.classList.add("correct");
+  item.dataset.packed = "1";
+  addPackedItem(word, item.querySelector(".item-emoji")?.textContent || "");
+  missionScore += 1;
+  missionIndex += 1;
+  saveMissionProgress();
+  missionFeedback.textContent = `เก่งมาก! ${word}`;
+  speakText(word);
+
+  if (missionIndex >= missionWords.length) {
+    completeMission();
+    return;
+  }
+
+  window.setTimeout(renderMissionState, 500);
+}
+
+function addPackedItem(word, icon) {
+  const packedItems = document.querySelector("#packedItems");
+  if (!packedItems) return;
+  const chip = document.createElement("span");
+  chip.textContent = `${icon} ${word}`;
+  packedItems.append(chip);
+  missionBag?.classList.remove("bag-pop");
+  void missionBag?.offsetWidth;
+  missionBag?.classList.add("bag-pop");
+}
+
+function completeMission() {
+  missionStars.textContent = `${missionScore}/${missionWords.length}`;
+  missionPromptText.textContent = "Great job!";
+  missionFeedback.textContent = "Mission complete";
+  missionComplete?.classList.remove("hidden");
+  if (missionComplete) {
+    missionComplete.innerHTML = `
+      <span class="mini-label">Mission Complete</span>
+      <h3>School Bag Star</h3>
+      <p>วันนี้รู้จัก 4 คำ: book, pencil, ruler, eraser และทำตามคำสั่งภาษาอังกฤษสั้น ๆ ได้</p>
+      <button id="restartMissionButton" class="button secondary" type="button">เล่นอีกครั้ง</button>
+    `;
+    missionComplete.querySelector("#restartMissionButton")?.addEventListener("click", restartMission);
+  }
+  localStorage.setItem("101future.englishMission.completed", new Date().toISOString());
+}
+
+function restartMission() {
+  missionIndex = 0;
+  missionScore = 0;
+  saveMissionProgress();
+  document.querySelector("#packedItems").innerHTML = "";
+  missionComplete?.classList.add("hidden");
+  missionItems?.querySelectorAll(".mission-item").forEach((item) => {
+    item.disabled = false;
+    item.dataset.packed = "0";
+    item.classList.remove("correct", "wrong");
+  });
+  renderMissionState();
+}
+
+function saveMissionProgress() {
+  localStorage.setItem("101future.englishMission.index", String(missionIndex));
+  localStorage.setItem("101future.englishMission.score", String(missionScore));
+}
+
+function speakMissionPrompt() {
+  speakText(`Tap the ${currentMissionWord()}.`);
+}
+
+function speakText(text) {
+  if (!("speechSynthesis" in window)) return;
+  window.speechSynthesis.cancel();
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = "en-US";
+  utterance.rate = 0.82;
+  window.speechSynthesis.speak(utterance);
 }
 
 function escapeHtml(value) {
