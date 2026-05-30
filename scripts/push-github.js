@@ -9,6 +9,8 @@ const root = path.resolve(__dirname, "..");
 const files = [
   ".gitignore",
   "EDTECH_10_PHASES.md",
+  "OPEN_THIS_FIRST.md",
+  "PROJECT_STATUS.md",
   "README.md",
   "admin.html",
   "admin.js",
