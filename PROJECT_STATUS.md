@@ -49,6 +49,19 @@ Done:
   - Vocabulary: school bag, book, pencil, ruler
   - 3-question exercise
   - Mock result summary after completion
+- English Mission 1 now opens as a full-screen mission at `/mission/school-bag`, separate from `/learn`.
+- Mission object visuals are local SVG assets, not CSS-only shapes, so book, pencil, ruler, and eraser are easier for young learners to recognize.
+- Wrong-answer feedback now tells the child what they tapped and what the prompt asked for.
+
+## Learning UX References
+
+LingoAce-inspired notes to keep:
+
+- Use a story world or mission context before drilling vocabulary.
+- Put the child into one clear action at a time: listen, choose/tap/drag, then get immediate feedback.
+- Use bright, concrete object art and character-like reactions instead of text-heavy instruction.
+- Keep parent-facing summaries separate from the child mission screen.
+- Do not build the first version like a tutor classroom page; build it like guided skill practice.
 
 ## Not Yet Done
 
@@ -66,7 +79,7 @@ Learning product:
 
 - Need a real grade-by-grade curriculum map, starting with English ป.1.
 - Current English sample lesson is a prototype, not the final ป.1 lesson design.
-- Need animation-first mission UI: tap, drag, bounce, shake, star reward, bag open/close, and completion badge.
+- Need more animation polish: bag open/close, stronger success reward, and completion badge.
 - Need first real lessons for English ป.1, then expand grade by grade.
 - Need first real lessons for Math, Science, and Thai later.
 - Need progress tracking.
@@ -112,7 +125,7 @@ LINE_CALLBACK_URL=https://www.101future.com/auth/line/callback
 4. Test parent payment page with that order link.
 5. Test KBank callback unlocks learning access.
 6. Design English ป.1 curriculum map from Thai indicators: classroom commands, letters/sounds, concrete vocabulary, picture matching, short sentences, listening and speaking.
-7. Build animation-first English Mission 1: `Pack My School Bag`.
+7. Polish animation-first English Mission 1: `Pack My School Bag`.
 8. Add progress tracking for mission completion and score.
 9. Add AI feedback pipeline later, after scripted missions are stable.
 10. Build first real ป.1 lessons for other subjects later.
