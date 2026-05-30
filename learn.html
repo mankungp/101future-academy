@@ -87,6 +87,53 @@
         <div id="interestList" class="lesson-grid"></div>
       </section>
 
+      <section id="englishPreview" class="lesson-panel english-preview" aria-labelledby="englishPreviewTitle">
+        <div>
+          <p class="eyebrow">บทเรียนตัวอย่าง</p>
+          <h2 id="englishPreviewTitle">English Skill Starter สำหรับ ป.1-ป.6</h2>
+          <p>ตัวอย่างบทเรียนอังกฤษ: เรียนคำศัพท์ อ่านเรื่องสั้น ทำแบบฝึกหัด และดูสรุปผลหลังเรียน</p>
+        </div>
+        <div class="lesson-workspace">
+          <article class="lesson-reader">
+            <span class="mini-label">Lesson 1 · 15 นาที</span>
+            <h3>My School Bag</h3>
+            <p class="story-text">
+              This is my school bag. I have a book, a pencil, and a ruler. My book is blue. My pencil is yellow.
+            </p>
+            <div class="vocab-list" aria-label="คำศัพท์ในบทเรียน">
+              <span><strong>school bag</strong> กระเป๋านักเรียน</span>
+              <span><strong>book</strong> หนังสือ</span>
+              <span><strong>pencil</strong> ดินสอ</span>
+              <span><strong>ruler</strong> ไม้บรรทัด</span>
+            </div>
+          </article>
+          <form id="englishExercise" class="exercise-card">
+            <div>
+              <span class="mini-label">แบบฝึกหัดหลังเรียน</span>
+              <h3>ตอบ 3 ข้อเพื่อดูสรุปผล</h3>
+            </div>
+            <fieldset>
+              <legend>1. What is in the school bag?</legend>
+              <label><input type="radio" name="q1" value="correct" /> A book, a pencil, and a ruler</label>
+              <label><input type="radio" name="q1" value="wrong" /> A cat and a ball</label>
+            </fieldset>
+            <fieldset>
+              <legend>2. What color is the book?</legend>
+              <label><input type="radio" name="q2" value="correct" /> Blue</label>
+              <label><input type="radio" name="q2" value="wrong" /> Yellow</label>
+            </fieldset>
+            <fieldset>
+              <legend>3. Choose the best sentence.</legend>
+              <label><input type="radio" name="q3" value="correct" /> I have a pencil.</label>
+              <label><input type="radio" name="q3" value="wrong" /> I has a pencil.</label>
+            </fieldset>
+            <button class="button primary" type="submit">ดูสรุปผล</button>
+            <p id="englishExerciseStatus" role="status"></p>
+          </form>
+        </div>
+        <div id="englishResult" class="result-card hidden" aria-live="polite"></div>
+      </section>
+
       <details class="login-card access-card fallback-access">
         <summary>เข้าเรียนด้วยรหัสสำรอง</summary>
         <div>
