@@ -583,7 +583,7 @@ async function startLineLogin(response, url) {
     return;
   }
   const state = crypto.randomBytes(16).toString("hex");
-  const next = url.searchParams.get("next") || "/learn";
+  const next = safeNextPath(url.searchParams.get("next") || "/learn");
   const sessions = await readSessions();
   sessions.push({
     id: `LINESTATE-${state}`,
@@ -1971,6 +1971,13 @@ function sessionCookie(value, expiresAt) {
 function redirect(response, location) {
   response.writeHead(302, { Location: location });
   response.end();
+}
+
+function safeNextPath(value) {
+  const next = String(value || "/learn").trim();
+  if (!next.startsWith("/") || next.startsWith("//")) return "/learn";
+  if (next.includes("\\") || /[\r\n]/.test(next)) return "/learn";
+  return next;
 }
 
 function decodeJwtPayload(token) {
