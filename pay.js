@@ -40,11 +40,7 @@ async function loadOrder() {
 }
 
 function money(value) {
-  return Number(value || 0).toLocaleString("th-TH", {
-    style: "currency",
-    currency: "THB",
-    maximumFractionDigits: 0,
-  });
+  return `${Number(value || 0).toLocaleString("th-TH", { maximumFractionDigits: 0 })} บาท`;
 }
 
 function escapeHtml(value) {
