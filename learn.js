@@ -76,13 +76,13 @@ async function loadLineAccount() {
     const response = await fetch("/api/auth/me");
     const data = await response.json();
     if (!data.lineConfigured) {
-      lineStatus.textContent = "LINE Login ยังไม่ได้เปิดใช้งานบนระบบนี้";
+      lineStatus.textContent = "การเข้าสู่ระบบด้วย LINE ยังไม่พร้อมใช้งาน";
       lineLoginButton?.classList.add("hidden");
       return;
     }
     if (!data.account) {
       if (!lineStatus.dataset.authMessage) {
-        lineStatus.textContent = "เข้าสู่ระบบด้วย LINE เพื่อผูกบัญชีและดูสิทธิ์เรียน";
+        lineStatus.textContent = "เข้าสู่ระบบด้วย LINE เพื่อดูแพ็กที่สนใจและสิทธิ์เรียน";
       }
       lineLoginButton?.classList.remove("hidden");
       return;
@@ -93,10 +93,10 @@ async function loadLineAccount() {
     profileForm.elements.role.value = data.account.role || "student";
     profileForm.elements.phone.value = data.account.phone || "";
     profileForm.elements.email.value = data.account.email || "";
-    lineStatus.textContent = `เข้าสู่ระบบแล้ว: ${data.account.displayName || "บัญชี LINE"} ระหว่างรอ KBank อนุมัติ ระบบจะใช้หน้านี้สำหรับติดตามแพ็กและสิทธิ์เรียน`;
+    lineStatus.textContent = `เข้าสู่ระบบแล้ว: ${data.account.displayName || "บัญชี LINE"} หน้านี้ใช้ติดตามแพ็กที่สนใจและสิทธิ์เรียนของคุณ`;
     await loadMyEnrollments();
   } catch (error) {
-    lineStatus.textContent = error.message || "ตรวจสอบ LINE Login ไม่สำเร็จ";
+    lineStatus.textContent = error.message || "ตรวจสอบการเข้าสู่ระบบ LINE ไม่สำเร็จ";
   }
 }
 
@@ -111,7 +111,7 @@ async function loadSelectedPackage() {
     selectedPackageBox.innerHTML = `
       <span class="mini-label">แพ็กที่สนใจ</span>
       <strong>${escapeHtml(item.name)} · ${money(item.price)} / ${item.durationDays} วัน</strong>
-      <p>บันทึกไว้ก่อนระหว่างรอ KBank อนุมัติ เมื่อระบบชำระเงินพร้อมจะเปิดขั้นตอนชำระจากหน้านี้</p>
+      <p>บันทึกแพ็กที่สนใจไว้ก่อน เมื่อระบบชำระเงินพร้อม จะเปิดขั้นตอนชำระจากหน้านี้</p>
     `;
   } catch {
     selectedPackageBox?.classList.add("hidden");
@@ -122,11 +122,11 @@ function showAuthMessage() {
   if (!lineStatus) return;
   const auth = params.get("auth") || "";
   const messages = {
-    "line-not-configured": "LINE Login ยังไม่ได้เปิดใช้งาน",
+    "line-not-configured": "การเข้าสู่ระบบด้วย LINE ยังไม่พร้อมใช้งาน",
     "line-error": "เข้าสู่ระบบ LINE ไม่สำเร็จ กรุณาลองใหม่",
-    "line-expired": "เวลาล็อกอินหมดอายุ กรุณากด LINE Login ใหม่",
+    "line-expired": "เวลาล็อกอินหมดอายุ กรุณาเข้าสู่ระบบด้วย LINE ใหม่",
     "line-token-error": "LINE ยืนยันตัวตนไม่สำเร็จ กรุณาลองใหม่",
-    "line-profile-error": "อ่านข้อมูล LINE profile ไม่สำเร็จ กรุณาลองใหม่",
+    "line-profile-error": "อ่านข้อมูลโปรไฟล์ LINE ไม่สำเร็จ กรุณาลองใหม่",
   };
   if (messages[auth]) {
     lineStatus.textContent = messages[auth];
@@ -153,11 +153,7 @@ function formatDate(value) {
 }
 
 function money(value) {
-  return Number(value || 0).toLocaleString("th-TH", {
-    style: "currency",
-    currency: "THB",
-    maximumFractionDigits: 0,
-  });
+  return `${Number(value || 0).toLocaleString("th-TH", { maximumFractionDigits: 0 })} บาท`;
 }
 
 function renderLesson(lesson, index) {
