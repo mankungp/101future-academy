@@ -113,7 +113,7 @@ async function loadLineAccount() {
       interestSummary.textContent = selectedPackageItem ? "รอบันทึกหลังเข้าสู่ระบบ" : "-";
       accessSummary.textContent = "ยังไม่มีสิทธิ์เรียน";
       if (!lineStatus.dataset.authMessage) {
-        lineStatus.textContent = "เข้าสู่ระบบด้วย LINE เพื่อดูแพ็กที่สนใจและสิทธิ์เรียน";
+        lineStatus.textContent = "เข้าสู่ระบบด้วย LINE เพื่อดูแพ็กและสิทธิ์เรียน";
       }
       renderSelectedPackage("login-required");
       lineLoginButton?.classList.remove("hidden");
