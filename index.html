@@ -154,87 +154,34 @@
       <section id="apply" class="section apply-section">
         <div class="section-head">
           <p class="eyebrow">สมัครเรียน</p>
-          <h2>กรอกข้อมูลเพื่อสร้างรายการสมัคร</h2>
-          <p>
-            เลือกแพ็ก กรอกข้อมูลผู้เรียน และตรวจสอบยอดก่อนชำระเงิน เมื่อระบบยืนยันยอดแล้วจะเปิดสิทธิ์เข้าเรียนให้อัตโนมัติ
-          </p>
+          <h2>สมัครและเข้าเรียนผ่าน LINE</h2>
+          <p>ไม่ต้องกรอกฟอร์มยาว เข้าสู่ระบบด้วย LINE แล้วระบบจะผูกบัญชีสำหรับเลือกแพ็ก ชำระเงิน และเปิดสิทธิ์เรียน</p>
         </div>
-        <form id="leadForm" class="lead-form">
-          <label>
-            สมัครในฐานะ
-            <select name="applicantRole" required>
-              <option value="student">นักเรียนสมัครเอง</option>
-              <option value="parent">ผู้ปกครองสมัครให้ลูก</option>
-            </select>
-          </label>
-          <label>
-            ผู้ชำระเงิน
-            <select name="payerType" required>
-              <option value="self">ชำระเองในหน้านี้</option>
-              <option value="parent_link">ส่งลิงก์ให้ผู้ปกครองชำระ</option>
-            </select>
-          </label>
-          <label class="wide">
-            แพ็กเรียน
-            <select id="packageSelect" name="packageId" required>
-              <option value="">เลือกแพ็ก</option>
-            </select>
-          </label>
-          <label>
-            ชื่อนักเรียน / ผู้ปกครอง
-            <input name="name" autocomplete="name" required />
-          </label>
-          <label>
-            เบอร์โทร
-            <input name="phone" inputmode="tel" autocomplete="tel" required />
-          </label>
-          <label>
-            อีเมลสำหรับเข้าเรียน
-            <input name="email" type="email" autocomplete="email" required />
-          </label>
-          <label>
-            LINE ID
-            <input name="lineId" autocomplete="off" />
-          </label>
-          <label>
-            ระดับชั้น
-            <select name="ageGroup">
-              <option>ม.1</option>
-              <option>ม.2</option>
-              <option>ม.3</option>
-            </select>
-          </label>
-          <label>
-            เวลาที่สะดวก
-            <select name="preferredSchedule">
-              <option value="">เลือกเวลา</option>
-              <option>วันธรรมดาหลังเลิกเรียน</option>
-              <option>เสาร์-อาทิตย์</option>
-              <option>เรียนออนไลน์</option>
-            </select>
-          </label>
-          <label class="wide">
-            เป้าหมายการเรียน
-            <textarea name="note" rows="4" placeholder="เช่น อยากกล้าพูดขึ้น หรือ grammar ยังไม่แน่น"></textarea>
-          </label>
-          <div class="form-footer wide">
-            <p id="formStatus" role="status"></p>
-            <button class="button primary" type="submit">สร้างรายการสมัคร</button>
+        <div class="line-signup-panel">
+          <div class="line-signup-copy">
+            <span class="mini-label">LINE-first enrollment</span>
+            <h3>เริ่มจากบัญชี LINE เดียว</h3>
+            <p>เด็กสมัครเองหรือผู้ปกครองสมัครให้ลูกก็ใช้ flow เดียวกัน ระบบจะค่อยถามข้อมูลที่จำเป็นหลังเข้าสู่ระบบแล้ว</p>
+            <a class="button line-button" href="/auth/line?next=/learn">เข้าสู่ระบบด้วย LINE</a>
           </div>
-        </form>
-
-        <section id="orderPanel" class="payment-box hidden" aria-live="polite">
-          <div>
-            <p class="eyebrow">ชำระเงิน</p>
-            <h3>รอชำระเงิน</h3>
-            <p id="orderIntro"></p>
+          <div class="signup-steps" aria-label="ขั้นตอนสมัครเรียน">
+            <article>
+              <span>01</span>
+              <h3>LINE Login</h3>
+              <p>ผูกบัญชีผู้เรียนหรือผู้ปกครอง</p>
+            </article>
+            <article>
+              <span>02</span>
+              <h3>เลือกแพ็ก</h3>
+              <p>เริ่มจาก English ม.1-ม.3 รายเดือน</p>
+            </article>
+            <article>
+              <span>03</span>
+              <h3>จ่ายแล้วเปิดสิทธิ์</h3>
+              <p>ระบบตรวจยอดและปลดล็อกบทเรียนอัตโนมัติ</p>
+            </article>
           </div>
-          <div id="qrBox" class="qr-box"></div>
-          <div class="form-footer">
-            <p id="orderStatus" role="status"></p>
-            <button id="refreshOrderButton" class="button secondary" type="button">เช็กสถานะ</button>
-          </div>
-        </section>
+        </div>
       </section>
 
       <section id="roadmap" class="section split">
@@ -300,6 +247,6 @@
         <a href="mailto:hello@101future.com">hello@101future.com</a>
       </div>
     </footer>
-    <script src="/app.js?v=20260530-scrollfix" defer></script>
+    <script src="/app.js?v=20260530-line-signup" defer></script>
   </body>
 </html>
