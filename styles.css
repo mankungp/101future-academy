@@ -1359,6 +1359,34 @@ h3 {
   animation: pulse-soft 1.8s ease-in-out infinite;
 }
 
+.sound-button.start-button {
+  position: relative;
+  min-width: 164px;
+  min-height: 58px;
+  overflow: hidden;
+  background: linear-gradient(135deg, #3157ff, #10b7a7 62%, #06c755);
+  border: 2px solid rgba(255, 255, 255, 0.9);
+  font-size: 16px;
+  letter-spacing: 0;
+  box-shadow: 0 18px 42px rgba(49, 87, 255, 0.28), 0 0 0 8px rgba(49, 87, 255, 0.08);
+  animation: start-button-pop 1.8s ease-in-out infinite;
+}
+
+.sound-button.start-button::after {
+  content: "";
+  position: absolute;
+  inset: -40% auto -40% -55%;
+  width: 48%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.68), transparent);
+  transform: rotate(16deg);
+  animation: start-shine 2.4s ease-in-out infinite;
+}
+
+.sound-button.start-button:focus-visible {
+  outline: 4px solid rgba(49, 87, 255, 0.28);
+  outline-offset: 3px;
+}
+
 .mission-stage {
   align-items: stretch;
   min-height: 300px;
@@ -1553,6 +1581,10 @@ h3 {
 }
 
 .mission-screen.is-transitioning .mission-item:not(:disabled) {
+  pointer-events: none;
+}
+
+.mission-screen.awaiting-start .mission-item:not(:disabled) {
   pointer-events: none;
 }
 
@@ -1895,6 +1927,26 @@ h3 {
   }
   50% {
     transform: scale(1.04);
+  }
+}
+
+@keyframes start-button-pop {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-2px) scale(1.035);
+  }
+}
+
+@keyframes start-shine {
+  0% {
+    left: -58%;
+  }
+  42%,
+  100% {
+    left: 115%;
   }
 }
 
