@@ -599,7 +599,7 @@ async function startLineLogin(response, url) {
   authUrl.searchParams.set("client_id", LINE_CHANNEL_ID);
   authUrl.searchParams.set("redirect_uri", LINE_CALLBACK_URL);
   authUrl.searchParams.set("state", state);
-  authUrl.searchParams.set("scope", "profile openid email");
+  authUrl.searchParams.set("scope", "profile openid");
   redirect(response, authUrl.toString());
 }
 
