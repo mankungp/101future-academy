@@ -24,46 +24,101 @@ const PAYMENT_PROVIDER = process.env.PAYMENT_PROVIDER || "";
 const PAYMENT_PROVIDER_API_KEY = process.env.PAYMENT_PROVIDER_API_KEY || "";
 const PAYMENT_WEBHOOK_SECRET = process.env.PAYMENT_WEBHOOK_SECRET || "";
 const XENDIT_API_VERSION = process.env.XENDIT_API_VERSION || "2024-11-11";
+const KBANK_QR_CREATE_URL = process.env.KBANK_QR_CREATE_URL || "";
+const KBANK_MERCHANT_ID = process.env.KBANK_MERCHANT_ID || "";
+const KBANK_TERMINAL_ID = process.env.KBANK_TERMINAL_ID || "";
+const KBANK_BRANCH_ID = process.env.KBANK_BRANCH_ID || "";
+const KBANK_API_KEY_HEADER = process.env.KBANK_API_KEY_HEADER || "x-api-key";
+const KBANK_WEBHOOK_TOKEN_HEADER = process.env.KBANK_WEBHOOK_TOKEN_HEADER || "x-callback-token";
 const SITE_ORIGIN = process.env.SITE_ORIGIN || "https://www.101future.com";
 const ACCESS_DAYS = Number(process.env.ACCESS_DAYS || 30);
 
 const PACKAGES = [
   {
     id: "eng-m1-m3-speaking-grammar-30d",
-    name: "English Speaking + Grammar ม.1-ม.3",
+    name: "English Monthly",
     subject: "English",
     level: "ม.1-ม.3",
     durationDays: 30,
-    price: Number(COURSE_PRICES["English Speaking + Grammar ม.1-ม.3"] || COURSE_PRICES.english || 1290),
-    description: "ฝึกพูดเป็นประโยค ใช้ grammar ให้ถูก และมั่นใจขึ้นสำหรับเด็กมัธยมต้น",
+    price: Number(
+      COURSE_PRICES["English Monthly"] ||
+        COURSE_PRICES["อังกฤษ ม.ต้น: พูดได้ + แกรมมาร์แน่น"] ||
+        COURSE_PRICES["English Speaking + Grammar ม.1-ม.3"] ||
+        COURSE_PRICES.english ||
+        299,
+    ),
+    description: "เริ่ม Phase 1: English Speaking + Grammar ม.ต้น ใช้ lesson cache, speaking prompt และ AI correction",
   },
   {
-    id: "eng-m1-m3-intensive-30d",
-    name: "English Intensive ม.ต้น",
-    subject: "English",
+    id: "eng-math-m1-m3-30d",
+    name: "English + Math",
+    subject: "English, Math",
     level: "ม.1-ม.3",
     durationDays: 30,
-    price: Number(COURSE_PRICES["English Intensive ม.ต้น"] || COURSE_PRICES.englishIntensive || 1990),
-    description: "เพิ่มแบบฝึก grammar, speaking drills, และงานส่งท้ายบทสำหรับคนที่อยากเร่งผล",
+    price: Number(COURSE_PRICES["English + Math"] || COURSE_PRICES.core || COURSE_PRICES.englishMath || 399),
+    description: "แพ็ก Phase 3 สำหรับเพิ่มคณิต ม.ต้น หลัง English MVP พร้อมใช้งานจริง",
+  },
+  {
+    id: "all-core-m1-m3-30d",
+    name: "All ม.ต้น",
+    subject: "English, Math, Science, Thai",
+    level: "ม.1-ม.3",
+    durationDays: 30,
+    price: Number(COURSE_PRICES["All ม.ต้น"] || COURSE_PRICES.allCore || 599),
+    description: "แพ็กเป้าหมายหลังเพิ่ม English, Math, Science และ Thai ครบตาม roadmap",
   },
 ];
 
 const COURSE_CONTENT = {
+  "English Monthly": [
+    {
+      title: "Lesson Cache: Past Tense 01",
+      duration: "20 นาที",
+      summary: "เรียนจากคำอธิบาย ตัวอย่าง และ quiz ที่เตรียมไว้ล่วงหน้า",
+    },
+    {
+      title: "Speaking Prompt Cache",
+      duration: "15 นาที",
+      summary: "ฝึกตอบคำถามสั้นจาก prompt เช่น What did you do yesterday?",
+    },
+    {
+      title: "AI Correction",
+      duration: "10 นาที",
+      summary: "AI ตรวจเฉพาะคำตอบเด็ก แก้ grammar และเก็บ weakness tag",
+    },
+  ],
+  "อังกฤษ ม.ต้น: พูดได้ + แกรมมาร์แน่น": [
+    {
+      title: "เริ่มพูดให้เป็นประโยค",
+      duration: "20 นาที",
+      summary: "ฝึกแนะนำตัว ตอบคำถามพื้นฐาน และเรียงประโยคให้พูดได้ชัดขึ้น",
+    },
+    {
+      title: "แกรมมาร์พื้นฐานที่ต้องแม่น",
+      duration: "34 นาที",
+      summary: "ทบทวน tense โครงสร้างประโยค และจุดที่เด็ก ม.ต้น มักพลาด",
+    },
+    {
+      title: "ฝึกบทสนทนาใช้งานจริง",
+      duration: "40 นาที",
+      summary: "ฝึกถามตอบสถานการณ์ใกล้ตัว พร้อมประโยคตั้งต้นสำหรับพูดต่อยอด",
+    },
+  ],
   "English Speaking + Grammar ม.1-ม.3": [
     {
-      title: "Speaking Starter",
+      title: "เริ่มพูดให้เป็นประโยค",
       duration: "20 นาที",
-      summary: "ฝึกแนะนำตัว ตอบคำถามพื้นฐาน และพูดเป็นประโยคเต็ม",
+      summary: "ฝึกแนะนำตัว ตอบคำถามพื้นฐาน และเรียงประโยคให้พูดได้ชัดขึ้น",
     },
     {
-      title: "Grammar Foundation",
+      title: "แกรมมาร์พื้นฐานที่ต้องแม่น",
       duration: "34 นาที",
-      summary: "ทบทวน tense, subject-verb agreement และโครงประโยคที่ใช้บ่อย",
+      summary: "ทบทวน tense โครงสร้างประโยค และจุดที่เด็ก ม.ต้น มักพลาด",
     },
     {
-      title: "Conversation Lab",
+      title: "ฝึกบทสนทนาใช้งานจริง",
       duration: "40 นาที",
-      summary: "ฝึกบทสนทนาสถานการณ์จริง พร้อม pattern สำหรับพูดต่อยอด",
+      summary: "ฝึกถามตอบสถานการณ์ใกล้ตัว พร้อมประโยคตั้งต้นสำหรับพูดต่อยอด",
     },
   ],
   "AI 101": [
@@ -508,14 +563,14 @@ async function getOrder(id, request, response) {
   const orders = await readOrders();
   const order = orders.find((item) => item.id === decodeURIComponent(id));
   if (!order) {
-    sendJson(response, 404, { error: "ไม่พบ order" });
+    sendJson(response, 404, { error: "ไม่พบรายการสมัคร" });
     return;
   }
   const leads = await readLeads();
   const enrollment = leads.find((lead) => lead.id === order.enrollmentId);
   const phone = normalizePhone(url.searchParams.get("phone"));
   if (enrollment && phone && phone !== normalizePhone(enrollment.phone)) {
-    sendJson(response, 403, { error: "เบอร์โทรไม่ตรงกับ order" });
+    sendJson(response, 403, { error: "เบอร์โทรไม่ตรงกับรายการสมัคร" });
     return;
   }
   sendJson(response, 200, { order: publicOrder(order), enrollment: enrollment ? publicLead(enrollment) : null });
@@ -1037,7 +1092,7 @@ function slipTransRef(data) {
 }
 
 function lessonsForCourse(course) {
-  return COURSE_CONTENT[course] || COURSE_CONTENT["English Speaking + Grammar ม.1-ม.3"];
+  return COURSE_CONTENT[course] || COURSE_CONTENT["อังกฤษ ม.ต้น: พูดได้ + แกรมมาร์แน่น"];
 }
 
 function nextAutomationPlan(lead, now = new Date(), reason = "workflow") {
@@ -1078,7 +1133,7 @@ async function createPaymentSession(order, enrollment) {
     return {
       provider: PAYMENT_PROVIDER || "unconfigured",
       status: "provider_not_configured",
-      message: "ยังไม่ได้ตั้งค่า payment provider สำหรับสร้าง PromptPay QR อัตโนมัติ",
+      message: "ยังไม่ได้ตั้งค่าระบบรับชำระเงินอัตโนมัติ",
       checkoutUrl: `${SITE_ORIGIN}/#apply`,
     };
   }
@@ -1087,12 +1142,121 @@ async function createPaymentSession(order, enrollment) {
     return createXenditPaymentRequest(order, enrollment);
   }
 
+  if (normalizeKey(PAYMENT_PROVIDER) === "kbank") {
+    return createKbankQrPaymentRequest(order, enrollment);
+  }
+
   return {
     provider: PAYMENT_PROVIDER,
     status: "adapter_ready",
-    message: "ตั้งค่า provider แล้ว แต่ยังต้องใส่ adapter เฉพาะเจ้า เช่น Opn หรือ Xendit",
+    message: "ตั้งค่าผู้ให้บริการรับชำระเงินแล้ว แต่ยังไม่ได้เปิดใช้งานกับระบบนี้",
     checkoutUrl: `${SITE_ORIGIN}/#apply`,
   };
+}
+
+async function createKbankQrPaymentRequest(order, enrollment) {
+  if (!KBANK_QR_CREATE_URL || !KBANK_MERCHANT_ID) {
+    return {
+      provider: "kbank",
+      status: "provider_not_configured",
+      providerStatus: "missing_kbank_config",
+      message: "ยังไม่ได้ตั้งค่า KBank QR API URL หรือ merchant id",
+      checkoutUrl: `${SITE_ORIGIN}/#apply`,
+    };
+  }
+
+  const payload = {
+    merchantId: KBANK_MERCHANT_ID,
+    terminalId: KBANK_TERMINAL_ID,
+    branchId: KBANK_BRANCH_ID,
+    partnerTxnUid: order.id,
+    partnerId: "101future",
+    requestDt: new Date().toISOString(),
+    txnAmount: Number(order.amount).toFixed(2),
+    txnCurrencyCode: "THB",
+    reference1: order.id,
+    reference2: order.enrollmentId,
+    reference3: order.packageId,
+    description: `${order.packageName} (${order.id})`.slice(0, 140),
+    expiryDt: order.expiresAt,
+    metadata: {
+      orderId: order.id,
+      enrollmentId: order.enrollmentId,
+      packageId: order.packageId,
+      studentName: clean(enrollment?.name).slice(0, 120),
+    },
+  };
+
+  try {
+    const providerResponse = await fetch(KBANK_QR_CREATE_URL, {
+      method: "POST",
+      headers: {
+        [KBANK_API_KEY_HEADER]: PAYMENT_PROVIDER_API_KEY,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+    const text = await providerResponse.text();
+    const data = parseJsonText(text);
+
+    if (!providerResponse.ok) {
+      return {
+        provider: "kbank",
+        status: "provider_error",
+        providerStatus: "provider_error",
+        message: kbankErrorMessage(data, text, providerResponse.status),
+        checkoutUrl: `${SITE_ORIGIN}/#apply`,
+      };
+    }
+
+    const qrPayload = clean(
+      data.qrPayload ||
+        data.qrCode ||
+        data.qr_code ||
+        data.qr ||
+        data.rawQr ||
+        data.data?.qrPayload ||
+        data.data?.qrCode ||
+        data.data?.qr_code,
+    );
+    const qrImageUrl =
+      clean(data.qrImageUrl || data.qr_image_url || data.data?.qrImageUrl || data.data?.qr_image_url) ||
+      (qrPayload ? await QRCode.toDataURL(qrPayload, { width: 320, margin: 2 }) : "");
+    const providerReference = clean(
+      data.partnerTxnUid ||
+        data.transactionId ||
+        data.txnId ||
+        data.qrId ||
+        data.data?.partnerTxnUid ||
+        data.data?.transactionId ||
+        data.data?.txnId ||
+        data.data?.qrId ||
+        order.id,
+    );
+
+    return {
+      provider: "kbank",
+      status: "created",
+      providerStatus: clean(data.status || data.respCode || data.data?.status || "created"),
+      providerReference,
+      providerPaymentId: clean(data.transactionId || data.txnId || data.data?.transactionId || data.data?.txnId),
+      paymentUrl: "",
+      qrImageUrl,
+      qrPayload,
+      checkoutUrl: `${SITE_ORIGIN}/#apply`,
+      message: qrPayload || qrImageUrl
+        ? "สแกน Thai QR จาก KBank เพื่อชำระเงิน เมื่อ callback ยืนยันยอดถูกต้องระบบจะเปิดบทเรียนให้อัตโนมัติ"
+        : "สร้างรายการ KBank QR แล้ว แต่ยังไม่พบ QR payload/image ในผลลัพธ์จากธนาคาร",
+    };
+  } catch (error) {
+    return {
+      provider: "kbank",
+      status: "provider_error",
+      providerStatus: "provider_error",
+      message: `เชื่อมต่อ KBank QR API ไม่สำเร็จ: ${error.message}`,
+      checkoutUrl: `${SITE_ORIGIN}/#apply`,
+    };
+  }
 }
 
 async function createXenditPaymentRequest(order, enrollment) {
@@ -1157,8 +1321,8 @@ async function createXenditPaymentRequest(order, enrollment) {
       qrPayload,
       checkoutUrl: paymentUrl || `${SITE_ORIGIN}/#apply`,
       message: qrPayload
-        ? "สแกน PromptPay QR แล้วระบบจะปลดล็อกอัตโนมัติหลังได้รับ webhook"
-        : "Xendit สร้าง payment request แล้ว แต่ยังไม่พบ QR payload ใน response",
+        ? "สแกน QR เพื่อชำระเงินได้เลย เมื่อยอดถูกต้องระบบจะเปิดบทเรียนให้อัตโนมัติ"
+        : "สร้างรายการชำระเงินแล้ว แต่ยังไม่พบข้อมูล QR ในผลลัพธ์จากผู้ให้บริการ",
     };
   } catch (error) {
     return {
@@ -1214,6 +1378,14 @@ function verifyPaymentSignature(request, rawBody) {
     const token = String(request.headers["x-callback-token"] || "");
     return token ? timingSafeEqual(token, PAYMENT_WEBHOOK_SECRET) : false;
   }
+  if (normalizeKey(PAYMENT_PROVIDER) === "kbank") {
+    const token = String(request.headers[KBANK_WEBHOOK_TOKEN_HEADER.toLowerCase()] || request.headers["x-api-key"] || "");
+    if (token && timingSafeEqual(token, PAYMENT_WEBHOOK_SECRET)) return true;
+    const kbankSignature = String(request.headers["x-kbank-signature"] || request.headers["x-signature"] || "");
+    if (!kbankSignature) return false;
+    const expected = crypto.createHmac("sha256", PAYMENT_WEBHOOK_SECRET).update(rawBody).digest("hex");
+    return timingSafeEqual(kbankSignature.replace(/^sha256=/, ""), expected);
+  }
   const signature = String(request.headers["x-signature"] || request.headers["x-callback-token"] || "");
   if (!signature) return false;
   const expected = crypto.createHmac("sha256", PAYMENT_WEBHOOK_SECRET).update(rawBody).digest("hex");
@@ -1229,16 +1401,39 @@ function paymentEventFromPayload(payload) {
     payload;
   const data = envelope.data?.data || envelope.data || payload.data?.data || payload.data || envelope;
   const metadata = data.metadata || envelope.metadata || payload.metadata || {};
-  const providerPaymentId = clean(data.payment_id || payload.payment_id || data.latest_payment_id || payload.id);
-  const paymentRequestId = clean(data.payment_request_id || payload.payment_request_id || metadata.payment_request_id);
+  const providerPaymentId = clean(
+    data.payment_id ||
+      payload.payment_id ||
+      data.latest_payment_id ||
+      payload.id ||
+      data.transactionId ||
+      payload.transactionId ||
+      data.txnId ||
+      payload.txnId,
+  );
+  const paymentRequestId = clean(
+    data.payment_request_id ||
+      payload.payment_request_id ||
+      metadata.payment_request_id ||
+      data.partnerTxnUid ||
+      payload.partnerTxnUid ||
+      data.qrId ||
+      payload.qrId,
+  );
 
   return {
     event: String(envelope.event || payload.event || ""),
-    status: String(data.status || envelope.status || payload.status || "").toLowerCase(),
+    status: String(data.status || envelope.status || payload.status || data.txnStatus || payload.txnStatus || data.paymentStatus || payload.paymentStatus || "").toLowerCase(),
     reference: clean(
       data.reference_id ||
         envelope.reference_id ||
         payload.reference_id ||
+        data.partnerTxnUid ||
+        payload.partnerTxnUid ||
+        data.reference1 ||
+        payload.reference1 ||
+        data.ref1 ||
+        payload.ref1 ||
         metadata.orderId ||
         metadata.order_id ||
         payload.orderId ||
@@ -1252,10 +1447,16 @@ function paymentEventFromPayload(payload) {
     paidAmount: Number(
       data.request_amount ??
         data.amount ??
+        data.txnAmount ??
+        data.transactionAmount ??
+        data.paidAmount ??
         data.paid_amount ??
         data.capture_amount ??
         data.captures?.[0]?.capture_amount ??
         payload.amount ??
+        payload.txnAmount ??
+        payload.transactionAmount ??
+        payload.paidAmount ??
         payload.paid_amount ??
         0,
     ),
@@ -1264,7 +1465,7 @@ function paymentEventFromPayload(payload) {
 
 function isPaidPaymentEvent(paymentEvent) {
   const value = `${paymentEvent.status} ${paymentEvent.event}`.toLowerCase();
-  return value.includes("succeeded") || value.includes("paid") || value.includes("completed") || value.includes("settled");
+  return value.includes("succeeded") || value.includes("success") || value.includes("paid") || value.includes("completed") || value.includes("settled");
 }
 
 function findXenditAction(data, descriptor) {
@@ -1284,6 +1485,10 @@ function parseJsonText(text) {
 
 function xenditErrorMessage(data, text, status) {
   return clean(data.message || data.error || data.error_code || text) || `Xendit ตอบกลับ status ${status}`;
+}
+
+function kbankErrorMessage(data, text, status) {
+  return clean(data.message || data.error || data.errorCode || data.respMsg || data.respCode || text) || `KBank ตอบกลับ status ${status}`;
 }
 
 function xenditTimestamp(value) {
