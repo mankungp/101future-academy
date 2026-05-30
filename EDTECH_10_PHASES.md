@@ -21,10 +21,11 @@ Status: In progress
 
 - Enrollment ID and access code are generated after signup.
 - Package and order APIs exist.
-- Payment webhook verification scaffold exists.
+- Xendit PromptPay QR adapter exists through Payment Requests API.
+- Payment webhook verification supports Xendit callback token and amount/order matching.
 - EasySlip-compatible slip verification remains available as fallback.
 - `/learn` unlocks only after paid status.
-- Needs production payment provider adapter, webhook secret, and real PromptPay QR test.
+- Needs production Xendit API key, callback token, and real PromptPay QR test.
 
 ## Phase 3: Student Learning Portal
 
