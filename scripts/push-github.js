@@ -51,10 +51,9 @@ async function gh(pathname, options = {}) {
   return data;
 }
 
-async function existingSha(file) {
+async function existingFile(file) {
   try {
-    const data = await gh(`/repos/${owner}/${repo}/contents/${encodeURIComponentPath(file)}?ref=${branch}`);
-    return data.sha;
+    return await gh(`/repos/${owner}/${repo}/contents/${encodeURIComponentPath(file)}?ref=${branch}`);
   } catch (error) {
     if (error.status === 404 || error.status === 409) return null;
     throw error;
@@ -63,20 +62,27 @@ async function existingSha(file) {
 
 async function putFile(file) {
   const buffer = await fs.readFile(path.join(root, file));
-  const sha = await existingSha(file);
+  const content = buffer.toString("base64");
+  const existing = await existingFile(file);
+  if (existing?.content?.replace(/\s/g, "") === content) {
+    console.log(`Skipped ${file}`);
+    return false;
+  }
+
   const body = {
-    message: `${sha ? "Update" : "Add"} ${file}`,
-    content: buffer.toString("base64"),
+    message: `${existing ? "Update" : "Add"} ${file}`,
+    content,
     branch,
   };
-  if (sha) body.sha = sha;
+  if (existing?.sha) body.sha = existing.sha;
 
   await gh(`/repos/${owner}/${repo}/contents/${encodeURIComponentPath(file)}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
   });
-  console.log(`${sha ? "Updated" : "Added"} ${file}`);
+  console.log(`${existing ? "Updated" : "Added"} ${file}`);
+  return true;
 }
 
 function encodeURIComponentPath(file) {
@@ -85,10 +91,11 @@ function encodeURIComponentPath(file) {
 
 async function main() {
   if (!process.env.GITHUB_TOKEN) throw new Error("GITHUB_TOKEN is required");
+  let changed = 0;
   for (const file of files) {
-    await putFile(file);
+    if (await putFile(file)) changed += 1;
   }
-  console.log(`Published ${files.length} files to https://github.com/${owner}/${repo}`);
+  console.log(`Published ${changed} changed file(s) to https://github.com/${owner}/${repo}`);
 }
 
 main().catch((error) => {
