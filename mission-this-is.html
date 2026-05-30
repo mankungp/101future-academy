@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="th">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>This Is My School Bag | 101 Future Academy</title>
+    <link rel="stylesheet" href="/styles.css?v=20260531-unit1-mission2" />
+  </head>
+  <body class="mission-body">
+    <header class="mission-topbar">
+      <a class="brand" href="/learn" aria-label="กลับหน้าเรียน 101 Future Academy">
+        <span class="brand-mark">101</span>
+        <span class="brand-name">Future Academy</span>
+      </a>
+      <a class="button secondary mission-exit-link" href="/learn">
+        <span class="exit-full">ออกจาก Mission</span>
+        <span class="exit-short">ออก</span>
+      </a>
+    </header>
+
+    <main class="mission-main">
+      <section class="mission-screen sentence-mission-screen" aria-live="polite">
+        <div class="mission-screen-head">
+          <div>
+            <p class="eyebrow">English Mission · ป.1 · Unit 1</p>
+            <h1>This Is My School Bag</h1>
+            <p>ฟังประโยคสั้น ๆ แล้วแตะรูปที่ตรงกับประโยค</p>
+          </div>
+          <div class="mission-score mission-score-large">
+            <span id="missionStars">0/4</span>
+            <strong>stars</strong>
+          </div>
+        </div>
+
+        <div class="mission-prompt mission-prompt-large">
+          <button id="missionSoundButton" class="sound-button start-button" type="button" aria-label="เริ่ม Mission">Start Mission</button>
+          <div>
+            <span id="missionPromptHint">กดเริ่ม แล้วฟังประโยคแรก</span>
+            <p id="missionPromptText">Ready to hear a sentence?</p>
+          </div>
+        </div>
+
+        <div id="missionFeedback" class="mission-feedback mission-feedback-large">
+          Mission 2: ฟังประโยค แล้วแตะรูปให้ตรง
+        </div>
+
+        <div id="correctBurst" class="correct-burst hidden" aria-live="assertive">
+          <div class="correct-burst-card">
+            <span class="burst-confetti" aria-hidden="true">
+              <i></i><i></i><i></i><i></i><i></i><i></i>
+            </span>
+            <span class="mini-label">Yes, correct</span>
+            <strong>ถูกต้อง</strong>
+            <span id="correctBurstWord">This is a book.</span>
+          </div>
+        </div>
+
+        <div class="mission-stage sentence-stage">
+          <article class="teacher-card">
+            <span class="mini-label">Sentence Pattern</span>
+            <h2>This is a...</h2>
+            <p>เด็กจะเริ่มจำโครงประโยคจากของที่เห็นจริง: This is a book. This is a pencil.</p>
+            <div id="sentenceProgress" class="sentence-progress"></div>
+          </article>
+
+          <div id="missionItems" class="mission-items mission-items-large sentence-items" aria-label="sentence choices">
+            <button class="mission-item mission-object sentence-item" type="button" data-word="book" data-thai="หนังสือ" data-phrase="This is a book.">
+              <img class="object-image" src="/assets/school-bag/book.svg" alt="" />
+              <strong>This is a book.</strong>
+              <small>นี่คือหนังสือ</small>
+            </button>
+            <button class="mission-item mission-object sentence-item" type="button" data-word="pencil" data-thai="ดินสอ" data-phrase="This is a pencil.">
+              <img class="object-image" src="/assets/school-bag/pencil.svg" alt="" />
+              <strong>This is a pencil.</strong>
+              <small>นี่คือดินสอ</small>
+            </button>
+            <button class="mission-item mission-object sentence-item" type="button" data-word="ruler" data-thai="ไม้บรรทัด" data-phrase="This is a ruler.">
+              <img class="object-image" src="/assets/school-bag/ruler.svg" alt="" />
+              <strong>This is a ruler.</strong>
+              <small>นี่คือไม้บรรทัด</small>
+            </button>
+            <button class="mission-item mission-object sentence-item" type="button" data-word="eraser" data-thai="ยางลบ" data-phrase="This is an eraser.">
+              <img class="object-image" src="/assets/school-bag/eraser.svg" alt="" />
+              <strong>This is an eraser.</strong>
+              <small>นี่คือยางลบ</small>
+            </button>
+          </div>
+        </div>
+
+        <div id="missionComplete" class="result-card mission-complete hidden"></div>
+      </section>
+    </main>
+
+    <script src="/mission-this-is.js?v=20260531-unit1-mission2" defer></script>
+  </body>
+</html>
