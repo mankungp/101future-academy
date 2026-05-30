@@ -51,6 +51,9 @@ Optional:
 - `XENDIT_API_VERSION`: Xendit Payment Request API version, defaults to `2024-11-11`
 - `SITE_ORIGIN`: public site URL, defaults to `https://www.101future.com`
 - `ACCESS_DAYS`: learning entitlement length, defaults to `30`
+- `LINE_CHANNEL_ID`: LINE Login channel id
+- `LINE_CHANNEL_SECRET`: LINE Login channel secret
+- `LINE_CALLBACK_URL`: LINE Login callback URL, defaults to `https://www.101future.com/auth/line/callback`
 - `EASYSLIP_API_KEY`: EasySlip API key used to verify Thai bank slips server-side
 - `EASYSLIP_MATCH_ACCOUNT`: set to `true` to require EasySlip receiver account matching
 - `COURSE_PRICES_JSON`: JSON object for server-side amount matching, for example `{"English Monthly":299,"English + Math":399,"All ม.ต้น":599}`
@@ -63,6 +66,8 @@ The enrollment system automatically:
 - prevents duplicate active leads by matching phone or LINE ID
 - exposes English M.1-M.3 packages through `/api/packages`
 - creates orders through `/api/orders`
+- supports LINE Login for student/parent accounts when LINE credentials are configured
+- supports student self-signup and parent payment links through `/pay?order=...`
 - creates KBank Dynamic Thai QR requests when `PAYMENT_PROVIDER=kbank`
 - verifies payment callbacks with `PAYMENT_WEBHOOK_SECRET`
 - checks paid amount against the locked order amount
