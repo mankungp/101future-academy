@@ -12,6 +12,8 @@ const selectedPackageBox = document.querySelector("#selectedPackageBox");
 
 const params = new URLSearchParams(location.search);
 const selectedPackageId = params.get("package") || "";
+let selectedPackageItem = null;
+let currentAccount = null;
 
 showAuthMessage();
 loadSelectedPackage();
@@ -81,12 +83,15 @@ async function loadLineAccount() {
       return;
     }
     if (!data.account) {
+      currentAccount = null;
       if (!lineStatus.dataset.authMessage) {
         lineStatus.textContent = "เข้าสู่ระบบด้วย LINE เพื่อดูแพ็กที่สนใจและสิทธิ์เรียน";
       }
+      renderSelectedPackage("login-required");
       lineLoginButton?.classList.remove("hidden");
       return;
     }
+    currentAccount = data.account;
     lineLoginButton?.classList.add("hidden");
     logoutButton?.classList.remove("hidden");
     profileForm?.classList.remove("hidden");
@@ -94,6 +99,7 @@ async function loadLineAccount() {
     profileForm.elements.phone.value = data.account.phone || "";
     profileForm.elements.email.value = data.account.email || "";
     lineStatus.textContent = `เข้าสู่ระบบแล้ว: ${data.account.displayName || "บัญชี LINE"} หน้านี้ใช้ติดตามแพ็กที่สนใจและสิทธิ์เรียนของคุณ`;
+    await saveSelectedInterest();
     await loadMyEnrollments();
   } catch (error) {
     lineStatus.textContent = error.message || "ตรวจสอบการเข้าสู่ระบบ LINE ไม่สำเร็จ";
@@ -107,14 +113,48 @@ async function loadSelectedPackage() {
     const data = await response.json();
     const item = (data.packages || []).find((pkg) => pkg.id === selectedPackageId);
     if (!item) return;
-    selectedPackageBox.classList.remove("hidden");
-    selectedPackageBox.innerHTML = `
-      <span class="mini-label">แพ็กที่สนใจ</span>
-      <strong>${escapeHtml(item.name)} · ${money(item.price)} / ${item.durationDays} วัน</strong>
-      <p>บันทึกแพ็กที่สนใจไว้ก่อน เมื่อระบบชำระเงินพร้อม จะเปิดขั้นตอนชำระจากหน้านี้</p>
-    `;
+    selectedPackageItem = item;
+    if (currentAccount) {
+      await saveSelectedInterest();
+    } else {
+      renderSelectedPackage("login-required");
+    }
   } catch {
     selectedPackageBox?.classList.add("hidden");
+  }
+}
+
+function renderSelectedPackage(state = "login-required", message = "") {
+  if (!selectedPackageBox || !selectedPackageItem) return;
+  const stateText = {
+    "login-required": "เข้าสู่ระบบด้วย LINE เพื่อบันทึกแพ็กนี้ไว้ในบัญชี",
+    saving: "กำลังบันทึกแพ็กที่สนใจ...",
+    saved: "บันทึกแพ็กที่สนใจแล้ว ทีมงานจะเห็นรายการนี้ในระบบหลังบ้าน",
+    error: message || "บันทึกแพ็กที่สนใจไม่สำเร็จ กรุณาลองใหม่",
+  }[state];
+  selectedPackageBox.classList.remove("hidden");
+  selectedPackageBox.innerHTML = `
+    <span class="mini-label">แพ็กที่สนใจ</span>
+    <strong>${escapeHtml(selectedPackageItem.name)} · ${money(selectedPackageItem.price)} / ${selectedPackageItem.durationDays} วัน</strong>
+    <p>${escapeHtml(stateText)}</p>
+  `;
+}
+
+async function saveSelectedInterest() {
+  if (!selectedPackageId || !selectedPackageItem || !currentAccount) return;
+  renderSelectedPackage("saving");
+  try {
+    const response = await fetch("/api/me/interests", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ packageId: selectedPackageId }),
+    });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || "บันทึกแพ็กที่สนใจไม่สำเร็จ");
+    currentAccount = data.account || currentAccount;
+    renderSelectedPackage("saved");
+  } catch (error) {
+    renderSelectedPackage("error", error.message);
   }
 }
 
