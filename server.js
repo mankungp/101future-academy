@@ -438,6 +438,11 @@ async function handleRequest(request, response) {
     return;
   }
 
+  if (request.method === "POST" && url.pathname === "/api/me/interests") {
+    await saveMyInterest(request, response);
+    return;
+  }
+
   if (request.method === "POST" && url.pathname === "/api/auth/logout") {
     await logoutAccount(request, response);
     return;
@@ -494,6 +499,22 @@ async function handleRequest(request, response) {
     requireAdmin(request, url);
     const leads = await readLeads();
     sendJson(response, 200, { leads: sortLeads(leads) });
+    return;
+  }
+
+  if (request.method === "GET" && url.pathname === "/api/interests") {
+    requireAdmin(request, url);
+    const accounts = await readAccounts();
+    const leads = await readLeads();
+    const orders = await readOrders();
+    sendJson(response, 200, { interests: buildAdminInterests(accounts, leads, orders) });
+    return;
+  }
+
+  const interestOrderMatch = url.pathname.match(/^\/api\/interests\/([^/]+)\/([^/]+)\/order$/);
+  if (request.method === "POST" && interestOrderMatch) {
+    requireAdmin(request, url);
+    await createOrderFromInterest(interestOrderMatch[1], interestOrderMatch[2], request, response);
     return;
   }
 
@@ -633,6 +654,39 @@ async function updateAccountProfile(request, response) {
   stored.updatedAt = new Date().toISOString();
   await writeAccounts(accounts);
   sendJson(response, 200, { account: publicAccount(stored) });
+}
+
+async function saveMyInterest(request, response) {
+  const account = await accountFromRequest(request);
+  if (!account) {
+    sendJson(response, 401, { error: "กรุณาเข้าสู่ระบบด้วย LINE ก่อน" });
+    return;
+  }
+
+  const body = await readJsonBody(request);
+  const packageItem = PACKAGES.find((item) => item.id === clean(body.packageId));
+  if (!packageItem) {
+    sendJson(response, 400, { error: "ไม่พบแพ็กที่เลือก" });
+    return;
+  }
+  if (packageItem.status === "coming_soon") {
+    sendJson(response, 409, { error: "แพ็กนี้ยังไม่เปิดให้ลงชื่อสนใจ" });
+    return;
+  }
+
+  const accounts = await readAccounts();
+  const stored = accounts.find((item) => item.id === account.id);
+  if (!stored) {
+    sendJson(response, 404, { error: "ไม่พบบัญชี" });
+    return;
+  }
+
+  const interest = upsertAccountInterest(stored, packageItem, {
+    source: "learn-page",
+    note: clean(body.note),
+  });
+  await writeAccounts(accounts);
+  sendJson(response, 200, { account: publicAccount(stored), interest: publicInterest(stored, interest) });
 }
 
 async function logoutAccount(request, response) {
@@ -843,6 +897,154 @@ async function createOrder(request, response) {
   await writeOrders(orders);
   await notifyLeadEvent("order.created", enrollment, request, { order: publicOrder(order), paymentSession });
   sendJson(response, 201, { enrollment: publicLead(enrollment), order: publicOrder(order), payment: paymentSession });
+}
+
+async function createOrderFromInterest(accountId, packageId, request, response) {
+  const decodedAccountId = decodeURIComponent(accountId);
+  const decodedPackageId = decodeURIComponent(packageId);
+  const packageItem = PACKAGES.find((item) => item.id === decodedPackageId);
+  if (!packageItem) {
+    sendJson(response, 400, { error: "ไม่พบแพ็กที่เลือก" });
+    return;
+  }
+
+  const accounts = await readAccounts();
+  const account = accounts.find((item) => item.id === decodedAccountId);
+  if (!account) {
+    sendJson(response, 404, { error: "ไม่พบบัญชี LINE" });
+    return;
+  }
+
+  const interest = accountInterestList(account).find((item) => item.packageId === packageItem.id);
+  if (!interest) {
+    sendJson(response, 404, { error: "บัญชีนี้ยังไม่ได้ลงชื่อสนใจแพ็กนี้" });
+    return;
+  }
+
+  const now = new Date();
+  const nowIso = now.toISOString();
+  const leads = await readLeads();
+  const orders = await readOrders();
+  let enrollment = leads.find((lead) => {
+    return (
+      lead.accountId === account.id &&
+      lead.course === packageItem.name &&
+      !["archived", "not-fit"].includes(lead.status)
+    );
+  });
+
+  if (!enrollment) {
+    enrollment = {
+      id: createId(),
+      name: account.displayName || "บัญชี LINE",
+      phone: account.phone || "",
+      email: account.email || "",
+      lineId: account.displayName || "",
+      ageGroup: packageItem.level,
+      course: packageItem.name,
+      preferredSchedule: "",
+      note: "ลงชื่อสนใจผ่าน LINE",
+      status: "pending-payment",
+      accountId: account.id,
+      payerAccountId: account.id,
+      applicantRole: account.role || "student",
+      payerType: "self",
+      createdAt: nowIso,
+      updatedAt: nowIso,
+      lastSubmittedAt: nowIso,
+      duplicateCount: 0,
+      source: {
+        ip: request.headers["x-forwarded-for"] || request.socket.remoteAddress || "",
+        userAgent: request.headers["user-agent"] || "",
+      },
+      timeline: [{ at: nowIso, action: "interest-order-ready", note: packageItem.name }],
+    };
+    ensureEnrollmentArtifacts(enrollment);
+    leads.push(enrollment);
+  } else {
+    ensureEnrollmentArtifacts(enrollment);
+    enrollment.updatedAt = nowIso;
+    enrollment.accountId = enrollment.accountId || account.id;
+    enrollment.payerAccountId = enrollment.payerAccountId || account.id;
+    enrollment.applicantRole = enrollment.applicantRole || account.role || "student";
+    enrollment.payerType = enrollment.payerType || "self";
+    enrollment.timeline = ensureTimeline(enrollment);
+    enrollment.timeline.push({ at: nowIso, action: "interest-order-ready", note: packageItem.name });
+  }
+
+  let order = [...orders]
+    .reverse()
+    .find((item) => item.enrollmentId === enrollment.id && item.packageId === packageItem.id && item.status !== "paid");
+  let paymentSession = null;
+
+  if (!order) {
+    order = buildPendingOrder(enrollment, packageItem, now);
+    paymentSession = await createPaymentSession(order, enrollment);
+    applyPaymentSession(order, paymentSession);
+    orders.push(order);
+  }
+
+  const storedInterest = upsertAccountInterest(account, packageItem, {
+    source: "admin-order",
+    note: interest.note || "",
+  });
+  storedInterest.lastOrderId = order.id;
+  storedInterest.status = order.status === "paid" ? "paid" : "payment_ready";
+  storedInterest.updatedAt = nowIso;
+  account.updatedAt = nowIso;
+
+  await writeAccounts(accounts);
+  await writeLeads(leads);
+  await writeOrders(orders);
+  await notifyLeadEvent("interest.payment_ready", enrollment, request, { order: publicOrder(order), paymentSession });
+  sendJson(response, 201, {
+    interest: publicInterest(account, storedInterest),
+    enrollment: publicLead(enrollment),
+    order: publicOrder(order),
+    payment: paymentSession,
+  });
+}
+
+function buildPendingOrder(enrollment, packageItem, now = new Date()) {
+  const nowIso = now.toISOString();
+  return {
+    id: createOrderId(),
+    enrollmentId: enrollment.id,
+    packageId: packageItem.id,
+    packageName: packageItem.name,
+    durationDays: packageItem.durationDays,
+    amount: packageItem.price,
+    currency: "THB",
+    status: "pending",
+    provider: PAYMENT_PROVIDER || "unconfigured",
+    providerReference: "",
+    providerPaymentId: "",
+    providerStatus: "",
+    paymentUrl: "",
+    qrImageUrl: "",
+    qrPayload: "",
+    applicantRole: enrollment.applicantRole || "student",
+    payerType: enrollment.payerType || "self",
+    paymentLink: "",
+    createdAt: nowIso,
+    updatedAt: nowIso,
+    paidAt: "",
+    expiresAt: addMinutes(now, 30).toISOString(),
+  };
+}
+
+function applyPaymentSession(order, paymentSession = {}) {
+  order.paymentLink = `${SITE_ORIGIN}/pay?order=${encodeURIComponent(order.id)}`;
+  order.provider = paymentSession.provider || order.provider;
+  order.providerReference = paymentSession.providerReference || "";
+  order.providerPaymentId = paymentSession.providerPaymentId || "";
+  order.providerStatus = paymentSession.providerStatus || paymentSession.status || "";
+  order.paymentUrl = paymentSession.paymentUrl || "";
+  order.qrImageUrl = paymentSession.qrImageUrl || "";
+  order.qrPayload = paymentSession.qrPayload || "";
+  order.paymentStatusMessage = paymentSession.message || "";
+  order.updatedAt = new Date().toISOString();
+  return order;
 }
 
 async function getOrder(id, request, response) {
@@ -1853,6 +2055,65 @@ function adminLead(lead) {
   };
 }
 
+function buildAdminInterests(accounts, leads, orders) {
+  const items = [];
+  for (const account of accounts) {
+    for (const interest of accountInterestList(account)) {
+      const packageItem = PACKAGES.find((item) => item.id === interest.packageId);
+      const enrollment = leads.find((lead) => {
+        return lead.accountId === account.id && packageItem && lead.course === packageItem.name;
+      });
+      const order = enrollment
+        ? [...orders].reverse().find((item) => item.enrollmentId === enrollment.id && item.packageId === interest.packageId)
+        : null;
+      items.push({
+        ...publicInterest(account, interest),
+        enrollment: enrollment ? publicLead(enrollment) : null,
+        order: order ? publicOrder(order) : null,
+      });
+    }
+  }
+  return items.sort((a, b) => String(b.updatedAt || b.createdAt).localeCompare(String(a.updatedAt || a.createdAt)));
+}
+
+function accountInterestList(account) {
+  return Array.isArray(account.interests) ? account.interests : [];
+}
+
+function upsertAccountInterest(account, packageItem, details = {}) {
+  const now = new Date().toISOString();
+  if (!Array.isArray(account.interests)) account.interests = [];
+  let interest = account.interests.find((item) => item.packageId === packageItem.id);
+  if (!interest) {
+    interest = {
+      packageId: packageItem.id,
+      packageName: packageItem.name,
+      level: packageItem.level,
+      price: packageItem.price,
+      durationDays: packageItem.durationDays,
+      status: "interested",
+      source: clean(details.source) || "unknown",
+      note: clean(details.note),
+      createdAt: now,
+      updatedAt: now,
+      lastOrderId: "",
+      count: 0,
+    };
+    account.interests.push(interest);
+  }
+  interest.packageName = packageItem.name;
+  interest.level = packageItem.level;
+  interest.price = packageItem.price;
+  interest.durationDays = packageItem.durationDays;
+  interest.status = interest.status || "interested";
+  interest.source = clean(details.source) || interest.source || "unknown";
+  if (details.note !== undefined) interest.note = clean(details.note);
+  interest.updatedAt = now;
+  interest.count = Number(interest.count || 0) + 1;
+  account.updatedAt = now;
+  return interest;
+}
+
 function createId() {
   const date = new Date().toISOString().slice(0, 10).replaceAll("-", "");
   return `LEAD-${date}-${crypto.randomBytes(3).toString("hex").toUpperCase()}`;
@@ -1974,7 +2235,32 @@ function publicAccount(account) {
     pictureUrl: account.pictureUrl || "",
     phone: account.phone || "",
     email: account.email || "",
+    interests: accountInterestList(account).map((interest) => publicInterest(account, interest)),
     createdAt: account.createdAt || "",
+  };
+}
+
+function publicInterest(account, interest) {
+  const packageItem = PACKAGES.find((item) => item.id === interest.packageId) || {};
+  return {
+    accountId: account.id,
+    displayName: account.displayName || "",
+    pictureUrl: account.pictureUrl || "",
+    role: account.role || "",
+    phone: account.phone || "",
+    email: account.email || "",
+    packageId: interest.packageId || "",
+    packageName: interest.packageName || packageItem.name || "",
+    level: interest.level || packageItem.level || "",
+    price: Number(interest.price || packageItem.price || 0),
+    durationDays: Number(interest.durationDays || packageItem.durationDays || 0),
+    status: interest.status || "interested",
+    source: interest.source || "",
+    note: interest.note || "",
+    lastOrderId: interest.lastOrderId || "",
+    count: Number(interest.count || 0),
+    createdAt: interest.createdAt || "",
+    updatedAt: interest.updatedAt || "",
   };
 }
 
