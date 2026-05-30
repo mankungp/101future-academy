@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>เข้าเรียน | 101 Future Academy</title>
-    <link rel="stylesheet" href="/styles.css?v=20260530-line-login" />
+    <link rel="stylesheet" href="/styles.css?v=20260530-kbank-wait" />
   </head>
   <body class="admin-body">
     <header class="topbar">
@@ -22,12 +22,13 @@
       <section class="login-card access-card">
         <div>
           <p class="eyebrow">LINE Login</p>
-          <h2>เข้าเรียนด้วย LINE</h2>
-          <p>เหมาะสำหรับนักเรียนหรือผู้ปกครองที่สมัครไว้แล้ว ระบบจะเปิดบทเรียนตามสิทธิ์ที่ผูกกับบัญชี LINE</p>
+          <h2>ผูกบัญชีและดูสิทธิ์เรียน</h2>
+          <p>ใช้บัญชี LINE เป็นหลักสำหรับผู้เรียนหรือผู้ปกครอง ตอนนี้อยู่ระหว่างรอ KBank อนุมัติระบบชำระเงิน</p>
         </div>
         <div id="lineAccountBox" class="share-link">
           <p id="lineStatus">กำลังตรวจสอบบัญชี...</p>
           <a id="lineLoginButton" class="button line-button" href="/auth/line?next=/learn">เข้าสู่ระบบด้วย LINE</a>
+          <div id="selectedPackageBox" class="selected-package hidden"></div>
           <form id="profileForm" class="access-form hidden">
             <label>
               คุณคือ
@@ -51,11 +52,12 @@
         </div>
       </section>
 
-      <section class="login-card access-card">
+      <details class="login-card access-card fallback-access">
+        <summary>เข้าเรียนด้วยรหัสสำรอง</summary>
         <div>
           <p class="eyebrow">รหัสเข้าเรียน</p>
-          <h2>เข้าเรียนด้วยรหัส</h2>
-          <p>ใช้เป็นทางสำรอง กรอกเลขสมัคร เบอร์โทร และรหัสเข้าเรียนที่ได้รับหลังชำระเงิน</p>
+          <h2>ใช้เมื่อทีมงานออกสิทธิ์ให้แล้ว</h2>
+          <p>ช่องทางนี้เป็นทางสำรองสำหรับรายการที่ชำระหรืออนุมัติเรียบร้อยแล้ว</p>
         </div>
         <form id="accessForm" class="access-form">
           <label>
@@ -73,7 +75,7 @@
           <button class="button primary" type="submit">เปิดบทเรียน</button>
           <p id="accessStatus" role="status"></p>
         </form>
-      </section>
+      </details>
 
       <section id="lessonPanel" class="lesson-panel hidden" aria-live="polite">
         <div>
@@ -84,6 +86,6 @@
         <div id="lessonList" class="lesson-grid"></div>
       </section>
     </main>
-    <script src="/learn.js?v=20260530-line-login" defer></script>
+    <script src="/learn.js?v=20260530-kbank-wait" defer></script>
   </body>
 </html>
