@@ -1258,8 +1258,11 @@ h3 {
 
   h1 {
     margin-bottom: 12px;
-    font-size: 30px;
-    line-height: 1.08;
+    max-width: 340px;
+    font-size: 29px;
+    line-height: 1.12;
+    overflow-wrap: anywhere;
+    word-break: break-word;
   }
 
   h2 {
