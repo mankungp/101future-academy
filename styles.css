@@ -1478,6 +1478,218 @@ h3 {
   font-weight: 900;
 }
 
+.mission-feedback span,
+.mission-feedback strong {
+  display: block;
+}
+
+.mission-feedback span {
+  margin-top: 4px;
+  color: var(--muted);
+  font-weight: 750;
+}
+
+.mission-preview-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px;
+  background:
+    radial-gradient(circle at 18% 18%, rgba(0, 163, 255, 0.12), transparent 30%),
+    linear-gradient(135deg, #ffffff, #f4fbff 52%, #fff8f2);
+  border: 1px solid rgba(49, 87, 255, 0.18);
+  border-radius: 8px;
+}
+
+.mission-preview-card h3 {
+  margin-bottom: 6px;
+}
+
+.mission-preview-card p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.mission-body {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top left, rgba(0, 163, 255, 0.12), transparent 32%),
+    radial-gradient(circle at bottom right, rgba(255, 95, 87, 0.1), transparent 28%),
+    var(--paper);
+}
+
+.mission-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 5vw;
+  background: rgba(255, 255, 255, 0.9);
+  border-bottom: 1px solid var(--line);
+  backdrop-filter: blur(18px);
+}
+
+.exit-short {
+  display: none;
+}
+
+.mission-main {
+  min-height: calc(100vh - 72px);
+  padding: 22px 5vw 34px;
+}
+
+.mission-screen {
+  display: grid;
+  gap: 16px;
+  min-height: calc(100vh - 128px);
+  padding: 24px;
+  background: rgba(255, 255, 255, 0.88);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+}
+
+.mission-screen-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.mission-screen h1 {
+  max-width: 720px;
+  font-size: 54px;
+}
+
+.mission-screen-head p:not(.eyebrow) {
+  margin: 10px 0 0;
+  color: var(--muted);
+  font-size: 18px;
+}
+
+.mission-score-large {
+  min-width: 96px;
+}
+
+.mission-prompt-large {
+  padding: 16px;
+}
+
+.mission-prompt-large > div {
+  display: grid;
+  gap: 2px;
+}
+
+.mission-prompt-large span {
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 850;
+}
+
+.mission-prompt-large p {
+  font-size: 32px;
+}
+
+.mission-feedback-large {
+  min-height: 58px;
+  font-size: 17px;
+}
+
+.mission-stage-full {
+  flex: 1;
+  min-height: min(520px, 48vh);
+}
+
+.school-bag-large {
+  min-height: 100%;
+}
+
+.mission-items-large {
+  grid-template-columns: repeat(2, minmax(160px, 1fr));
+}
+
+.mission-object {
+  min-height: 190px;
+}
+
+.mission-object small {
+  color: var(--muted);
+  font-weight: 850;
+}
+
+.object-image {
+  display: block;
+  width: min(130px, 80%);
+  height: 100px;
+  object-fit: contain;
+}
+
+.object-shape {
+  position: relative;
+  display: block;
+  width: 82px;
+  height: 82px;
+}
+
+.object-book {
+  background: linear-gradient(90deg, #3157ff 0 44%, #5b78ff 44% 100%);
+  border: 4px solid #2039b7;
+  border-radius: 8px;
+  box-shadow: inset 8px 0 0 rgba(255, 255, 255, 0.2);
+}
+
+.object-pencil {
+  width: 96px;
+  height: 22px;
+  margin-block: 30px;
+  background: linear-gradient(90deg, #f5b335 0 72%, #f7d98a 72% 84%, #111827 84% 100%);
+  border: 2px solid #b57700;
+  border-radius: 999px 8px 8px 999px;
+  transform: rotate(-18deg);
+}
+
+.object-ruler {
+  width: 106px;
+  height: 30px;
+  margin-block: 26px;
+  background: #10b7a7;
+  border: 3px solid #087d73;
+  border-radius: 6px;
+  transform: rotate(10deg);
+}
+
+.object-ruler::before {
+  content: "";
+  position: absolute;
+  inset: 6px 8px;
+  background: repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.9) 0 2px, transparent 2px 12px);
+}
+
+.object-eraser {
+  width: 88px;
+  height: 54px;
+  margin-block: 14px;
+  background: linear-gradient(90deg, #fff 0 52%, #ff8f9b 52% 100%);
+  border: 3px solid #d9e2ef;
+  border-radius: 12px;
+  transform: rotate(-8deg);
+}
+
+.target-hint {
+  border-color: rgba(49, 87, 255, 0.38);
+}
+
+.target-hint-strong {
+  border-color: rgba(6, 199, 85, 0.8);
+  box-shadow: 0 0 0 4px rgba(6, 199, 85, 0.16), 0 18px 36px rgba(17, 24, 39, 0.1);
+}
+
+.mission-complete {
+  align-items: start;
+  grid-template-columns: 1fr auto auto;
+}
+
 .lesson-workspace {
   display: grid;
   grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
@@ -1888,29 +2100,187 @@ h3 {
     flex-direction: column;
   }
 
+  .mission-preview-card,
+  .mission-complete {
+    align-items: stretch;
+    grid-template-columns: 1fr;
+    flex-direction: column;
+  }
+
+  .mission-topbar {
+    align-items: center;
+    flex-direction: row;
+    gap: 8px;
+    padding: 10px 5vw;
+  }
+
+  .mission-topbar .brand {
+    min-width: 0;
+  }
+
+  .mission-topbar .brand-name {
+    font-size: 14px;
+  }
+
+  .mission-topbar .button {
+    width: auto;
+    min-height: 38px;
+    padding-inline: 12px;
+    font-size: 13px;
+  }
+
+  .mission-exit-link .exit-full {
+    display: none;
+  }
+
+  .mission-exit-link .exit-short {
+    display: inline;
+  }
+
+  .mission-main {
+    min-height: calc(100vh - 62px);
+    padding: 10px 4vw 18px;
+  }
+
+  .mission-screen {
+    gap: 10px;
+    min-height: calc(100vh - 90px);
+    padding: 14px;
+  }
+
+  .mission-screen-head {
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .mission-screen h1 {
+    max-width: 220px;
+    margin-bottom: 0;
+    font-size: 27px;
+    line-height: 1.06;
+  }
+
+  .mission-screen-head p:not(.eyebrow) {
+    display: none;
+  }
+
   .mission-score {
     align-self: flex-start;
+    min-width: 66px;
+    padding: 8px;
+  }
+
+  .mission-score span {
+    font-size: 18px;
+  }
+
+  .mission-score strong {
+    font-size: 10px;
+  }
+
+  .mission-prompt-large {
+    align-items: center;
+    flex-direction: row;
+    gap: 10px;
+    padding: 10px;
+  }
+
+  .mission-prompt-large span {
+    font-size: 11px;
   }
 
   .mission-stage {
     min-height: auto;
   }
 
+  .mission-stage-full {
+    gap: 8px;
+  }
+
   .school-bag {
     flex-basis: auto;
-    min-height: 220px;
+    min-height: 132px;
+    padding: 14px;
+    border-radius: 22px 22px 12px 12px;
+  }
+
+  .school-bag::before {
+    top: 18px;
+    height: 30px;
+    border-width: 6px;
+  }
+
+  .school-bag > span {
+    font-size: 17px;
   }
 
   .mission-items {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
   }
 
   .mission-item {
-    min-height: 112px;
+    min-height: 88px;
+    padding: 8px;
+    gap: 4px;
+  }
+
+  .mission-object {
+    min-height: 88px;
+  }
+
+  .mission-item strong {
+    font-size: 16px;
+  }
+
+  .mission-object small {
+    font-size: 11.5px;
+  }
+
+  .object-image {
+    width: min(112px, 86%);
+    height: 58px;
+  }
+
+  .object-shape {
+    width: 50px;
+    height: 50px;
+    transform: none;
+  }
+
+  .object-pencil {
+    width: 72px;
+    height: 17px;
+    margin-block: 8px;
+    transform: rotate(-18deg);
+  }
+
+  .object-ruler {
+    width: 72px;
+    height: 22px;
+    margin-block: 6px;
+    transform: rotate(10deg);
+  }
+
+  .object-eraser {
+    width: 54px;
+    height: 34px;
+    margin-block: 0;
+    transform: rotate(-8deg);
   }
 
   .mission-prompt p {
+    font-size: 20px;
+  }
+
+  .mission-prompt-large p {
     font-size: 21px;
+  }
+
+  .mission-feedback-large {
+    min-height: 0;
+    padding: 10px 12px;
+    font-size: 14.5px;
   }
 
   .program p,
