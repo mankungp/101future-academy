@@ -41,56 +41,124 @@ const SESSION_COOKIE_NAME = "future_session";
 
 const PACKAGES = [
   {
-    id: "eng-m1-m3-speaking-grammar-30d",
+    id: "math-p1-p6-30d",
+    name: "คณิตรายเดือน",
+    subject: "Math",
+    level: "ป.1-ป.6",
+    durationDays: 30,
+    price: Number(COURSE_PRICES["คณิตประถม"] || COURSE_PRICES.mathPrimary || COURSE_PRICES.math || 299),
+    status: "interest_open",
+    description: "ปูพื้นฐานจำนวน การคำนวณ โจทย์ปัญหา และวิธีคิดทีละขั้นสำหรับเด็กประถม",
+  },
+  {
+    id: "science-p1-p6-30d",
+    name: "วิทย์รายเดือน",
+    subject: "Science",
+    level: "ป.1-ป.6",
+    durationDays: 30,
+    price: Number(COURSE_PRICES["วิทย์ประถม"] || COURSE_PRICES.sciencePrimary || COURSE_PRICES.science || 299),
+    status: "interest_open",
+    description: "เรียนวิทยาศาสตร์จากสิ่งรอบตัว ทดลองคิด สังเกต และตอบคำถามตามหลักสูตรประถม",
+  },
+  {
+    id: "english-p1-p6-30d",
     name: "อังกฤษรายเดือน",
     subject: "English",
-    level: "ม.1-ม.3",
+    level: "ป.1-ป.6",
     durationDays: 30,
-    price: Number(
-      COURSE_PRICES["English Monthly"] ||
-        COURSE_PRICES["อังกฤษ ม.ต้น: พูดได้ + แกรมมาร์แน่น"] ||
-        COURSE_PRICES["English Speaking + Grammar ม.1-ม.3"] ||
-        COURSE_PRICES.english ||
-        299,
-    ),
-    description: "ฝึกพูดเป็นประโยค ทวนแกรมมาร์พื้นฐาน และรับ feedback หลังทำแบบฝึก",
+    price: Number(COURSE_PRICES["อังกฤษประถม"] || COURSE_PRICES.englishPrimary || COURSE_PRICES.english || 299),
+    status: "interest_open",
+    description: "ฝึกคำศัพท์ ประโยคพื้นฐาน การฟังอ่าน และความมั่นใจในการใช้ภาษาอังกฤษ",
   },
   {
-    id: "eng-math-m1-m3-30d",
-    name: "อังกฤษ + คณิต",
-    subject: "English, Math",
-    level: "ม.1-ม.3",
+    id: "thai-p1-p6-30d",
+    name: "ภาษาไทยรายเดือน",
+    subject: "Thai",
+    level: "ป.1-ป.6",
     durationDays: 30,
-    price: Number(COURSE_PRICES["English + Math"] || COURSE_PRICES.core || COURSE_PRICES.englishMath || 399),
-    description: "แพ็กเตรียมเปิดสำหรับเรียนอังกฤษและคณิต ม.ต้นในระบบเดียว",
+    price: Number(COURSE_PRICES["ไทยประถม"] || COURSE_PRICES.thaiPrimary || COURSE_PRICES.thai || 299),
+    status: "interest_open",
+    description: "อ่านจับใจความ เขียนประโยค คำศัพท์ และหลักภาษาที่เด็กประถมต้องใช้ในห้องเรียน",
   },
   {
-    id: "all-core-m1-m3-30d",
-    name: "ครบวิชา ม.ต้น",
-    subject: "English, Math, Science, Thai",
-    level: "ม.1-ม.3",
+    id: "all-primary-p1-p6-30d",
+    name: "ครบ 4 วิชาประถม",
+    subject: "Math, Science, English, Thai",
+    level: "ป.1-ป.6",
     durationDays: 30,
-    price: Number(COURSE_PRICES["All ม.ต้น"] || COURSE_PRICES.allCore || 599),
-    description: "แพ็กเตรียมเปิดสำหรับวิชาหลัก ม.ต้น: อังกฤษ คณิต วิทย์ และไทย",
+    price: Number(COURSE_PRICES["ครบวิชาประถม"] || COURSE_PRICES.allPrimary || 599),
+    status: "coming_soon",
+    description: "แพ็กหลายวิชาสำหรับครอบครัวที่อยากให้เด็กเรียนครบ คณิต วิทย์ อังกฤษ และไทย",
   },
 ];
 
 const COURSE_CONTENT = {
+  "คณิตรายเดือน": [
+    {
+      title: "คิดเลขให้มั่นใจ",
+      duration: "20 นาที",
+      summary: "ปูพื้นฐานจำนวน การบวก ลบ คูณ หาร และวิธีตรวจคำตอบด้วยตัวเอง",
+    },
+    {
+      title: "โจทย์ปัญหาทีละขั้น",
+      duration: "25 นาที",
+      summary: "ฝึกอ่านโจทย์ แยกข้อมูลสำคัญ และเลือกวิธีทำให้ตรงกับคำถาม",
+    },
+    {
+      title: "สรุปจุดที่ต้องซ้อม",
+      duration: "10 นาที",
+      summary: "AI ช่วยสรุปว่าควรกลับไปซ้อมเรื่องคำนวณ ความเข้าใจโจทย์ หรือการเขียนวิธีทำ",
+    },
+  ],
+  "วิทย์รายเดือน": [
+    {
+      title: "สังเกตและตั้งคำถาม",
+      duration: "18 นาที",
+      summary: "เริ่มจากสิ่งรอบตัว ให้เด็กเข้าใจหลักวิทย์ผ่านภาพ สถานการณ์ และคำถามสั้น",
+    },
+    {
+      title: "เข้าใจคำสำคัญในบทเรียน",
+      duration: "24 นาที",
+      summary: "ทวนคำศัพท์และแนวคิดที่ใช้บ่อย เช่น พลังงาน สิ่งมีชีวิต วัสดุ และสิ่งแวดล้อม",
+    },
+    {
+      title: "ตอบแบบมีเหตุผล",
+      duration: "12 นาที",
+      summary: "ฝึกอธิบายคำตอบด้วยเหตุผล ไม่ใช่ท่องจำอย่างเดียว",
+    },
+  ],
   "อังกฤษรายเดือน": [
     {
-      title: "เริ่มพูดให้เป็นประโยค",
+      title: "คำศัพท์และประโยคพื้นฐาน",
       duration: "20 นาที",
-      summary: "ฝึกแนะนำตัว ตอบคำถามพื้นฐาน และเรียงประโยคให้ชัดขึ้น",
+      summary: "ฝึกคำศัพท์ใกล้ตัวและประโยคสั้นที่เด็กประถมใช้ได้จริง",
     },
     {
-      title: "แกรมมาร์ที่ใช้บ่อยในข้อสอบ",
-      duration: "30 นาที",
-      summary: "ทวน tense โครงสร้างประโยค และคำศัพท์ที่พบในระดับ ม.ต้น",
+      title: "อ่านและฟังให้เข้าใจ",
+      duration: "24 นาที",
+      summary: "อ่านเรื่องสั้น ฟังประโยคง่าย และตอบคำถามเพื่อเช็กความเข้าใจ",
     },
     {
-      title: "ฝึกบทสนทนาใช้งานจริง",
-      duration: "35 นาที",
-      summary: "ฝึกตอบคำถามจากสถานการณ์ใกล้ตัวและรับ feedback หลังฝึก",
+      title: "ฝึกพูดทีละประโยค",
+      duration: "12 นาที",
+      summary: "ฝึกตอบคำถามสั้นเกี่ยวกับตัวเอง โรงเรียน ครอบครัว และสิ่งที่ชอบ",
+    },
+  ],
+  "ภาษาไทยรายเดือน": [
+    {
+      title: "อ่านจับใจความ",
+      duration: "22 นาที",
+      summary: "ฝึกอ่านเรื่องสั้นแล้วจับใจความสำคัญ ตัวละคร เหตุการณ์ และข้อคิด",
+    },
+    {
+      title: "คำศัพท์และหลักภาษา",
+      duration: "24 นาที",
+      summary: "ทวนคำที่ใช้บ่อย ชนิดของคำ ประโยค และจุดที่เด็กประถมมักสับสน",
+    },
+    {
+      title: "เขียนตอบให้ชัด",
+      duration: "12 นาที",
+      summary: "ฝึกเรียบเรียงคำตอบสั้น ๆ ให้ครบและอ่านเข้าใจง่าย",
     },
   ],
   "English Monthly": [
@@ -1311,7 +1379,7 @@ function slipTransRef(data) {
 }
 
 function lessonsForCourse(course) {
-  return COURSE_CONTENT[course] || COURSE_CONTENT["อังกฤษ ม.ต้น: พูดได้ + แกรมมาร์แน่น"];
+  return COURSE_CONTENT[course] || COURSE_CONTENT["คณิตรายเดือน"];
 }
 
 function nextAutomationPlan(lead, now = new Date(), reason = "workflow") {
