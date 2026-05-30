@@ -30,7 +30,7 @@ form.addEventListener("submit", async (event) => {
       body: JSON.stringify(payload),
     });
     const data = await response.json();
-    if (!response.ok) throw new Error(data.error || "สร้าง order ไม่สำเร็จ");
+    if (!response.ok) throw new Error(data.error || "สร้างรายการสมัครไม่สำเร็จ");
 
     currentOrder = data.order;
     currentEnrollment = data.enrollment;
@@ -51,7 +51,7 @@ async function loadPackages() {
   packages = data.packages || [];
   packageGrid.innerHTML = packages.map(renderPackage).join("");
   packageSelect.innerHTML =
-    `<option value="">เลือกแพ็ก</option>` +
+    `<option value="">เลือกแพ็กเรียน</option>` +
     packages.map((item) => `<option value="${item.id}">${escapeHtml(item.name)} - ${money(item.price)}</option>`).join("");
 
   packageGrid.querySelectorAll("[data-package]").forEach((button) => {
@@ -69,7 +69,7 @@ function renderPackage(item) {
       <h3>${escapeHtml(item.name)}</h3>
       <p>${escapeHtml(item.description)}</p>
       <strong class="price-line">${money(item.price)} / ${item.durationDays} วัน</strong>
-      <button class="text-button" data-package="${item.id}">เลือกแพ็กนี้</button>
+      <button class="text-button" data-package="${item.id}">สมัครแพ็กนี้</button>
     </article>
   `;
 }
@@ -77,21 +77,21 @@ function renderPackage(item) {
 function showOrder(order, enrollment, payment) {
   orderPanel.classList.remove("hidden");
   orderIntro.innerHTML = `
-    Order <strong>${escapeHtml(order.id)}</strong>
-    ยอด <strong>${money(order.amount)}</strong>
+    เลขสมัคร <strong>${escapeHtml(order.id)}</strong>
+    ยอดชำระ <strong>${money(order.amount)}</strong>
     สำหรับ <strong>${escapeHtml(enrollment.name)}</strong>
   `;
 
   if (order.qrImageUrl) {
-    qrBox.innerHTML = `<img class="qr-image" src="${escapeHtml(order.qrImageUrl)}" alt="PromptPay QR" />`;
+    qrBox.innerHTML = `<img class="qr-image" src="${escapeHtml(order.qrImageUrl)}" alt="KBank Thai QR" />`;
   } else if (order.qrPayload) {
     qrBox.innerHTML = `<pre>${escapeHtml(order.qrPayload)}</pre>`;
   } else {
-    qrBox.innerHTML = `<p>${escapeHtml(payment?.message || order.paymentStatusMessage || "รอเชื่อม payment provider เพื่อสร้าง PromptPay QR")}</p>`;
+    qrBox.innerHTML = `<p>${escapeHtml(payment?.message || order.paymentStatusMessage || "ยังไม่ได้เปิดระบบสร้าง QR ชำระเงินอัตโนมัติ")}</p>`;
   }
 
-  orderStatusEl.textContent = order.status === "paid" ? "ชำระแล้ว เปิดบทเรียนได้" : "หลังชำระ ระบบจะรอ webhook และปลดล็อก 30 วัน";
-  statusEl.textContent = `สร้าง order แล้ว: ${order.id}`;
+  orderStatusEl.textContent = order.status === "paid" ? "ชำระเงินแล้ว เข้าเรียนได้" : "หลังชำระเงิน ระบบจะตรวจยอดและเปิดบทเรียนให้ 30 วัน";
+  statusEl.textContent = `สร้างรายการสมัครแล้ว: ${order.id}`;
   orderPanel.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
@@ -104,18 +104,26 @@ async function refreshOrderStatus() {
     const phone = form.elements.phone.value || "";
     const response = await fetch(`/api/orders/${encodeURIComponent(currentOrder.id)}?phone=${encodeURIComponent(phone)}`);
     const data = await response.json();
-    if (!response.ok) throw new Error(data.error || "เช็ค order ไม่สำเร็จ");
+    if (!response.ok) throw new Error(data.error || "เช็กสถานะไม่สำเร็จ");
     currentOrder = data.order;
     currentEnrollment = data.enrollment;
     if (data.order.status === "paid" && data.enrollment?.accessActive) {
       orderStatusEl.innerHTML = `ชำระแล้ว เปิดบทเรียนถึง ${formatDate(data.enrollment.accessExpiresAt)} <a href="/learn">เข้าเรียน</a>`;
     } else {
-      orderStatusEl.textContent = `สถานะล่าสุด: ${data.order.status}`;
+      orderStatusEl.textContent = `สถานะล่าสุด: ${statusLabel(data.order.status)}`;
     }
   } catch (error) {
     orderStatusEl.textContent = error.message;
     orderStatusEl.classList.add("error");
   }
+}
+
+function statusLabel(status) {
+  return {
+    pending: "รอชำระเงิน",
+    paid: "ชำระเงินแล้ว",
+    "amount-mismatch": "ยอดชำระไม่ตรง รอตรวจสอบ",
+  }[status] || status;
 }
 
 function money(value) {
