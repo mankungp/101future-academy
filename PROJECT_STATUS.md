@@ -14,6 +14,8 @@ Public positioning:
 - No wallet in the first version.
 - LINE Login is the main path. Access code remains as a fallback.
 - While KBank payment is pending, the site collects LINE interests so leads are not lost.
+- Learning direction is animation-first for young learners. Start with English ป.1 as interactive missions, not video-heavy lessons.
+- First prototype mission: `Pack My School Bag` / `My School Bag`, where children tap or drag school items, hear/read words, answer tiny exercises, and receive a parent-friendly summary.
 
 ## Live Site
 
@@ -41,6 +43,12 @@ Done:
 - Payment order, parent payment link, KBank QR adapter scaffold, and entitlement unlock structure exist.
 - `/pay?order=...` page exists for parent payment links.
 - Access-code fallback login exists.
+- English sample lesson exists on `/learn`:
+  - `English Skill Starter สำหรับ ป.1-ป.6`
+  - Story: `My School Bag`
+  - Vocabulary: school bag, book, pencil, ruler
+  - 3-question exercise
+  - Mock result summary after completion
 
 ## Not Yet Done
 
@@ -56,8 +64,11 @@ Payment:
 
 Learning product:
 
-- Real lesson content is still placeholder.
-- Need first real lessons for Math, Science, English, and Thai ป.1-ป.6.
+- Need a real grade-by-grade curriculum map, starting with English ป.1.
+- Current English sample lesson is a prototype, not the final ป.1 lesson design.
+- Need animation-first mission UI: tap, drag, bounce, shake, star reward, bag open/close, and completion badge.
+- Need first real lessons for English ป.1, then expand grade by grade.
+- Need first real lessons for Math, Science, and Thai later.
 - Need progress tracking.
 - Need speaking/answer attempt records.
 - Need AI feedback pipeline.
@@ -100,11 +111,13 @@ LINE_CALLBACK_URL=https://www.101future.com/auth/line/callback
 3. From Admin, create a payment order from a LINE interest.
 4. Test parent payment page with that order link.
 5. Test KBank callback unlocks learning access.
-6. Build the first real ป.1-ป.6 lesson set for the four subjects.
-7. Add progress tracking.
-8. Add AI feedback pipeline.
-9. Add parent/student dashboard.
-10. Move JSON storage to a durable database before real paid users.
+6. Design English ป.1 curriculum map from Thai indicators: classroom commands, letters/sounds, concrete vocabulary, picture matching, short sentences, listening and speaking.
+7. Build animation-first English Mission 1: `Pack My School Bag`.
+8. Add progress tracking for mission completion and score.
+9. Add AI feedback pipeline later, after scripted missions are stable.
+10. Build first real ป.1 lessons for other subjects later.
+11. Add parent/student dashboard.
+12. Move JSON storage to a durable database before real paid users.
 
 ## Rule For Future Codex Chats
 
