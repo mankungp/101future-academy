@@ -1463,6 +1463,7 @@ h3 {
 }
 
 .mission-item {
+  position: relative;
   display: grid;
   place-items: center;
   gap: 8px;
@@ -1495,6 +1496,62 @@ h3 {
 
 .mission-item.wrong {
   animation: item-wrong 420ms ease;
+}
+
+.object-feedback-bubble {
+  position: absolute;
+  inset: 8px 8px auto auto;
+  z-index: 2;
+  display: grid;
+  min-width: 86px;
+  padding: 8px 10px;
+  color: #7a2418;
+  text-align: left;
+  background: #fff4ed;
+  border: 1px solid rgba(255, 95, 87, 0.34);
+  border-radius: 8px;
+  box-shadow: 0 12px 26px rgba(122, 36, 24, 0.14);
+  pointer-events: none;
+  animation: wrong-bubble-pop 1700ms ease both;
+}
+
+.object-feedback-bubble strong {
+  font-size: 15px;
+  line-height: 1.05;
+}
+
+.object-feedback-bubble small {
+  color: #9a3412;
+  font-size: 12px;
+  font-weight: 850;
+}
+
+.mission-flyer {
+  position: fixed;
+  z-index: 60;
+  display: grid;
+  place-items: center;
+  gap: 6px;
+  padding: 10px;
+  color: var(--ink);
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid rgba(49, 87, 255, 0.2);
+  border-radius: 8px;
+  box-shadow: 0 26px 70px rgba(17, 24, 39, 0.22);
+  pointer-events: none;
+}
+
+.mission-flyer .object-image {
+  width: min(112px, 80%);
+  height: 72px;
+}
+
+.mission-flyer strong {
+  font-size: 15px;
+}
+
+.mission-flyer small {
+  display: none;
 }
 
 .mission-feedback {
@@ -1613,6 +1670,15 @@ h3 {
 .mission-prompt-large {
   align-items: center;
   padding: 16px;
+}
+
+.mission-screen.is-speaking .mission-prompt-large {
+  border-color: rgba(6, 199, 85, 0.36);
+  box-shadow: 0 0 0 5px rgba(6, 199, 85, 0.08);
+}
+
+.mission-screen.is-speaking .sound-button:not(.start-button) {
+  animation: speaker-pulse 920ms ease-in-out infinite;
 }
 
 .mission-prompt-large > div {
@@ -1930,6 +1996,18 @@ h3 {
   }
 }
 
+@keyframes speaker-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    box-shadow: 0 14px 28px rgba(6, 199, 85, 0.22);
+  }
+  50% {
+    transform: scale(1.045);
+    box-shadow: 0 18px 36px rgba(6, 199, 85, 0.32);
+  }
+}
+
 @keyframes start-button-pop {
   0%,
   100% {
@@ -1975,6 +2053,25 @@ h3 {
   }
   75% {
     transform: translateX(-5px);
+  }
+}
+
+@keyframes wrong-bubble-pop {
+  0% {
+    opacity: 0;
+    transform: translateY(10px) scale(0.84);
+  }
+  18% {
+    opacity: 1;
+    transform: translateY(-3px) scale(1.04);
+  }
+  72% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.96);
   }
 }
 
