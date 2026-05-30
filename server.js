@@ -8,6 +8,8 @@ const ROOT = __dirname;
 const DATA_DIR = process.env.DATA_DIR || path.join(ROOT, "data");
 const LEADS_FILE = path.join(DATA_DIR, "leads.json");
 const ORDERS_FILE = path.join(DATA_DIR, "orders.json");
+const ACCOUNTS_FILE = path.join(DATA_DIR, "accounts.json");
+const SESSIONS_FILE = path.join(DATA_DIR, "sessions.json");
 const TOKEN_FILE = path.join(DATA_DIR, "admin-token.txt");
 const PORT = Number(process.env.PORT || 4173);
 const HOST = process.env.HOST || "127.0.0.1";
@@ -32,6 +34,10 @@ const KBANK_API_KEY_HEADER = process.env.KBANK_API_KEY_HEADER || "x-api-key";
 const KBANK_WEBHOOK_TOKEN_HEADER = process.env.KBANK_WEBHOOK_TOKEN_HEADER || "x-callback-token";
 const SITE_ORIGIN = process.env.SITE_ORIGIN || "https://www.101future.com";
 const ACCESS_DAYS = Number(process.env.ACCESS_DAYS || 30);
+const LINE_CHANNEL_ID = process.env.LINE_CHANNEL_ID || "";
+const LINE_CHANNEL_SECRET = process.env.LINE_CHANNEL_SECRET || "";
+const LINE_CALLBACK_URL = process.env.LINE_CALLBACK_URL || `${SITE_ORIGIN}/auth/line/callback`;
+const SESSION_COOKIE_NAME = "future_session";
 
 const PACKAGES = [
   {
@@ -70,6 +76,23 @@ const PACKAGES = [
 ];
 
 const COURSE_CONTENT = {
+  "อังกฤษรายเดือน": [
+    {
+      title: "เริ่มพูดให้เป็นประโยค",
+      duration: "20 นาที",
+      summary: "ฝึกแนะนำตัว ตอบคำถามพื้นฐาน และเรียงประโยคให้ชัดขึ้น",
+    },
+    {
+      title: "แกรมมาร์ที่ใช้บ่อยในข้อสอบ",
+      duration: "30 นาที",
+      summary: "ทวน tense โครงสร้างประโยค และคำศัพท์ที่พบในระดับ ม.ต้น",
+    },
+    {
+      title: "ฝึกบทสนทนาใช้งานจริง",
+      duration: "35 นาที",
+      summary: "ฝึกตอบคำถามจากสถานการณ์ใกล้ตัวและรับ feedback หลังฝึก",
+    },
+  ],
   "English Monthly": [
     {
       title: "Lesson Cache: Past Tense 01",
@@ -194,6 +217,9 @@ const STATIC_ROUTES = new Map([
   ["/learn", "learn.html"],
   ["/learn.html", "learn.html"],
   ["/learn.js", "learn.js"],
+  ["/pay", "pay.html"],
+  ["/pay.html", "pay.html"],
+  ["/pay.js", "pay.js"],
   ["/refund-policy", "refund-policy.html"],
   ["/refund-policy.html", "refund-policy.html"],
   ["/privacy-policy", "privacy-policy.html"],
@@ -286,6 +312,16 @@ async function ensureDataFiles() {
   } catch {
     await fs.writeFile(ORDERS_FILE, "[]\n", "utf8");
   }
+  try {
+    await fs.access(ACCOUNTS_FILE);
+  } catch {
+    await fs.writeFile(ACCOUNTS_FILE, "[]\n", "utf8");
+  }
+  try {
+    await fs.access(SESSIONS_FILE);
+  } catch {
+    await fs.writeFile(SESSIONS_FILE, "[]\n", "utf8");
+  }
 }
 
 async function getAdminToken() {
@@ -321,6 +357,36 @@ async function handleRequest(request, response) {
 
   if (request.method === "GET" && url.pathname === "/api/packages") {
     sendJson(response, 200, { packages: PACKAGES });
+    return;
+  }
+
+  if (request.method === "GET" && url.pathname === "/api/auth/me") {
+    await getCurrentAccount(request, response);
+    return;
+  }
+
+  if (request.method === "POST" && url.pathname === "/api/auth/profile") {
+    await updateAccountProfile(request, response);
+    return;
+  }
+
+  if (request.method === "POST" && url.pathname === "/api/auth/logout") {
+    await logoutAccount(request, response);
+    return;
+  }
+
+  if (request.method === "GET" && url.pathname === "/auth/line") {
+    await startLineLogin(response, url);
+    return;
+  }
+
+  if (request.method === "GET" && url.pathname === "/auth/line/callback") {
+    await handleLineCallback(url, response);
+    return;
+  }
+
+  if (request.method === "GET" && url.pathname === "/api/me/enrollments") {
+    await getMyEnrollments(request, response);
     return;
   }
 
@@ -467,8 +533,153 @@ async function createLead(request, response) {
   sendJson(response, 201, { lead: publicLead(lead) });
 }
 
+async function getCurrentAccount(request, response) {
+  const account = await accountFromRequest(request);
+  sendJson(response, 200, {
+    lineConfigured: Boolean(LINE_CHANNEL_ID && LINE_CHANNEL_SECRET),
+    account: account ? publicAccount(account) : null,
+  });
+}
+
+async function updateAccountProfile(request, response) {
+  const account = await accountFromRequest(request);
+  if (!account) {
+    sendJson(response, 401, { error: "กรุณาเข้าสู่ระบบด้วย LINE ก่อน" });
+    return;
+  }
+  const body = await readJsonBody(request);
+  const accounts = await readAccounts();
+  const stored = accounts.find((item) => item.id === account.id);
+  if (!stored) {
+    sendJson(response, 404, { error: "ไม่พบบัญชี" });
+    return;
+  }
+  const role = clean(body.role);
+  if (role && !["student", "parent", "both"].includes(role)) {
+    sendJson(response, 400, { error: "role ไม่ถูกต้อง" });
+    return;
+  }
+  if (role) stored.role = role;
+  stored.phone = clean(body.phone) || stored.phone || "";
+  stored.email = clean(body.email) || stored.email || "";
+  stored.updatedAt = new Date().toISOString();
+  await writeAccounts(accounts);
+  sendJson(response, 200, { account: publicAccount(stored) });
+}
+
+async function logoutAccount(request, response) {
+  const session = sessionFromRequest(request);
+  if (session?.id) {
+    const sessions = await readSessions();
+    await writeSessions(sessions.filter((item) => item.id !== session.id));
+  }
+  response.setHeader("Set-Cookie", sessionCookie("", new Date(0)));
+  sendJson(response, 200, { ok: true });
+}
+
+async function startLineLogin(response, url) {
+  if (!LINE_CHANNEL_ID || !LINE_CHANNEL_SECRET) {
+    redirect(response, `/learn?auth=${encodeURIComponent("line-not-configured")}`);
+    return;
+  }
+  const state = crypto.randomBytes(16).toString("hex");
+  const next = url.searchParams.get("next") || "/learn";
+  const sessions = await readSessions();
+  sessions.push({
+    id: `LINESTATE-${state}`,
+    type: "line-oauth-state",
+    next,
+    createdAt: new Date().toISOString(),
+    expiresAt: addMinutes(new Date(), 10).toISOString(),
+  });
+  await writeSessions(sessions);
+
+  const authUrl = new URL("https://access.line.me/oauth2/v2.1/authorize");
+  authUrl.searchParams.set("response_type", "code");
+  authUrl.searchParams.set("client_id", LINE_CHANNEL_ID);
+  authUrl.searchParams.set("redirect_uri", LINE_CALLBACK_URL);
+  authUrl.searchParams.set("state", state);
+  authUrl.searchParams.set("scope", "profile openid email");
+  redirect(response, authUrl.toString());
+}
+
+async function handleLineCallback(url, response) {
+  const code = url.searchParams.get("code") || "";
+  const state = url.searchParams.get("state") || "";
+  if (!code || !state) {
+    redirect(response, "/learn?auth=line-error");
+    return;
+  }
+
+  const sessions = await readSessions();
+  const stateSession = sessions.find((item) => item.id === `LINESTATE-${state}` && item.type === "line-oauth-state");
+  if (!stateSession || Date.parse(stateSession.expiresAt || "") < Date.now()) {
+    redirect(response, "/learn?auth=line-expired");
+    return;
+  }
+
+  const tokenResponse = await fetch("https://api.line.me/oauth2/v2.1/token", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: new URLSearchParams({
+      grant_type: "authorization_code",
+      code,
+      redirect_uri: LINE_CALLBACK_URL,
+      client_id: LINE_CHANNEL_ID,
+      client_secret: LINE_CHANNEL_SECRET,
+    }).toString(),
+  });
+  const tokenData = await tokenResponse.json().catch(() => ({}));
+  if (!tokenResponse.ok || !tokenData.access_token) {
+    redirect(response, "/learn?auth=line-token-error");
+    return;
+  }
+
+  const profileResponse = await fetch("https://api.line.me/v2/profile", {
+    headers: { Authorization: `Bearer ${tokenData.access_token}` },
+  });
+  const profile = await profileResponse.json().catch(() => ({}));
+  if (!profileResponse.ok || !profile.userId) {
+    redirect(response, "/learn?auth=line-profile-error");
+    return;
+  }
+
+  const account = await upsertLineAccount(profile, tokenData);
+  const authSession = {
+    id: `SESSION-${crypto.randomBytes(18).toString("hex")}`,
+    type: "auth",
+    accountId: account.id,
+    createdAt: new Date().toISOString(),
+    expiresAt: addDays(new Date(), 30).toISOString(),
+  };
+  const nextSessions = sessions.filter((item) => item.id !== stateSession.id && Date.parse(item.expiresAt || "") > Date.now());
+  nextSessions.push(authSession);
+  await writeSessions(nextSessions);
+
+  response.setHeader("Set-Cookie", sessionCookie(authSession.id, new Date(authSession.expiresAt)));
+  redirect(response, stateSession.next || "/learn");
+}
+
+async function getMyEnrollments(request, response) {
+  const account = await accountFromRequest(request);
+  if (!account) {
+    sendJson(response, 401, { error: "กรุณาเข้าสู่ระบบด้วย LINE ก่อน" });
+    return;
+  }
+  const leads = await readLeads();
+  const mine = sortLeads(leads).filter((lead) => lead.accountId === account.id || lead.payerAccountId === account.id);
+  sendJson(response, 200, {
+    account: publicAccount(account),
+    enrollments: mine.map((lead) => ({
+      ...publicLead(lead),
+      lessons: isAccessActive(lead) ? lessonsForCourse(lead.course) : [],
+    })),
+  });
+}
+
 async function createOrder(request, response) {
   const body = await readJsonBody(request);
+  const account = await accountFromRequest(request);
   const packageItem = PACKAGES.find((item) => item.id === clean(body.packageId));
   if (!packageItem) {
     sendJson(response, 400, { error: "ไม่พบแพ็กที่เลือก" });
@@ -500,6 +711,10 @@ async function createOrder(request, response) {
   };
 
   ensureEnrollmentArtifacts(enrollment);
+  enrollment.accountId = account?.id || enrollment.accountId || "";
+  enrollment.applicantRole = clean(body.applicantRole) || account?.role || enrollment.applicantRole || "student";
+  enrollment.payerType = clean(body.payerType) || enrollment.payerType || "self";
+  enrollment.payerAccountId = enrollment.payerType === "self" ? account?.id || enrollment.payerAccountId || "" : enrollment.payerAccountId || "";
   enrollment.status = enrollment.status === "paid" ? "paid" : "pending-payment";
   enrollment.course = packageItem.name;
   enrollment.email = lead.email;
@@ -535,6 +750,9 @@ async function createOrder(request, response) {
     paymentUrl: "",
     qrImageUrl: "",
     qrPayload: "",
+    applicantRole: enrollment.applicantRole,
+    payerType: enrollment.payerType,
+    paymentLink: "",
     createdAt: nowIso,
     updatedAt: nowIso,
     paidAt: "",
@@ -542,6 +760,7 @@ async function createOrder(request, response) {
   };
 
   const paymentSession = await createPaymentSession(order, enrollment);
+  order.paymentLink = `${SITE_ORIGIN}/pay?order=${encodeURIComponent(order.id)}`;
   order.provider = paymentSession.provider || order.provider;
   order.providerReference = paymentSession.providerReference || "";
   order.providerPaymentId = paymentSession.providerPaymentId || "";
@@ -1600,12 +1819,30 @@ async function readOrders() {
   return JSON.parse(raw);
 }
 
+async function readAccounts() {
+  const raw = await fs.readFile(ACCOUNTS_FILE, "utf8");
+  return JSON.parse(raw);
+}
+
+async function readSessions() {
+  const raw = await fs.readFile(SESSIONS_FILE, "utf8");
+  return JSON.parse(raw);
+}
+
 async function writeLeads(leads) {
   await fs.writeFile(LEADS_FILE, `${JSON.stringify(leads, null, 2)}\n`, "utf8");
 }
 
 async function writeOrders(orders) {
   await fs.writeFile(ORDERS_FILE, `${JSON.stringify(orders, null, 2)}\n`, "utf8");
+}
+
+async function writeAccounts(accounts) {
+  await fs.writeFile(ACCOUNTS_FILE, `${JSON.stringify(accounts, null, 2)}\n`, "utf8");
+}
+
+async function writeSessions(sessions) {
+  await fs.writeFile(SESSIONS_FILE, `${JSON.stringify(sessions, null, 2)}\n`, "utf8");
 }
 
 function sortLeads(leads) {
@@ -1626,6 +1863,8 @@ function publicLead(lead) {
     accessExpiresAt: lead.access?.expiresAt || "",
     learnUrl: "/learn",
     createdAt: lead.createdAt,
+    applicantRole: lead.applicantRole || "",
+    payerType: lead.payerType || "",
     nextAction: accessActive ? "เข้าเรียนได้ทันที" : "เลือกแพ็กและชำระเงินเพื่อเปิดบทเรียน",
   };
 }
@@ -1644,11 +1883,104 @@ function publicOrder(order) {
     paymentUrl: order.paymentUrl,
     qrImageUrl: order.qrImageUrl,
     qrPayload: order.qrPayload,
+    payerType: order.payerType || "",
+    paymentLink: order.paymentLink || `${SITE_ORIGIN}/pay?order=${encodeURIComponent(order.id)}`,
     paymentStatusMessage: order.paymentStatusMessage || "",
     createdAt: order.createdAt,
     expiresAt: order.expiresAt,
     paidAt: order.paidAt,
   };
+}
+
+function publicAccount(account) {
+  return {
+    id: account.id,
+    role: account.role || "",
+    displayName: account.displayName || "",
+    pictureUrl: account.pictureUrl || "",
+    phone: account.phone || "",
+    email: account.email || "",
+    createdAt: account.createdAt || "",
+  };
+}
+
+async function upsertLineAccount(profile, tokenData = {}) {
+  const accounts = await readAccounts();
+  const now = new Date().toISOString();
+  let account = accounts.find((item) => item.provider === "line" && item.lineUserId === profile.userId);
+  if (!account) {
+    account = {
+      id: `ACCOUNT-${crypto.randomBytes(8).toString("hex").toUpperCase()}`,
+      provider: "line",
+      lineUserId: profile.userId,
+      role: "",
+      displayName: "",
+      pictureUrl: "",
+      phone: "",
+      email: "",
+      createdAt: now,
+      updatedAt: now,
+    };
+    accounts.push(account);
+  }
+  account.displayName = clean(profile.displayName) || account.displayName || "";
+  account.pictureUrl = clean(profile.pictureUrl) || account.pictureUrl || "";
+  if (tokenData.id_token && !account.email) {
+    const claims = decodeJwtPayload(tokenData.id_token);
+    account.email = clean(claims.email) || account.email || "";
+  }
+  account.updatedAt = now;
+  await writeAccounts(accounts);
+  return account;
+}
+
+async function accountFromRequest(request) {
+  const session = sessionFromRequest(request);
+  if (!session?.id) return null;
+  const sessions = await readSessions();
+  const active = sessions.find((item) => item.id === session.id && item.type === "auth");
+  if (!active || Date.parse(active.expiresAt || "") <= Date.now()) return null;
+  const accounts = await readAccounts();
+  return accounts.find((item) => item.id === active.accountId) || null;
+}
+
+function sessionFromRequest(request) {
+  const cookies = parseCookies(request.headers.cookie || "");
+  const id = cookies[SESSION_COOKIE_NAME] || "";
+  return id ? { id } : null;
+}
+
+function parseCookies(cookieHeader) {
+  return String(cookieHeader || "")
+    .split(";")
+    .map((part) => part.trim())
+    .filter(Boolean)
+    .reduce((acc, part) => {
+      const idx = part.indexOf("=");
+      if (idx <= 0) return acc;
+      acc[decodeURIComponent(part.slice(0, idx))] = decodeURIComponent(part.slice(idx + 1));
+      return acc;
+    }, {});
+}
+
+function sessionCookie(value, expiresAt) {
+  const secure = SITE_ORIGIN.startsWith("https://") ? "; Secure" : "";
+  return `${SESSION_COOKIE_NAME}=${encodeURIComponent(value)}; Path=/; HttpOnly; SameSite=Lax; Expires=${expiresAt.toUTCString()}${secure}`;
+}
+
+function redirect(response, location) {
+  response.writeHead(302, { Location: location });
+  response.end();
+}
+
+function decodeJwtPayload(token) {
+  try {
+    const payload = String(token).split(".")[1] || "";
+    const json = Buffer.from(payload.replace(/-/g, "+").replace(/_/g, "/"), "base64").toString("utf8");
+    return JSON.parse(json);
+  } catch {
+    return {};
+  }
 }
 
 function isAccessActive(lead) {
