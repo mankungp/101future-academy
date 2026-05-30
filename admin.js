@@ -13,6 +13,7 @@ const statusLabels = {
 
 let token = localStorage.getItem("101future.adminToken") || "";
 let leads = [];
+let interests = [];
 
 const loginPanel = document.querySelector("#loginPanel");
 const adminPanel = document.querySelector("#adminPanel");
@@ -21,6 +22,7 @@ const loginButton = document.querySelector("#loginButton");
 const loginStatus = document.querySelector("#loginStatus");
 const refreshButton = document.querySelector("#refreshButton");
 const metricsEl = document.querySelector("#metrics");
+const interestList = document.querySelector("#interestList");
 const paymentList = document.querySelector("#paymentList");
 const leadList = document.querySelector("#leadList");
 const exportLink = document.querySelector("#exportLink");
@@ -39,17 +41,19 @@ refreshButton.addEventListener("click", loadLeads);
 
 async function loadLeads() {
   loginStatus.textContent = "";
-  const result = await fetchJson("/api/leads");
+  const [leadResult, interestResult] = await Promise.all([fetchJson("/api/leads"), fetchJson("/api/interests")]);
 
-  if (!result.ok) {
-    loginStatus.textContent = result.data.error || "เข้าสู่ระบบไม่สำเร็จ";
+  if (!leadResult.ok || !interestResult.ok) {
+    loginStatus.textContent = leadResult.data?.error || interestResult.data?.error || "เข้าสู่ระบบไม่สำเร็จ";
     return;
   }
 
-  leads = result.data.leads;
+  leads = leadResult.data.leads;
+  interests = interestResult.data.interests || [];
   loginPanel.classList.add("hidden");
   adminPanel.classList.remove("hidden");
   renderMetrics();
+  renderInterests();
   renderPaymentQueue();
   renderLeads();
 }
@@ -82,11 +86,74 @@ function renderMetrics() {
     ["รอตรวจ", counts["payment-review"] || 0],
     ["เปิดเรียน", counts.paid || 0],
     ["ไม่ผ่าน", counts["payment-rejected"] || 0],
+    ["สนใจ LINE", interests.length],
   ];
 
   metricsEl.innerHTML = items
     .map(([label, value]) => `<article class="metric"><span>${label}</span><strong>${value}</strong></article>`)
     .join("");
+}
+
+function renderInterests() {
+  if (!interestList) return;
+  interestList.innerHTML =
+    interests.map(renderInterestCard).join("") ||
+    `<article class="payment-card empty-state">
+      <strong>ยังไม่มีคนลงชื่อสนใจ</strong>
+      <span>เมื่อกดเลือกแพ็กผ่าน LINE รายการจะเข้ามาที่นี่</span>
+    </article>`;
+
+  interestList.querySelectorAll("[data-create-order]").forEach((button) => {
+    button.addEventListener("click", async () => {
+      await createInterestOrder(button.dataset.accountId, button.dataset.packageId);
+    });
+  });
+}
+
+function renderInterestCard(interest) {
+  const role = { student: "นักเรียน", parent: "ผู้ปกครอง", both: "นักเรียน/ผู้ปกครอง" }[interest.role] || "ยังไม่ระบุ";
+  const order = interest.order || null;
+  const enrollment = interest.enrollment || null;
+  const orderLink = order?.paymentLink || "";
+  const statusText = order
+    ? `เตรียมชำระแล้ว: ${statusLabels[enrollment?.status] || order.status}`
+    : "รอเปิดรายการชำระ";
+  const contact = [interest.phone ? `โทร ${escapeHtml(interest.phone)}` : "", interest.email ? escapeHtml(interest.email) : ""]
+    .filter(Boolean)
+    .join(" · ");
+
+  return `
+    <article class="payment-card">
+      <div>
+        <span class="mini-label">${escapeHtml(statusText)}</span>
+        <strong>${escapeHtml(interest.displayName || "บัญชี LINE")}</strong>
+        <p>${escapeHtml(interest.packageName)} · ${money(interest.price)} / ${interest.durationDays || 30} วัน</p>
+      </div>
+      <div class="automation-links">
+        <span>${escapeHtml(role)}</span>
+        <span>${contact || "ยังไม่มีเบอร์/อีเมล"}</span>
+        <span>ล่าสุด: ${formatDateTime(interest.updatedAt)}</span>
+      </div>
+      <div class="queue-actions">
+        ${
+          orderLink
+            ? `<a class="button primary" href="${escapeHtml(orderLink)}" target="_blank" rel="noreferrer">เปิดลิงก์ชำระ</a>`
+            : `<button class="button primary" data-create-order="true" data-account-id="${escapeHtml(interest.accountId)}" data-package-id="${escapeHtml(interest.packageId)}">เตรียมรายการชำระ</button>`
+        }
+      </div>
+    </article>
+  `;
+}
+
+async function createInterestOrder(accountId, packageId) {
+  const result = await fetchJson(`/api/interests/${encodeURIComponent(accountId)}/${encodeURIComponent(packageId)}/order`, {
+    method: "POST",
+  });
+  if (!result.ok) {
+    alert(result.data.error || "สร้างรายการชำระไม่สำเร็จ");
+    return;
+  }
+  await loadLeads();
 }
 
 function renderPaymentQueue() {
@@ -103,6 +170,10 @@ function renderPaymentQueue() {
       await updateLead(button.dataset.id, { status: button.dataset.status, note: button.dataset.note || "" });
     });
   });
+}
+
+function money(value) {
+  return `${Number(value || 0).toLocaleString("th-TH", { maximumFractionDigits: 0 })} บาท`;
 }
 
 function renderPaymentCard(lead) {
