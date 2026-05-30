@@ -2024,6 +2024,7 @@ async function serveAsset(response, pathname, isHead = false) {
 function setBaseHeaders(response) {
   response.setHeader("X-Content-Type-Options", "nosniff");
   response.setHeader("Referrer-Policy", "same-origin");
+  response.setHeader("Cache-Control", "no-store");
 }
 
 function sendJson(response, status, payload) {
