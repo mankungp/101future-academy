@@ -47,7 +47,7 @@ const PACKAGES = [
         COURSE_PRICES.english ||
         299,
     ),
-    description: "เริ่ม Phase 1: English Speaking + Grammar ม.ต้น ใช้ lesson cache, speaking prompt และ AI correction",
+    description: "ฝึกพูดเป็นประโยค ทวนแกรมมาร์พื้นฐาน และรับ feedback หลังทำแบบฝึก",
   },
   {
     id: "eng-math-m1-m3-30d",
@@ -56,7 +56,7 @@ const PACKAGES = [
     level: "ม.1-ม.3",
     durationDays: 30,
     price: Number(COURSE_PRICES["English + Math"] || COURSE_PRICES.core || COURSE_PRICES.englishMath || 399),
-    description: "แพ็ก Phase 3 สำหรับเพิ่มคณิต ม.ต้น หลัง English MVP พร้อมใช้งานจริง",
+    description: "แพ็กเตรียมเปิดสำหรับเรียนอังกฤษและคณิต ม.ต้นในระบบเดียว",
   },
   {
     id: "all-core-m1-m3-30d",
@@ -65,7 +65,7 @@ const PACKAGES = [
     level: "ม.1-ม.3",
     durationDays: 30,
     price: Number(COURSE_PRICES["All ม.ต้น"] || COURSE_PRICES.allCore || 599),
-    description: "แพ็กเป้าหมายหลังเพิ่ม English, Math, Science และ Thai ครบตาม roadmap",
+    description: "แพ็กเตรียมเปิดสำหรับวิชาหลัก ม.ต้น: English, Math, Science และ Thai",
   },
 ];
 
@@ -1245,7 +1245,7 @@ async function createKbankQrPaymentRequest(order, enrollment) {
       qrPayload,
       checkoutUrl: `${SITE_ORIGIN}/#apply`,
       message: qrPayload || qrImageUrl
-        ? "สแกน Thai QR จาก KBank เพื่อชำระเงิน เมื่อ callback ยืนยันยอดถูกต้องระบบจะเปิดบทเรียนให้อัตโนมัติ"
+        ? "สแกน Thai QR จาก KBank เพื่อชำระเงิน เมื่อธนาคารยืนยันยอดถูกต้องระบบจะเปิดบทเรียนให้อัตโนมัติ"
         : "สร้างรายการ KBank QR แล้ว แต่ยังไม่พบ QR payload/image ในผลลัพธ์จากธนาคาร",
     };
   } catch (error) {
