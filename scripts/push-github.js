@@ -18,6 +18,7 @@ const files = [
   "index.html",
   "learn.html",
   "learn.js",
+  "package-lock.json",
   "package.json",
   "scripts/push-github.js",
   "server.js",
