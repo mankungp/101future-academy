@@ -12,6 +12,7 @@ let packages = [];
 let currentOrder = null;
 let currentEnrollment = null;
 
+resetInitialScrollPosition();
 loadPackages();
 
 form.addEventListener("submit", async (event) => {
@@ -44,6 +45,19 @@ form.addEventListener("submit", async (event) => {
 });
 
 refreshOrderButton.addEventListener("click", refreshOrderStatus);
+
+function resetInitialScrollPosition() {
+  if (window.location.hash) return;
+
+  if ("scrollRestoration" in history) {
+    history.scrollRestoration = "manual";
+  }
+
+  const scrollTop = () => window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+  window.addEventListener("pageshow", scrollTop, { once: true });
+  requestAnimationFrame(scrollTop);
+  window.setTimeout(scrollTop, 0);
+}
 
 async function loadPackages() {
   const response = await fetch("/api/packages");
