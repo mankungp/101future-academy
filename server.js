@@ -2,6 +2,7 @@ const crypto = require("node:crypto");
 const fs = require("node:fs/promises");
 const http = require("node:http");
 const path = require("node:path");
+const QRCode = require("qrcode");
 
 const ROOT = __dirname;
 const DATA_DIR = process.env.DATA_DIR || path.join(ROOT, "data");
@@ -22,6 +23,7 @@ const DEFAULT_COURSE_PRICE = Number(process.env.DEFAULT_COURSE_PRICE || 0);
 const PAYMENT_PROVIDER = process.env.PAYMENT_PROVIDER || "";
 const PAYMENT_PROVIDER_API_KEY = process.env.PAYMENT_PROVIDER_API_KEY || "";
 const PAYMENT_WEBHOOK_SECRET = process.env.PAYMENT_WEBHOOK_SECRET || "";
+const XENDIT_API_VERSION = process.env.XENDIT_API_VERSION || "2024-11-11";
 const SITE_ORIGIN = process.env.SITE_ORIGIN || "https://www.101future.com";
 const ACCESS_DAYS = Number(process.env.ACCESS_DAYS || 30);
 
@@ -461,11 +463,14 @@ async function createOrder(request, response) {
     enrollmentId: enrollment.id,
     packageId: packageItem.id,
     packageName: packageItem.name,
+    durationDays: packageItem.durationDays,
     amount: packageItem.price,
     currency: "THB",
     status: "pending",
     provider: PAYMENT_PROVIDER || "unconfigured",
     providerReference: "",
+    providerPaymentId: "",
+    providerStatus: "",
     paymentUrl: "",
     qrImageUrl: "",
     qrPayload: "",
@@ -478,6 +483,8 @@ async function createOrder(request, response) {
   const paymentSession = await createPaymentSession(order, enrollment);
   order.provider = paymentSession.provider || order.provider;
   order.providerReference = paymentSession.providerReference || "";
+  order.providerPaymentId = paymentSession.providerPaymentId || "";
+  order.providerStatus = paymentSession.providerStatus || paymentSession.status || "";
   order.paymentUrl = paymentSession.paymentUrl || "";
   order.qrImageUrl = paymentSession.qrImageUrl || "";
   order.qrPayload = paymentSession.qrPayload || "";
@@ -522,28 +529,42 @@ async function handlePaymentWebhook(request, response) {
     throw new HttpError(400, "Invalid JSON");
   }
 
-  const reference = clean(payload.orderId || payload.order_id || payload.reference || payload.external_id);
-  const providerReference = clean(payload.providerReference || payload.payment_id || payload.charge_id || payload.id);
-  const status = String(payload.status || payload.event || "").toLowerCase();
-  const paid = status.includes("paid") || status.includes("complete") || status.includes("succeeded");
-  const paidAmount = Number(payload.amount || payload.paid_amount || payload.data?.amount || 0);
+  const paymentEvent = paymentEventFromPayload(payload);
+  const paid = isPaidPaymentEvent(paymentEvent);
   const now = new Date();
 
   const leads = await readLeads();
   const orders = await readOrders();
-  const order = orders.find((item) => item.id === reference || item.providerReference === providerReference);
+  const order = orders.find((item) => {
+    return (
+      item.id === paymentEvent.reference ||
+      (paymentEvent.providerReference && item.providerReference === paymentEvent.providerReference) ||
+      (paymentEvent.paymentRequestId && item.providerReference === paymentEvent.paymentRequestId) ||
+      (paymentEvent.providerReference && item.providerPaymentId === paymentEvent.providerReference) ||
+      (paymentEvent.providerPaymentId && item.providerPaymentId === paymentEvent.providerPaymentId)
+    );
+  });
   if (!order) {
     sendJson(response, 404, { error: "Order not found" });
     return;
   }
+  order.lastWebhook = { ...paymentEvent, receivedAt: now.toISOString() };
+  order.providerStatus = paymentEvent.status || order.providerStatus || "";
+
   if (!paid) {
-    sendJson(response, 202, { ok: true, ignored: true, status });
+    order.updatedAt = now.toISOString();
+    await writeOrders(orders);
+    sendJson(response, 202, { ok: true, ignored: true, status: paymentEvent.status });
     return;
   }
-  if (Number(order.amount) !== Number(paidAmount)) {
+  if (order.status === "paid") {
+    await writeOrders(orders);
+    sendJson(response, 200, { ok: true, duplicate: true, order: publicOrder(order) });
+    return;
+  }
+  if (Number(order.amount) !== Number(paymentEvent.paidAmount)) {
     order.status = "amount-mismatch";
     order.updatedAt = now.toISOString();
-    order.lastWebhook = { status, paidAmount, at: order.updatedAt };
     await writeOrders(orders);
     sendJson(response, 422, { error: "Amount mismatch" });
     return;
@@ -555,7 +576,7 @@ async function handlePaymentWebhook(request, response) {
     return;
   }
 
-  markOrderPaid(order, lead, now, providerReference);
+  markOrderPaid(order, lead, now, paymentEvent);
   await writeOrders(orders);
   await writeLeads(leads);
   await notifyLeadEvent("order.paid", lead, request, { order: publicOrder(order) });
@@ -657,6 +678,7 @@ async function submitPayment(id, request, response) {
   }
 
   lead.status = "paid";
+  const expiresAt = addDays(new Date(now), ACCESS_DAYS).toISOString();
   lead.payment = {
     ...lead.payment,
     status: "approved",
@@ -670,6 +692,15 @@ async function submitPayment(id, request, response) {
     verification,
   };
   lead.access.unlockedAt = now;
+  lead.access.expiresAt = expiresAt;
+  lead.entitlement = {
+    orderId: "",
+    packageId: "",
+    packageName: lead.course,
+    startsAt: now,
+    expiresAt,
+    status: "active",
+  };
   lead.updatedAt = now;
   lead.timeline = ensureTimeline(lead);
   lead.timeline.push({
@@ -1036,7 +1067,7 @@ function createOrderId() {
   return `ORDER-${date}-${crypto.randomBytes(4).toString("hex").toUpperCase()}`;
 }
 
-async function createPaymentSession(order) {
+async function createPaymentSession(order, enrollment) {
   if (!PAYMENT_PROVIDER || !PAYMENT_PROVIDER_API_KEY) {
     return {
       provider: PAYMENT_PROVIDER || "unconfigured",
@@ -1044,6 +1075,10 @@ async function createPaymentSession(order) {
       message: "ยังไม่ได้ตั้งค่า payment provider สำหรับสร้าง PromptPay QR อัตโนมัติ",
       checkoutUrl: `${SITE_ORIGIN}/#apply`,
     };
+  }
+
+  if (normalizeKey(PAYMENT_PROVIDER) === "xendit") {
+    return createXenditPaymentRequest(order, enrollment);
   }
 
   return {
@@ -1054,12 +1089,90 @@ async function createPaymentSession(order) {
   };
 }
 
-function markOrderPaid(order, lead, now = new Date(), providerReference = "") {
+async function createXenditPaymentRequest(order, enrollment) {
+  const payload = {
+    reference_id: order.id,
+    type: "PAY",
+    country: "TH",
+    currency: "THB",
+    request_amount: Number(order.amount),
+    capture_method: "AUTOMATIC",
+    channel_code: "QRPROMPTPAY",
+    channel_properties: {
+      expires_at: xenditTimestamp(order.expiresAt),
+      qr_string_type: "DYNAMIC",
+    },
+    description: `${order.packageName} (${order.id})`.slice(0, 1000),
+    metadata: {
+      order_id: order.id,
+      orderId: order.id,
+      enrollment_id: order.enrollmentId,
+      package_id: order.packageId,
+      student_name: clean(enrollment?.name).slice(0, 120),
+      product: "101future",
+    },
+  };
+
+  try {
+    const providerResponse = await fetch("https://api.xendit.co/v3/payment_requests", {
+      method: "POST",
+      headers: {
+        Authorization: `Basic ${Buffer.from(`${PAYMENT_PROVIDER_API_KEY}:`).toString("base64")}`,
+        "Content-Type": "application/json",
+        "api-version": XENDIT_API_VERSION,
+      },
+      body: JSON.stringify(payload),
+    });
+    const text = await providerResponse.text();
+    const data = parseJsonText(text);
+
+    if (!providerResponse.ok) {
+      return {
+        provider: "xendit",
+        status: "provider_error",
+        providerStatus: "provider_error",
+        message: xenditErrorMessage(data, text, providerResponse.status),
+        checkoutUrl: `${SITE_ORIGIN}/#apply`,
+      };
+    }
+
+    const qrPayload = findXenditAction(data, "QR_STRING")?.value || "";
+    const paymentUrl = findXenditAction(data, "WEB_URL")?.value || "";
+    const qrImageUrl = qrPayload ? await QRCode.toDataURL(qrPayload, { width: 320, margin: 2 }) : "";
+
+    return {
+      provider: "xendit",
+      status: "created",
+      providerStatus: data.status || "",
+      providerReference: clean(data.payment_request_id || data.id || data.reference_id),
+      providerPaymentId: clean(data.latest_payment_id || ""),
+      paymentUrl,
+      qrImageUrl,
+      qrPayload,
+      checkoutUrl: paymentUrl || `${SITE_ORIGIN}/#apply`,
+      message: qrPayload
+        ? "สแกน PromptPay QR แล้วระบบจะปลดล็อกอัตโนมัติหลังได้รับ webhook"
+        : "Xendit สร้าง payment request แล้ว แต่ยังไม่พบ QR payload ใน response",
+    };
+  } catch (error) {
+    return {
+      provider: "xendit",
+      status: "provider_error",
+      providerStatus: "provider_error",
+      message: `เชื่อมต่อ Xendit ไม่สำเร็จ: ${error.message}`,
+      checkoutUrl: `${SITE_ORIGIN}/#apply`,
+    };
+  }
+}
+
+function markOrderPaid(order, lead, now = new Date(), paymentEvent = {}) {
   ensureEnrollmentArtifacts(lead);
   const nowIso = now.toISOString();
   const expiresAt = addDays(now, order.durationDays || ACCESS_DAYS).toISOString();
   order.status = "paid";
-  order.providerReference = providerReference || order.providerReference || "";
+  order.providerReference = paymentEvent.paymentRequestId || order.providerReference || paymentEvent.providerReference || "";
+  order.providerPaymentId = paymentEvent.providerPaymentId || order.providerPaymentId || "";
+  order.providerStatus = paymentEvent.status || order.providerStatus || "";
   order.paidAt = order.paidAt || nowIso;
   order.updatedAt = nowIso;
   lead.status = "paid";
@@ -1070,6 +1183,9 @@ function markOrderPaid(order, lead, now = new Date(), providerReference = "") {
     reference: order.id,
     reviewedAt: nowIso,
     provider: order.provider,
+    providerReference: order.providerReference,
+    providerPaymentId: order.providerPaymentId,
+    paidAt: nowIso,
   };
   lead.access.unlockedAt = lead.access.unlockedAt || nowIso;
   lead.access.expiresAt = expiresAt;
@@ -1088,10 +1204,86 @@ function markOrderPaid(order, lead, now = new Date(), providerReference = "") {
 
 function verifyPaymentSignature(request, rawBody) {
   if (!PAYMENT_WEBHOOK_SECRET) return false;
+  if (normalizeKey(PAYMENT_PROVIDER) === "xendit") {
+    const token = String(request.headers["x-callback-token"] || "");
+    return token ? timingSafeEqual(token, PAYMENT_WEBHOOK_SECRET) : false;
+  }
   const signature = String(request.headers["x-signature"] || request.headers["x-callback-token"] || "");
   if (!signature) return false;
   const expected = crypto.createHmac("sha256", PAYMENT_WEBHOOK_SECRET).update(rawBody).digest("hex");
   return timingSafeEqual(signature.replace(/^sha256=/, ""), expected);
+}
+
+function paymentEventFromPayload(payload) {
+  const envelope =
+    payload.paymentCapture?.value ||
+    payload.paymentAuthorization?.value ||
+    payload.paymentFailure?.value ||
+    payload.value ||
+    payload;
+  const data = envelope.data?.data || envelope.data || payload.data?.data || payload.data || envelope;
+  const metadata = data.metadata || envelope.metadata || payload.metadata || {};
+  const providerPaymentId = clean(data.payment_id || payload.payment_id || data.latest_payment_id || payload.id);
+  const paymentRequestId = clean(data.payment_request_id || payload.payment_request_id || metadata.payment_request_id);
+
+  return {
+    event: String(envelope.event || payload.event || ""),
+    status: String(data.status || envelope.status || payload.status || "").toLowerCase(),
+    reference: clean(
+      data.reference_id ||
+        envelope.reference_id ||
+        payload.reference_id ||
+        metadata.orderId ||
+        metadata.order_id ||
+        payload.orderId ||
+        payload.order_id ||
+        payload.reference ||
+        payload.external_id,
+    ),
+    providerReference: clean(providerPaymentId || paymentRequestId || payload.providerReference || data.charge_id || payload.charge_id),
+    providerPaymentId,
+    paymentRequestId,
+    paidAmount: Number(
+      data.request_amount ??
+        data.amount ??
+        data.paid_amount ??
+        data.capture_amount ??
+        data.captures?.[0]?.capture_amount ??
+        payload.amount ??
+        payload.paid_amount ??
+        0,
+    ),
+  };
+}
+
+function isPaidPaymentEvent(paymentEvent) {
+  const value = `${paymentEvent.status} ${paymentEvent.event}`.toLowerCase();
+  return value.includes("succeeded") || value.includes("paid") || value.includes("completed") || value.includes("settled");
+}
+
+function findXenditAction(data, descriptor) {
+  return (Array.isArray(data.actions) ? data.actions : []).find((action) => {
+    return String(action.descriptor || "").toUpperCase() === descriptor;
+  });
+}
+
+function parseJsonText(text) {
+  if (!text) return {};
+  try {
+    return JSON.parse(text);
+  } catch {
+    return {};
+  }
+}
+
+function xenditErrorMessage(data, text, status) {
+  return clean(data.message || data.error || data.error_code || text) || `Xendit ตอบกลับ status ${status}`;
+}
+
+function xenditTimestamp(value) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return new Date().toISOString().replace(/\.\d{3}Z$/, "Z");
+  return date.toISOString().replace(/\.\d{3}Z$/, "Z");
 }
 
 function timingSafeEqual(a, b) {
@@ -1237,6 +1429,7 @@ function publicOrder(order) {
     currency: order.currency,
     status: order.status,
     provider: order.provider,
+    providerStatus: order.providerStatus || "",
     paymentUrl: order.paymentUrl,
     qrImageUrl: order.qrImageUrl,
     qrPayload: order.qrPayload,
