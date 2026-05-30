@@ -20,6 +20,8 @@ const files = [
   "learn.js",
   "package-lock.json",
   "package.json",
+  "pay.html",
+  "pay.js",
   "privacy-policy.html",
   "refund-policy.html",
   "scripts/push-github.js",
