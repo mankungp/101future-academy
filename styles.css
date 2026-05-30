@@ -346,10 +346,101 @@ h3 {
 
 .program p,
 .why-list p,
-.contact p {
+.contact p,
+.trust-card p,
+.course-grid p,
+.policy-card p,
+.site-footer p,
+.policy-document p,
+.policy-document li {
   color: var(--muted);
   font-size: 18px;
   line-height: 1.55;
+}
+
+.trust-section {
+  background: var(--paper);
+}
+
+.trust-grid,
+.course-grid,
+.policy-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.trust-card,
+.course-grid article,
+.policy-card {
+  display: grid;
+  align-content: start;
+  gap: 12px;
+  min-height: 220px;
+  padding: 24px;
+  color: var(--ink);
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  box-shadow: 0 10px 34px rgba(17, 24, 39, 0.05);
+}
+
+.trust-card span,
+.policy-card span {
+  color: var(--coral);
+  font-size: 13px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.trust-card h3,
+.course-grid h3,
+.policy-card h3 {
+  margin-bottom: 0;
+}
+
+.course-section {
+  background: #fff;
+  border-top: 1px solid var(--line);
+}
+
+.course-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.course-grid article {
+  min-height: 240px;
+}
+
+.course-grid article:nth-child(2) {
+  border-top: 4px solid var(--cyan);
+}
+
+.course-grid article:nth-child(3) {
+  border-top: 4px solid var(--coral);
+}
+
+.course-grid article:nth-child(4) {
+  border-top: 4px solid var(--teal);
+}
+
+.policy-section {
+  background: #fff;
+  border-top: 1px solid var(--line);
+}
+
+.policy-card {
+  min-height: 210px;
+  transition:
+    transform 160ms ease,
+    border-color 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.policy-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(49, 87, 255, 0.32);
+  box-shadow: var(--shadow);
 }
 
 .program-tag {
@@ -573,6 +664,68 @@ h3 {
   color: var(--primary);
   background: #fff;
   border-color: #fff;
+}
+
+.site-footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 32px;
+  padding: 36px 5vw;
+  background: #fff;
+  border-top: 1px solid var(--line);
+}
+
+.site-footer p {
+  max-width: 640px;
+  margin: 10px 0 0;
+}
+
+.site-footer div:last-child {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  justify-content: flex-end;
+  gap: 12px 18px;
+  color: var(--primary);
+  font-weight: 850;
+}
+
+.policy-body {
+  min-height: 100vh;
+  background: var(--paper);
+}
+
+.policy-main {
+  padding: 64px 5vw 96px;
+}
+
+.policy-document {
+  max-width: 900px;
+  padding: 42px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+}
+
+.policy-document h1 {
+  font-size: 58px;
+}
+
+.policy-document h2 {
+  margin-top: 34px;
+  font-size: 32px;
+}
+
+.policy-document ul {
+  display: grid;
+  gap: 10px;
+  padding-left: 22px;
+}
+
+.policy-document a {
+  color: var(--primary);
+  font-weight: 850;
 }
 
 .admin-body {
@@ -835,6 +988,9 @@ h3 {
   }
 
   .program-grid,
+  .trust-grid,
+  .course-grid,
+  .policy-grid,
   .metric-grid,
   .automation-grid,
   .payment-grid,
@@ -897,11 +1053,14 @@ h3 {
   }
 
   .program-grid,
-  .lead-form,
-  .payment-form,
-  .access-form,
-  .metric-grid,
-  .automation-grid,
+    .lead-form,
+    .payment-form,
+    .access-form,
+    .trust-grid,
+    .course-grid,
+    .policy-grid,
+    .metric-grid,
+    .automation-grid,
   .payment-grid,
   .lesson-grid,
   .lead-meta {
@@ -915,9 +1074,26 @@ h3 {
   .form-footer,
   .admin-toolbar,
   .toolbar-actions,
-  .contact {
+  .contact,
+  .site-footer {
     align-items: stretch;
     flex-direction: column;
+  }
+
+  .site-footer div:last-child {
+    justify-content: flex-start;
+  }
+
+  .policy-main {
+    padding: 28px 5vw 56px;
+  }
+
+  .policy-document {
+    padding: 24px;
+  }
+
+  .policy-document h1 {
+    font-size: 42px;
   }
 
   .contact {
