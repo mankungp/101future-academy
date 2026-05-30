@@ -52,6 +52,7 @@ Done:
 - English Mission 1 now opens as a full-screen mission at `/mission/school-bag`, separate from `/learn`.
 - Mission object visuals are local SVG assets, not CSS-only shapes, so book, pencil, ruler, and eraser are easier for young learners to recognize.
 - Wrong-answer feedback now tells the child what they tapped and what the prompt asked for.
+- Correct answers now show a short animated popup and the next prompt is read automatically, while the Listen button remains for replay.
 
 ## Learning UX References
 
