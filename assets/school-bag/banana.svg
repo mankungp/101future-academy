@@ -1,6 +1,14 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="banana">
-  <rect width="120" height="120" rx="18" fill="#fffbeb"/>
-  <path d="M23 66c34 22 62 10 74-25 5 40-30 63-70 45-6-3-8-14-4-20z" fill="#facc15" stroke="#ca8a04" stroke-width="5" stroke-linejoin="round"/>
-  <path d="M27 82c23 9 47 7 63-13" stroke="#fde68a" stroke-width="5" stroke-linecap="round"/>
-  <path d="M22 65l-5-7M98 40l7-6" stroke="#78350f" stroke-width="5" stroke-linecap="round"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" role="img" aria-label="banana">
+  <defs>
+    <linearGradient id="bananaSkin" x1="46" x2="190" y1="91" y2="70" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#fbbf24"/>
+      <stop offset=".45" stop-color="#fde047"/>
+      <stop offset="1" stop-color="#eab308"/>
+    </linearGradient>
+  </defs>
+  <rect width="240" height="180" rx="30" fill="#fffbeb"/>
+  <path d="M39 96c56 39 119 18 153-46 6 66-59 105-137 69-16-7-22-17-16-23z" fill="url(#bananaSkin)" stroke="#ca8a04" stroke-width="7" stroke-linejoin="round"/>
+  <path d="M55 115c44 18 91 9 124-28" stroke="#fff7ad" stroke-width="7" stroke-linecap="round" opacity=".85"/>
+  <path d="M38 96l-13-15M193 49l15-11" stroke="#78350f" stroke-width="8" stroke-linecap="round"/>
+  <ellipse cx="120" cy="143" rx="58" ry="10" fill="#fde68a" opacity=".65"/>
 </svg>
