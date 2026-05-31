@@ -1,7 +1,15 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="chair">
-  <rect width="120" height="120" rx="18" fill="#f0fdf4"/>
-  <rect x="38" y="24" width="44" height="38" rx="8" fill="#22c55e" stroke="#15803d" stroke-width="5"/>
-  <rect x="32" y="58" width="56" height="16" rx="6" fill="#16a34a"/>
-  <path d="M42 74v25M78 74v25" stroke="#166534" stroke-width="7" stroke-linecap="round"/>
-  <path d="M44 35h32" stroke="#bbf7d0" stroke-width="5" stroke-linecap="round"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" role="img" aria-label="chair">
+  <defs>
+    <linearGradient id="chairSeat" x1="70" x2="170" y1="42" y2="138" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#54d982"/>
+      <stop offset="1" stop-color="#15803d"/>
+    </linearGradient>
+  </defs>
+  <rect width="240" height="180" rx="30" fill="#f0fdf4"/>
+  <ellipse cx="120" cy="154" rx="58" ry="10" fill="#bbf7d0" opacity=".72"/>
+  <rect x="82" y="35" width="76" height="66" rx="15" fill="url(#chairSeat)" stroke="#166534" stroke-width="7"/>
+  <rect x="65" y="94" width="110" height="28" rx="11" fill="#16a34a" stroke="#166534" stroke-width="6"/>
+  <path d="M82 122v34M158 122v34" stroke="#166534" stroke-width="10" stroke-linecap="round"/>
+  <path d="M93 53h54" stroke="#bbf7d0" stroke-width="7" stroke-linecap="round"/>
+  <path d="M76 106h88" stroke="#86efac" stroke-width="7" stroke-linecap="round" opacity=".85"/>
 </svg>
