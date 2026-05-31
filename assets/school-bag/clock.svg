@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="clock">
+  <rect width="120" height="120" rx="18" fill="#f8fafc"/>
+  <circle cx="60" cy="60" r="38" fill="#fff" stroke="#334155" stroke-width="7"/>
+  <path d="M60 36v25l18 10" stroke="#ef4444" stroke-width="7" stroke-linecap="round"/>
+  <circle cx="60" cy="60" r="5" fill="#334155"/>
+  <path d="M60 24v7M60 89v7M24 60h7M89 60h7" stroke="#94a3b8" stroke-width="4" stroke-linecap="round"/>
+</svg>
