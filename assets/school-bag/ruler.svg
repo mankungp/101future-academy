@@ -1,9 +1,17 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 260 160" role="img" aria-label="ruler">
+  <defs>
+    <linearGradient id="rulerBody" x1="30" x2="230" y1="58" y2="104" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#6ee7d8"/>
+      <stop offset=".45" stop-color="#10b7a7"/>
+      <stop offset="1" stop-color="#087d73"/>
+    </linearGradient>
+  </defs>
   <rect width="260" height="160" rx="28" fill="#ebfffb"/>
-  <g transform="translate(36 66) rotate(8 94 22)">
-    <rect x="0" y="0" width="188" height="48" rx="10" fill="#10b7a7" stroke="#087d73" stroke-width="6"/>
-    <path d="M22 10v22M42 10v14M62 10v22M82 10v14M102 10v22M122 10v14M142 10v22M162 10v14" stroke="#e6fffb" stroke-width="5" stroke-linecap="round"/>
-    <circle cx="172" cy="24" r="6" fill="#e6fffb" opacity=".9"/>
+  <g transform="translate(32 62) rotate(8 98 24)">
+    <rect x="0" y="0" width="196" height="52" rx="11" fill="url(#rulerBody)" stroke="#075f58" stroke-width="6"/>
+    <path d="M18 10v26M38 10v16M58 10v26M78 10v16M98 10v26M118 10v16M138 10v26M158 10v16M178 10v26" stroke="#e6fffb" stroke-width="5" stroke-linecap="round"/>
+    <path d="M14 41h164" stroke="#075f58" stroke-width="4" stroke-linecap="round" opacity=".35"/>
+    <circle cx="180" cy="27" r="6" fill="#e6fffb" opacity=".92"/>
   </g>
-  <path d="M57 123c36 10 100 11 148 2" fill="none" stroke="#b8eee7" stroke-width="8" stroke-linecap="round" opacity=".75"/>
+  <path d="M58 124c38 11 103 12 150 2" fill="none" stroke="#b8eee7" stroke-width="8" stroke-linecap="round" opacity=".75"/>
 </svg>
