@@ -1,4 +1,4 @@
-const assetVersion = "20260531-real-stationery-v1";
+const assetVersion = "20260531-real-objects-v2";
 const asset = (name) => `/assets/school-bag/${name}.svg?v=${assetVersion}`;
 const assetPng = (name) => `/assets/school-bag/${name}.png?v=${assetVersion}`;
 
