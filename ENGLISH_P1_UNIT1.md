@@ -9,7 +9,8 @@
 1. Mission 1: Pack My School Bag
    - Skill: ฟังคำศัพท์เดี่ยว
    - Prompt: `Tap the book.`
-   - Vocabulary: book, pencil, ruler, eraser
+   - Vocabulary: 20 picture-word rounds, no repeated target word in one playthrough
+   - Rule: เด็กฟังคำถามสั้น ๆ แล้วเลือกรูปให้ตรง ยังไม่ปนประโยคยาวหรือ sentence pattern
    - Feedback: บอกว่าจิ้มอะไร และโจทย์ถามหาอะไร
 
 2. Mission 2: This Is My School Bag
@@ -27,13 +28,7 @@
    - Planned behavior: เด็กกดอัดเสียง แล้วระบบเทียบคำ/ประโยคแบบง่ายก่อน
    - Start with human-friendly feedback, not harsh scoring
 
-4. Mission Lab: 20 Game Variants
-   - Skill: ทดลอง mechanics สั้น ๆ ว่าเด็กตอบสนองกับเกมแบบไหน
-   - Route: `/mission/lab?game=1`
-   - Behavior: เลือกเกม ฟังโจทย์ แตะคำตอบ ได้ feedback ทันที
-   - Screen rule: หน้า mission ต้องอยู่ในจอเดียว ไม่ให้ zoom หรือเลื่อนขึ้นลง
-
-5. Parent Summary
+4. Parent Summary
    - สรุปคำศัพท์ที่เรียน
    - สรุปประโยคที่ฝึก
    - บอกคำที่ตอบผิดซ้ำ เพื่อให้ผู้ปกครองรู้ว่าควรทวนตรงไหน
