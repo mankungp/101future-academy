@@ -1,8 +1,12 @@
+const assetVersion = "20260531-real-objects-v2";
+const asset = (name) => `/assets/school-bag/${name}.svg?v=${assetVersion}`;
+const assetPng = (name) => `/assets/school-bag/${name}.png?v=${assetVersion}`;
+
 const sentenceItems = [
-  { word: "book", thai: "หนังสือ", phrase: "This is a book.", image: "/assets/school-bag/book.svg" },
-  { word: "pencil", thai: "ดินสอ", phrase: "This is a pencil.", image: "/assets/school-bag/pencil.svg" },
-  { word: "ruler", thai: "ไม้บรรทัด", phrase: "This is a ruler.", image: "/assets/school-bag/ruler.svg" },
-  { word: "eraser", thai: "ยางลบ", phrase: "This is an eraser.", image: "/assets/school-bag/eraser.svg" },
+  { word: "book", thai: "หนังสือ", phrase: "This is a book.", image: asset("book") },
+  { word: "pencil", thai: "ดินสอ", phrase: "This is a pencil.", image: assetPng("real-pencil") },
+  { word: "ruler", thai: "ไม้บรรทัด", phrase: "This is a ruler.", image: asset("ruler") },
+  { word: "eraser", thai: "ยางลบ", phrase: "This is an eraser.", image: asset("eraser") },
 ];
 
 const promptText = document.querySelector("#missionPromptText");
@@ -84,6 +88,10 @@ function currentTarget() {
   return sentenceItems[currentIndex] || sentenceItems[0];
 }
 
+function slugifyWord(word) {
+  return String(word).replace(/\s+/g, "-").replace(/[^a-z0-9-]/gi, "").toLowerCase();
+}
+
 function renderMission() {
   const target = currentTarget();
   setSoundButtonReplay();
@@ -92,7 +100,10 @@ function renderMission() {
   stars.textContent = `${score}/${sentenceItems.length}`;
   feedback.innerHTML = `<strong>พูดตามครู</strong><span>${escapeHtml(target.phrase)} = นี่คือ${escapeHtml(target.thai)}</span>`;
   missionScreen?.classList.remove("awaiting-start");
-  if (sayObjectImage) sayObjectImage.src = target.image;
+  if (sayObjectImage) {
+    sayObjectImage.src = target.image;
+    sayObjectImage.className = `object-image object-image-${slugifyWord(target.word)}`;
+  }
   if (sayObjectPhrase) sayObjectPhrase.textContent = target.phrase;
   if (sayObjectThai) sayObjectThai.textContent = `นี่คือ${target.thai}`;
   renderSentenceProgress();
@@ -153,7 +164,10 @@ function startRecognition() {
   recognition.onerror = (event) => {
     setListeningUi(false);
     if (event.error === "not-allowed" || event.error === "service-not-allowed") {
-      offerManualPath("ยังไม่ได้เปิดไมค์ ไม่เป็นไร กดพูดแล้วเพื่อไปต่อได้เลย");
+      offerManualPath(
+        "ไมค์ยังไม่เปิด ให้ผู้ปกครองกดอนุญาตไมค์ในเบราว์เซอร์ แล้วลองกดไมค์อีกครั้ง หรือให้เด็กพูดตามแล้วกดไปต่อ",
+        { allowMicRetry: true },
+      );
     } else if (event.error === "no-speech") {
       if (sayHeard) sayHeard.textContent = "ครูยังไม่ได้ยินเสียง ลองกดไมค์แล้วพูดอีกครั้ง";
       offerRetryControls();
@@ -215,7 +229,7 @@ function handleHeard(heardOptions) {
 // Fallback: record the child's own voice locally so they can hear themselves, then self-confirm.
 function startRecorderFallback() {
   if (!navigator.mediaDevices?.getUserMedia || typeof MediaRecorder === "undefined") {
-    offerManualPath("เครื่องนี้ยังพูดเทียบเสียงไม่ได้ พูดตามครูแล้วกดพูดแล้วเพื่อไปต่อได้เลย");
+    offerManualPath("เครื่องนี้ยังเทียบเสียงไม่ได้ ให้เด็กพูดตามครู แล้วกดพูดแล้วไปต่อได้เลย");
     return;
   }
   navigator.mediaDevices
@@ -226,7 +240,7 @@ function startRecorderFallback() {
         mediaRecorder = new MediaRecorder(stream);
       } catch {
         stream.getTracks().forEach((track) => track.stop());
-        offerManualPath("เครื่องนี้ยังบันทึกเสียงไม่ได้ กดพูดแล้วเพื่อไปต่อได้เลย");
+        offerManualPath("เครื่องนี้ยังบันทึกเสียงไม่ได้ ให้เด็กพูดตามครู แล้วกดพูดแล้วไปต่อได้เลย");
         return;
       }
       mediaRecorder.ondataavailable = (event) => {
@@ -251,15 +265,24 @@ function startRecorderFallback() {
         if (mediaRecorder && mediaRecorder.state === "recording") mediaRecorder.stop();
       }, 4000);
     })
-    .catch(() => {
-      offerManualPath("ยังไม่ได้เปิดไมค์ ไม่เป็นไร กดพูดแล้วเพื่อไปต่อได้เลย");
+    .catch((error) => {
+      if (error?.name === "NotAllowedError" || error?.name === "SecurityError") {
+        offerManualPath(
+          "ไมค์ยังไม่เปิด ให้ผู้ปกครองกดอนุญาตไมค์ในเบราว์เซอร์ แล้วลองกดไมค์อีกครั้ง หรือให้เด็กพูดตามแล้วกดไปต่อ",
+          { allowMicRetry: true },
+        );
+        return;
+      }
+      offerManualPath("เครื่องนี้ยังใช้ไมค์ไม่ได้ ให้เด็กพูดตามครู แล้วกดพูดแล้วไปต่อได้เลย");
     });
 }
 
-function offerManualPath(message) {
+function offerManualPath(message, options = {}) {
   setListeningUi(false);
   if (sayHeard) sayHeard.textContent = message;
-  setMicEnabled(false);
+  const allowMicRetry = Boolean(options.allowMicRetry);
+  setMicEnabled(allowMicRetry);
+  setMicLabel(allowMicRetry ? "ลองเปิดไมค์อีกครั้ง" : "พูดตามเอง");
   iSaidItButton?.classList.remove("say-hidden");
 }
 
@@ -418,8 +441,8 @@ function completeMission() {
       <h3>Speaking Practice</h3>
       <p>วันนี้ลูกฝึกพูด This is a book, This is a pencil, This is a ruler และ This is an eraser.</p>
       ${renderParentRetrySummary()}
-      <button id="restartMissionButton" class="button secondary" type="button">เล่นอีกครั้ง</button>
-      <a class="button primary" href="/learn">กลับหน้าเรียน</a>
+      <button id="restartMissionButton" class="button primary" type="button">เล่นอีกครั้ง</button>
+      <a class="button secondary" href="/learn">กลับหน้าเรียน</a>
     `;
     completeBox.querySelector("#restartMissionButton")?.addEventListener("click", restartMission);
   }
