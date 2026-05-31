@@ -2799,3 +2799,593 @@ h3 {
     border-radius: 0;
   }
 }
+
+/* Mission pages are designed as one focused game screen for young children. */
+html:has(body.no-zoom-body) {
+  height: 100%;
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+body.no-zoom-body {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  min-height: 0;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  overscroll-behavior: none;
+  touch-action: manipulation;
+  -webkit-text-size-adjust: 100%;
+}
+
+.no-zoom-body * {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.no-zoom-body .mission-topbar {
+  min-height: 62px;
+  height: 62px;
+  padding-block: 10px;
+}
+
+.no-zoom-body .mission-main {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  min-height: 0;
+  height: calc(100vh - 62px);
+  height: calc(100dvh - 62px);
+  padding: 10px 4vw;
+  overflow: hidden;
+}
+
+.no-zoom-body .mission-screen {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+  gap: 8px;
+  padding: 14px;
+  overflow: hidden;
+  grid-template-rows: auto auto auto minmax(0, 1fr) auto;
+}
+
+.no-zoom-body .mission-screen-head {
+  min-height: 0;
+}
+
+.no-zoom-body .mission-screen h1 {
+  margin-bottom: 0;
+}
+
+.no-zoom-body .mission-prompt-large {
+  min-height: 0;
+}
+
+.no-zoom-body .mission-stage,
+.no-zoom-body .mission-stage-full,
+.no-zoom-body .sentence-stage {
+  max-width: 100%;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.no-zoom-body .mission-items,
+.no-zoom-body .sentence-items,
+.no-zoom-body .lab-items {
+  max-width: 100%;
+  min-width: 0;
+  min-height: 0;
+}
+
+.no-zoom-body .mission-complete:not(.hidden) {
+  position: absolute;
+  right: 14px;
+  bottom: 14px;
+  left: 14px;
+  z-index: 18;
+  grid-template-columns: 1fr auto auto;
+  max-height: min(220px, 38%);
+  overflow: hidden;
+  box-shadow: 0 18px 50px rgba(17, 24, 39, 0.18);
+}
+
+.mission-lab-screen {
+  grid-template-rows: auto minmax(0, 1fr);
+}
+
+.mission-lab-layout {
+  display: grid;
+  grid-template-columns: minmax(180px, 250px) minmax(0, 1fr);
+  gap: 10px;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.mission-game-menu,
+.mission-play-panel {
+  max-width: 100%;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.mission-game-menu {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: 10px;
+  padding: 12px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.mission-game-menu h2 {
+  margin: 2px 0 0;
+  font-size: 22px;
+}
+
+.game-select-label {
+  display: none;
+}
+
+.game-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-content: start;
+  gap: 6px;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.game-picker {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  min-height: 35px;
+  padding: 6px;
+  color: var(--muted);
+  text-align: left;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.game-picker span {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 24px;
+  color: #fff;
+  background: var(--ink);
+  border-radius: 7px;
+  font-size: 11px;
+  font-weight: 950;
+}
+
+.game-picker strong {
+  min-width: 0;
+  overflow: hidden;
+  font-size: 12px;
+  line-height: 1.1;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.game-picker.active {
+  color: var(--ink);
+  background: #eef4ff;
+  border-color: rgba(49, 87, 255, 0.34);
+  box-shadow: inset 0 0 0 1px rgba(49, 87, 255, 0.14);
+}
+
+.mission-play-panel {
+  position: relative;
+  display: grid;
+  grid-template-rows: auto auto auto minmax(0, 1fr) auto;
+  gap: 8px;
+  width: 100%;
+}
+
+.lab-teacher-card {
+  min-height: 0;
+  padding: 14px;
+}
+
+.lab-teacher-card h2 {
+  font-size: 30px;
+}
+
+.lab-teacher-card p {
+  font-size: 14px;
+}
+
+.lab-items {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.lab-choice {
+  min-height: 120px;
+}
+
+.unit-roadmap {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+@media (max-width: 980px) {
+  .unit-roadmap {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 760px) {
+  .no-zoom-body .mission-topbar {
+    min-height: 52px;
+    height: 52px;
+    padding: 8px 4vw;
+  }
+
+  .no-zoom-body .mission-topbar .brand-mark {
+    width: 38px;
+    height: 32px;
+    font-size: 15px;
+  }
+
+  .no-zoom-body .mission-topbar .brand-name {
+    font-size: 13px;
+  }
+
+  .no-zoom-body .mission-topbar .button {
+    min-height: 34px;
+    padding-inline: 10px;
+    font-size: 12px;
+  }
+
+  .no-zoom-body .mission-main {
+    height: calc(100vh - 52px);
+    height: calc(100dvh - 52px);
+    padding: 6px 3vw 8px;
+  }
+
+  .no-zoom-body .mission-screen {
+    width: calc(100vw - 6vw);
+    max-width: calc(100vw - 6vw);
+    gap: 6px;
+    padding: 9px;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .no-zoom-body .mission-screen-head {
+    gap: 8px;
+  }
+
+  .no-zoom-body .mission-screen h1 {
+    max-width: 230px;
+    font-size: clamp(21px, 6.3vw, 28px);
+    line-height: 1.03;
+  }
+
+  .no-zoom-body .eyebrow {
+    margin-bottom: 4px;
+    font-size: 10px;
+  }
+
+  .no-zoom-body .mission-score {
+    min-width: 58px;
+    padding: 6px;
+  }
+
+  .no-zoom-body .mission-score span {
+    font-size: 16px;
+  }
+
+  .no-zoom-body .mission-score strong {
+    font-size: 9px;
+  }
+
+  .no-zoom-body .mission-prompt-large {
+    gap: 8px;
+    padding: 7px;
+  }
+
+  .no-zoom-body .sound-button {
+    min-width: 82px;
+    min-height: 38px;
+    font-size: 12px;
+  }
+
+  .no-zoom-body .sound-button.start-button {
+    min-width: 126px;
+    min-height: 44px;
+    font-size: 13px;
+  }
+
+  .no-zoom-body .mission-prompt-large span {
+    font-size: 10px;
+  }
+
+  .no-zoom-body .mission-prompt-large p {
+    font-size: clamp(17px, 5.2vw, 22px);
+    line-height: 1.12;
+  }
+
+  .no-zoom-body .mission-feedback-large {
+    min-height: 0;
+    max-height: 52px;
+    padding: 7px 9px;
+    overflow: hidden;
+    font-size: 12.5px;
+    line-height: 1.25;
+  }
+
+  .no-zoom-body .mission-feedback span {
+    margin-top: 2px;
+  }
+
+  .no-zoom-body .mission-stage-full {
+    display: grid;
+    grid-template-rows: 84px minmax(0, 1fr);
+    gap: 6px;
+  }
+
+  .no-zoom-body .school-bag {
+    min-height: 0;
+    height: 84px;
+    padding: 8px;
+    border-width: 2px;
+    border-radius: 18px 18px 10px 10px;
+  }
+
+  .no-zoom-body .school-bag::before {
+    top: 12px;
+    height: 22px;
+    border-width: 4px;
+  }
+
+  .no-zoom-body .school-bag > span {
+    font-size: 14px;
+  }
+
+  .no-zoom-body .packed-items {
+    gap: 4px;
+    margin-bottom: 6px;
+  }
+
+  .no-zoom-body .packed-items span {
+    padding: 3px 5px;
+    font-size: 10px;
+  }
+
+  .no-zoom-body .mission-items-large,
+  .no-zoom-body .sentence-items,
+  .no-zoom-body .lab-items {
+    width: 100%;
+    max-width: calc(100vw - 6vw - 18px);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px;
+  }
+
+  .no-zoom-body .mission-item,
+  .no-zoom-body .mission-object,
+  .no-zoom-body .sentence-item,
+  .no-zoom-body .lab-choice {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    min-height: 0;
+    padding: 6px;
+    gap: 3px;
+  }
+
+  .no-zoom-body .mission-object {
+    align-content: center;
+  }
+
+  .no-zoom-body .mission-item strong,
+  .no-zoom-body .sentence-item strong {
+    font-size: clamp(12px, 3.8vw, 15px);
+    line-height: 1.1;
+  }
+
+  .no-zoom-body .mission-object small {
+    font-size: 10px;
+  }
+
+  .no-zoom-body .object-image {
+    width: min(88px, 82%);
+    height: 46px;
+  }
+
+  .no-zoom-body .object-feedback-bubble {
+    inset: 4px 4px auto auto;
+    min-width: 58px;
+    padding: 5px 6px;
+  }
+
+  .no-zoom-body .object-feedback-bubble strong {
+    font-size: 12px;
+  }
+
+  .no-zoom-body .object-feedback-bubble small {
+    font-size: 10px;
+  }
+
+  .no-zoom-body .sentence-stage {
+    grid-template-rows: auto minmax(0, 1fr);
+    gap: 6px;
+  }
+
+  .no-zoom-body .teacher-card {
+    gap: 6px;
+    padding: 9px;
+  }
+
+  .no-zoom-body .teacher-card h2 {
+    font-size: 21px;
+  }
+
+  .no-zoom-body .teacher-card p {
+    display: none;
+  }
+
+  .no-zoom-body .sentence-progress {
+    gap: 4px;
+  }
+
+  .no-zoom-body .sentence-progress span {
+    padding: 4px 5px;
+    font-size: 9.5px;
+  }
+
+  .no-zoom-body .correct-burst-card {
+    min-width: min(270px, 84vw);
+    padding: 16px 18px;
+  }
+
+  .no-zoom-body .correct-burst-card strong {
+    font-size: 30px;
+  }
+
+  .no-zoom-body .correct-burst-card > span:last-child {
+    font-size: 15px;
+  }
+
+  .mission-lab-screen {
+    grid-template-rows: auto minmax(0, 1fr);
+  }
+
+  .mission-lab-layout {
+    width: 100%;
+    max-width: calc(100vw - 6vw - 18px);
+    grid-template-columns: 1fr;
+    grid-template-rows: auto minmax(0, 1fr);
+    gap: 6px;
+  }
+
+  .mission-game-menu,
+  .mission-play-panel {
+    width: 100%;
+    max-width: calc(100vw - 6vw - 18px);
+  }
+
+  .mission-game-menu {
+    grid-template-rows: auto auto;
+    gap: 6px;
+    padding: 8px;
+  }
+
+  .mission-game-menu > div {
+    display: none;
+  }
+
+  .game-select-label {
+    display: grid;
+    gap: 4px;
+  }
+
+  .game-select-label span {
+    color: var(--muted);
+    font-size: 10px;
+    font-weight: 900;
+  }
+
+  .game-select-label select {
+    width: 100%;
+    min-height: 36px;
+    padding: 6px 10px;
+    color: var(--ink);
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    font-weight: 900;
+  }
+
+  .game-list {
+    display: none;
+  }
+
+  .mission-play-panel {
+    grid-template-rows: auto auto auto minmax(0, 1fr) auto;
+    gap: 6px;
+  }
+
+  .lab-teacher-card {
+    padding: 8px;
+  }
+
+  .lab-teacher-card h2 {
+    font-size: 20px;
+  }
+
+  .lab-teacher-card p {
+    display: none;
+  }
+
+  .no-zoom-body .mission-complete:not(.hidden) {
+    right: 9px;
+    bottom: 9px;
+    left: 9px;
+    grid-template-columns: 1fr;
+    max-height: 42%;
+    padding: 10px;
+    gap: 8px;
+  }
+
+  .no-zoom-body .mission-complete h3,
+  .no-zoom-body .mission-complete p {
+    margin: 0;
+  }
+
+  .no-zoom-body .mission-complete p {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 380px), (max-height: 720px) {
+  .no-zoom-body .mission-topbar {
+    min-height: 48px;
+    height: 48px;
+  }
+
+  .no-zoom-body .mission-main {
+    height: calc(100vh - 48px);
+    height: calc(100dvh - 48px);
+  }
+
+  .no-zoom-body .mission-screen h1 {
+    font-size: 21px;
+  }
+
+  .no-zoom-body .mission-stage-full {
+    grid-template-rows: 72px minmax(0, 1fr);
+  }
+
+  .no-zoom-body .school-bag {
+    height: 72px;
+  }
+
+  .no-zoom-body .object-image {
+    height: 38px;
+  }
+
+  .no-zoom-body .mission-feedback-large {
+    max-height: 43px;
+    font-size: 11.5px;
+  }
+
+  .no-zoom-body .mission-prompt-large p {
+    font-size: 17px;
+  }
+}
