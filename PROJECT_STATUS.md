@@ -45,9 +45,8 @@ Done:
 - Access-code fallback login exists.
 - English ป.1 Unit 1 exists on `/learn`:
   - Unit title: `My School Bag`
-  - Mission 1: `/mission/school-bag` for listening to single words and tapping the correct object
+  - Mission 1: `/mission/school-bag` for 20 non-repeating picture-word rounds
   - Mission 2: `/mission/this-is` for listening to `This is a/an ...` sentences and tapping the matching object
-  - Mission Lab: `/mission/lab` with 20 short game variants for testing with children
   - Story: `My School Bag`
   - Vocabulary: school bag, book, pencil, ruler
   - 3-question exercise
@@ -60,7 +59,7 @@ Done:
 - Correct-answer timing now keeps the reward popup longer and waits before reading the next prompt. Mission speech is slower for primary students. Final production voice must be selected before replacing the current browser speech prototype.
 - Mission entry now starts with a prominent Start Mission button. After the first click, the button becomes Listen Again for replay.
 - Mission pages now lock zoom and vertical page scrolling so the play screen stays focused for young children.
-- Mission Lab adds 20 short tap/listen games for testing which mechanics children understand fastest.
+- Mission 1 now contains the 20-round picture-word prototype directly; `/mission/lab` redirects back to Mission 1.
 - Mission 1 now has a first sound-design layer: start chime, prompt cue, wrong-answer tone, correct ding, bag-drop sound, and complete fanfare using Web Audio while final human TTS is still pending.
 - Added more visible interaction animation: listening state on the prompt card, wrong-answer object bubble, and a correct item flying into the school bag.
 - English ป.1 Unit 1 source doc exists at `ENGLISH_P1_UNIT1.md`.
@@ -91,7 +90,7 @@ Payment:
 Learning product:
 
 - Need a real grade-by-grade curriculum map beyond English ป.1 Unit 1.
-- English ป.1 Unit 1 has Mission 1, Mission 2, and Mission Lab prototypes, but still needs Mission 3 speaking and parent summary output.
+- English ป.1 Unit 1 has Mission 1 and Mission 2 prototypes, but still needs Mission 3 speaking and parent summary output.
 - Need the next animation polish pass: bag open/close, stronger completion badge, and a more finished lesson-end screen.
 - Need first real lessons for English ป.1, then expand grade by grade.
 - Need first real lessons for Math, Science, and Thai later.
