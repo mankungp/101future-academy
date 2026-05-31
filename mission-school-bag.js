@@ -368,8 +368,8 @@ function completeMission() {
       <span class="mini-label">สรุปสำหรับผู้ปกครอง</span>
       <h3>Picture Word Star</h3>
       <p>วันนี้เด็กฝึกฟังคำศัพท์และเลือกรูปภาพครบ ${missionItems.length} คำ โดยยังไม่ต้องฝึกประโยคยาว</p>
-      <button id="restartMissionButton" class="button secondary" type="button">เล่นอีกครั้ง</button>
-      <a class="button primary" href="/learn">กลับหน้าเรียน</a>
+      <button id="restartMissionButton" class="button primary" type="button">เล่นอีกครั้ง</button>
+      <a class="button secondary" href="/learn">กลับหน้าเรียน</a>
     `;
     completeBox.querySelector("#restartMissionButton")?.addEventListener("click", restartMission);
   }
