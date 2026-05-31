@@ -1387,6 +1387,12 @@ h3 {
   outline-offset: 3px;
 }
 
+.sound-button:focus-visible,
+.mission-item:focus-visible {
+  outline: 4px solid rgba(49, 87, 255, 0.32);
+  outline-offset: 3px;
+}
+
 .mission-stage {
   align-items: stretch;
   min-height: 300px;
