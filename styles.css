@@ -1964,13 +1964,13 @@ h3 {
 }
 
 .object-image-crayon {
-  width: min(150px, 92%);
+  width: min(170px, 96%);
 }
 
 .object-image-pencil,
 .object-image-pen {
-  width: min(86px, 62%);
-  height: 118px;
+  width: min(96px, 68%);
+  height: 130px;
 }
 
 .object-shape {
@@ -2706,14 +2706,14 @@ h3 {
   }
 
   .object-image-crayon {
-    width: min(128px, 94%);
+    width: min(148px, 98%);
     height: 58px;
   }
 
   .object-image-pencil,
   .object-image-pen {
-    width: min(54px, 44%);
-    height: 82px;
+    width: min(66px, 52%);
+    height: 94px;
   }
 
   .object-shape {
@@ -3239,14 +3239,14 @@ body.no-zoom-body {
   }
 
   .no-zoom-body .object-image-crayon {
-    width: min(132px, 94%);
+    width: min(150px, 98%);
     height: 56px;
   }
 
   .no-zoom-body .object-image-pencil,
   .no-zoom-body .object-image-pen {
-    width: min(54px, 44%);
-    height: 84px;
+    width: min(66px, 52%);
+    height: 96px;
   }
 
   .no-zoom-body .object-feedback-bubble {
@@ -3427,7 +3427,7 @@ body.no-zoom-body {
 
   .no-zoom-body .object-image-pencil,
   .no-zoom-body .object-image-pen {
-    height: 70px;
+    height: 78px;
   }
 
   .no-zoom-body .mission-feedback-large {
