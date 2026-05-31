@@ -2,88 +2,14 @@
 <html lang="th">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
-    <title>Mission Lab | 101 Future Academy</title>
-    <link rel="stylesheet" href="/styles.css?v=20260531-fit-missions-3" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta http-equiv="refresh" content="0; url=/mission/school-bag?reset=1" />
+    <title>Mission 1 | 101 Future Academy</title>
   </head>
-  <body class="mission-body no-zoom-body">
-    <header class="mission-topbar">
-      <a class="brand" href="/learn" aria-label="กลับหน้าเรียน 101 Future Academy">
-        <span class="brand-mark">101</span>
-        <span class="brand-name">Future Academy</span>
-      </a>
-      <a class="button secondary mission-exit-link" href="/learn">
-        <span class="exit-full">ออกจาก Mission Lab</span>
-        <span class="exit-short">ออก</span>
-      </a>
-    </header>
-
-    <main class="mission-main mission-lab-main">
-      <section class="mission-screen mission-lab-screen" aria-live="polite">
-        <div class="mission-screen-head">
-          <div>
-            <p class="eyebrow">English ป.1 · Mission Lab</p>
-            <h1 id="labTitle">20 เกมให้เด็กลอง</h1>
-            <p id="labSubtitle">เลือกเกมสั้น ๆ แล้วให้เด็กฟัง แตะ และรับ feedback ทันที</p>
-          </div>
-          <div class="mission-score mission-score-large">
-            <span id="missionStars">0/4</span>
-            <strong>stars</strong>
-          </div>
-        </div>
-
-        <div class="mission-lab-layout">
-          <aside class="mission-game-menu" aria-label="เลือกเกม">
-            <div>
-              <span class="mini-label">Game List</span>
-              <h2>เลือกเกม</h2>
-            </div>
-            <label class="game-select-label">
-              <span>เกม</span>
-              <select id="gameSelect" aria-label="เลือกเกม"></select>
-            </label>
-            <div id="gameList" class="game-list"></div>
-          </aside>
-
-          <div class="mission-play-panel">
-            <div class="mission-prompt mission-prompt-large">
-              <button id="missionSoundButton" class="sound-button start-button" type="button" aria-label="เริ่มเกม">Start Game</button>
-              <div>
-                <span id="missionPromptHint">เลือกเกม แล้วกดเริ่ม</span>
-                <p id="missionPromptText">Ready?</p>
-              </div>
-            </div>
-
-            <div id="missionFeedback" class="mission-feedback mission-feedback-large">
-              เลือกเกมจากด้านบนหรือด้านซ้าย แล้วกด Start Game
-            </div>
-
-            <div id="correctBurst" class="correct-burst hidden" aria-live="assertive">
-              <div class="correct-burst-card">
-                <span class="burst-confetti" aria-hidden="true">
-                  <i></i><i></i><i></i><i></i><i></i><i></i>
-                </span>
-                <span class="mini-label">Yes, correct</span>
-                <strong>ถูกต้อง</strong>
-                <span id="correctBurstWord">book = หนังสือ</span>
-              </div>
-            </div>
-
-            <div class="teacher-card lab-teacher-card">
-              <span id="gameBadge" class="mini-label">Game 01</span>
-              <h2 id="gameTitle">Word Hunt</h2>
-              <p id="gameDescription">ฟังคำศัพท์เดี่ยว แล้วแตะของให้ถูก</p>
-              <div id="roundProgress" class="sentence-progress"></div>
-            </div>
-
-            <div id="missionItems" class="mission-items mission-items-large lab-items" aria-label="choices"></div>
-
-            <div id="missionComplete" class="result-card mission-complete hidden"></div>
-          </div>
-        </div>
-      </section>
-    </main>
-
-    <script src="/mission-lab.js?v=20260531-fit-missions-3" defer></script>
+  <body>
+    <p>กำลังพาไป Mission 1...</p>
+    <script>
+      window.location.replace("/mission/school-bag?reset=1");
+    </script>
   </body>
 </html>
