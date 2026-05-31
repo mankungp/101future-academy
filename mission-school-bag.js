@@ -1,8 +1,24 @@
 const missionItems = [
-  { word: "book", thai: "หนังสือ" },
-  { word: "pencil", thai: "ดินสอ" },
-  { word: "ruler", thai: "ไม้บรรทัด" },
-  { word: "eraser", thai: "ยางลบ" },
+  { word: "book", thai: "หนังสือ", image: "/assets/school-bag/book.svg", prompt: "Tap the book." },
+  { word: "pencil", thai: "ดินสอ", image: "/assets/school-bag/pencil.svg", prompt: "Find the pencil." },
+  { word: "ruler", thai: "ไม้บรรทัด", image: "/assets/school-bag/ruler.svg", prompt: "Touch the ruler." },
+  { word: "eraser", thai: "ยางลบ", image: "/assets/school-bag/eraser.svg", prompt: "Choose the eraser." },
+  { word: "school bag", thai: "กระเป๋านักเรียน", image: "/assets/school-bag/school-bag.svg", prompt: "Tap the school bag." },
+  { word: "notebook", thai: "สมุด", image: "/assets/school-bag/notebook.svg", prompt: "Find the notebook." },
+  { word: "pen", thai: "ปากกา", image: "/assets/school-bag/pen.svg", prompt: "Touch the pen." },
+  { word: "crayon", thai: "สีเทียน", image: "/assets/school-bag/crayon.svg", prompt: "Choose the crayon." },
+  { word: "scissors", thai: "กรรไกร", image: "/assets/school-bag/scissors.svg", prompt: "Tap the scissors." },
+  { word: "glue", thai: "กาว", image: "/assets/school-bag/glue.svg", prompt: "Find the glue." },
+  { word: "sharpener", thai: "กบเหลาดินสอ", image: "/assets/school-bag/sharpener.svg", prompt: "Touch the sharpener." },
+  { word: "desk", thai: "โต๊ะเรียน", image: "/assets/school-bag/desk.svg", prompt: "Choose the desk." },
+  { word: "chair", thai: "เก้าอี้", image: "/assets/school-bag/chair.svg", prompt: "Tap the chair." },
+  { word: "board", thai: "กระดาน", image: "/assets/school-bag/board.svg", prompt: "Find the board." },
+  { word: "clock", thai: "นาฬิกา", image: "/assets/school-bag/clock.svg", prompt: "Touch the clock." },
+  { word: "apple", thai: "แอปเปิล", image: "/assets/school-bag/apple.svg", prompt: "Choose the apple." },
+  { word: "banana", thai: "กล้วย", image: "/assets/school-bag/banana.svg", prompt: "Tap the banana." },
+  { word: "ball", thai: "ลูกบอล", image: "/assets/school-bag/ball.svg", prompt: "Find the ball." },
+  { word: "bottle", thai: "ขวดน้ำ", image: "/assets/school-bag/bottle.svg", prompt: "Touch the bottle." },
+  { word: "lunch box", thai: "กล่องข้าว", image: "/assets/school-bag/lunch-box.svg", prompt: "Choose the lunch box." },
 ];
 
 const promptText = document.querySelector("#missionPromptText");
@@ -25,6 +41,7 @@ let draggedWord = "";
 let isTransitioning = false;
 let correctBurstTimer = 0;
 let nextPromptTimer = 0;
+let activeSpeechFallbackTimer = 0;
 let preferredEnglishVoice = null;
 let missionStarted = false;
 let audioContext = null;
@@ -61,14 +78,6 @@ soundButton?.addEventListener("click", () => {
   speakPrompt();
 });
 
-itemsBox?.querySelectorAll(".mission-item").forEach((item) => {
-  item.addEventListener("click", () => chooseItem(item.dataset.word || "", item));
-  item.addEventListener("dragstart", (event) => {
-    draggedWord = item.dataset.word || "";
-    event.dataTransfer?.setData("text/plain", draggedWord);
-  });
-});
-
 bag?.addEventListener("dragover", (event) => {
   event.preventDefault();
   bag.classList.add("bag-ready");
@@ -93,16 +102,50 @@ function currentTarget() {
 function renderMission() {
   const target = currentTarget();
   setSoundButtonReplay();
-  if (promptHint) promptHint.textContent = "ฟังแล้วแตะของที่ได้ยิน";
-  promptText.textContent = `Tap the ${target.word}.`;
+  renderChoices(target);
+  if (promptHint) promptHint.textContent = `ด่าน ${currentIndex + 1} จาก ${missionItems.length}`;
+  promptText.textContent = target.prompt;
   stars.textContent = `${score}/${missionItems.length}`;
-  feedback.textContent = `โจทย์คือ ${target.word} (${target.thai})`;
+  feedback.innerHTML = `<strong>ฟังคำถาม</strong><span>แล้วแตะรูปที่ตรงกับคำว่า ${escapeHtml(target.word)}</span>`;
   missionScreen?.classList.remove("awaiting-start");
-  itemsBox?.querySelectorAll(".mission-item").forEach((item) => {
-    const packed = Number(item.dataset.packed || 0) === 1;
-    item.disabled = packed;
-    item.classList.toggle("target-hint", item.dataset.word === target.word && !packed);
+}
+
+function renderChoices(target) {
+  if (!itemsBox) return;
+  const choices = choiceSetFor(target);
+  itemsBox.innerHTML = choices.map((item) => `
+    <button class="mission-item mission-object" type="button" draggable="true" data-word="${escapeHtml(item.word)}" data-thai="${escapeHtml(item.thai)}">
+      <img class="object-image" src="${escapeHtml(item.image)}" alt="" />
+      <strong>${escapeHtml(item.word)}</strong>
+      <small>${escapeHtml(item.thai)}</small>
+    </button>
+  `).join("");
+
+  itemsBox.querySelectorAll(".mission-item").forEach((item) => {
+    item.addEventListener("click", () => chooseItem(item.dataset.word || "", item));
+    item.addEventListener("dragstart", (event) => {
+      draggedWord = item.dataset.word || "";
+      event.dataTransfer?.setData("text/plain", draggedWord);
+    });
+    item.classList.toggle("target-hint", item.dataset.word === target.word);
   });
+}
+
+function choiceSetFor(target) {
+  const start = currentIndex * 3 + 1;
+  const distractors = [];
+  for (let offset = 0; distractors.length < 3 && offset < missionItems.length * 2; offset += 1) {
+    const item = missionItems[(start + offset) % missionItems.length];
+    if (item.word !== target.word && !distractors.some((entry) => entry.word === item.word)) distractors.push(item);
+  }
+  return shuffleStable([target, ...distractors], currentIndex);
+}
+
+function shuffleStable(items, seed) {
+  return items
+    .map((item, index) => ({ item, sort: Math.sin((seed + 1) * 97 + index * 31) }))
+    .sort((a, b) => a.sort - b.sort)
+    .map((entry) => entry.item);
 }
 
 function chooseItem(word, item) {
@@ -118,21 +161,19 @@ function chooseItem(word, item) {
     playUiSound("wrong");
     showWrongBubble(item, selected);
     recordAttempt({ correct: false, selected, target });
-    const selectedPhrase = `No, this is ${withArticle(selected.word)}.`;
+    const selectedPhrase = `No. ${thingPhrase(selected)}.`;
     feedback.innerHTML = `
       <strong>${escapeHtml(selectedPhrase)}</strong>
-      <span>แต่โจทย์ถามหา ${escapeHtml(target.word)} (${escapeHtml(target.thai)}) ลองแตะคำว่า ${escapeHtml(target.word)} อีกครั้ง</span>
+      <span>โจทย์ถามหา ${escapeHtml(target.word)} (${escapeHtml(target.thai)}) ลองแตะรูปที่ถูกอีกครั้ง</span>
     `;
     highlightTarget(target.word);
-    speakText(selectedPhrase, { rate: 0.66, fallbackMs: 2200 });
+    speakText(selectedPhrase, { rate: 0.58, fallbackMs: estimateSpeechMs(selectedPhrase, 0.58) + 1200 });
     return;
   }
 
   item.classList.remove("correct");
   void item.offsetWidth;
   item.classList.add("correct");
-  item.dataset.packed = "1";
-  item.disabled = true;
   playUiSound("correct");
   animateItemToBag(item);
   addPackedItem(target);
@@ -143,22 +184,22 @@ function chooseItem(word, item) {
   score += 1;
   saveProgress();
   stars.textContent = `${score}/${missionItems.length}`;
-  feedback.innerHTML = `<strong>Yes, correct!</strong><span>${escapeHtml(target.word)} แปลว่า ${escapeHtml(target.thai)}</span>`;
-  const correctStartedAt = Date.now();
+  feedback.innerHTML = `<strong>Correct!</strong><span>${escapeHtml(target.word)} = ${escapeHtml(target.thai)}</span>`;
+
+  const praise = `Correct. ${target.word}.`;
   const advanceAfterPraise = () => {
-    const waitMs = Math.max(0, 2200 - (Date.now() - correctStartedAt));
     window.clearTimeout(nextPromptTimer);
-    nextPromptTimer = window.setTimeout(advanceMission, waitMs);
+    nextPromptTimer = window.setTimeout(advanceMission, 700);
   };
-  const speechStarted = speakText(`Yes, correct. ${target.word}.`, {
-    rate: 0.66,
-    fallbackMs: 2600,
+  const speechStarted = speakText(praise, {
+    rate: 0.58,
+    fallbackMs: estimateSpeechMs(praise, 0.58) + 1400,
     onEnd: advanceAfterPraise,
   });
 
   if (!speechStarted) {
     window.clearTimeout(nextPromptTimer);
-    nextPromptTimer = window.setTimeout(advanceMission, 2200);
+    nextPromptTimer = window.setTimeout(advanceMission, 1800);
   }
 }
 
@@ -171,23 +212,24 @@ function advanceMission() {
 
   renderMission();
   unlockMission();
-  window.setTimeout(speakPrompt, 280);
+  window.setTimeout(speakPrompt, 650);
 }
 
 function renderStartScreen() {
   const hasProgress = currentIndex > 0;
   missionStarted = false;
   stars.textContent = `${score}/${missionItems.length}`;
-  if (promptHint) promptHint.textContent = hasProgress ? "เล่นต่อจากข้อที่ค้างไว้" : "กดเริ่ม แล้วฟังคำสั่งแรก";
-  promptText.textContent = hasProgress ? "Ready to continue?" : "Ready to pack your school bag?";
+  if (promptHint) promptHint.textContent = hasProgress ? "เล่นต่อจากด่านที่ค้างไว้" : "กดเริ่ม แล้วฟังคำถามแรก";
+  promptText.textContent = hasProgress ? "Ready to continue?" : "Ready to play 20 picture rounds?";
   feedback.innerHTML = hasProgress
-    ? "<strong>Mission 1</strong><span>กด Resume Mission แล้วฟังโจทย์ถัดไป</span>"
-    : "<strong>Mission 1</strong><span>แตะของที่ได้ยิน แล้วเก็บใส่กระเป๋า</span>";
+    ? "<strong>Mission 1</strong><span>กด Resume Mission แล้วเล่นด่านถัดไป</span>"
+    : "<strong>Mission 1</strong><span>20 ด่าน ฟังคำศัพท์ แล้วแตะรูปภาพให้ถูก</span>";
   missionScreen?.classList.add("awaiting-start");
   setSoundButtonStart(hasProgress);
+  itemsBox.innerHTML = "";
+  renderChoices(currentTarget());
   itemsBox?.querySelectorAll(".mission-item").forEach((item) => {
-    const packed = Number(item.dataset.packed || 0) === 1;
-    item.disabled = packed;
+    item.disabled = true;
     item.classList.remove("target-hint", "target-hint-strong", "correct", "wrong");
   });
 }
@@ -197,7 +239,7 @@ function startMission() {
   playUiSound("start");
   missionStarted = true;
   renderMission();
-  window.setTimeout(speakPrompt, 420);
+  window.setTimeout(speakPrompt, 520);
 }
 
 function setSoundButtonStart(isResume = false) {
@@ -210,7 +252,7 @@ function setSoundButtonStart(isResume = false) {
 function setSoundButtonReplay() {
   if (!soundButton) return;
   soundButton.textContent = "Listen Again";
-  soundButton.setAttribute("aria-label", "ฟังคำสั่งอีกครั้ง");
+  soundButton.setAttribute("aria-label", "ฟังคำถามอีกครั้ง");
   soundButton.classList.remove("start-button");
 }
 
@@ -220,14 +262,17 @@ function highlightTarget(word) {
   });
   window.setTimeout(() => {
     itemsBox?.querySelectorAll(".mission-item").forEach((node) => node.classList.remove("target-hint-strong"));
-  }, 1200);
+  }, 1500);
 }
 
 function addPackedItem(item) {
   if (!packedItems) return;
   const chip = document.createElement("span");
-  chip.textContent = `${item.word} · ${item.thai}`;
+  chip.textContent = item.word;
   packedItems.append(chip);
+  while (packedItems.children.length > 4) {
+    packedItems.firstElementChild?.remove();
+  }
   bag?.classList.remove("bag-pop");
   void bag?.offsetWidth;
   bag?.classList.add("bag-pop");
@@ -254,7 +299,7 @@ function showCorrectBurst(item) {
   correctBurstTimer = window.setTimeout(() => {
     correctBurst.classList.add("hidden");
     correctBurst.classList.remove("burst-running");
-  }, 1800);
+  }, 2000);
 }
 
 function showWrongBubble(item, selected) {
@@ -263,7 +308,7 @@ function showWrongBubble(item, selected) {
   bubble.className = "object-feedback-bubble wrong-bubble";
   bubble.innerHTML = `<strong>${escapeHtml(selected.word)}</strong><small>${escapeHtml(selected.thai)}</small>`;
   item.append(bubble);
-  window.setTimeout(() => bubble.remove(), 1700);
+  window.setTimeout(() => bubble.remove(), 2000);
 }
 
 function animateItemToBag(item) {
@@ -296,12 +341,9 @@ function animateItemToBag(item) {
 }
 
 function restorePackedItems() {
-  itemsBox?.querySelectorAll(".mission-item").forEach((node, index) => {
-    if (index < currentIndex) {
-      node.dataset.packed = "1";
-      addPackedItem(missionItems[index]);
-    }
-  });
+  if (!packedItems) return;
+  packedItems.innerHTML = "";
+  missionItems.slice(0, currentIndex).forEach(addPackedItem);
 }
 
 function completeMission() {
@@ -310,14 +352,14 @@ function completeMission() {
   stars.textContent = `${score}/${missionItems.length}`;
   if (promptHint) promptHint.textContent = "Mission นี้จบแล้ว";
   promptText.textContent = "Great job!";
-  feedback.innerHTML = `<strong>Mission complete</strong><span>เก็บของใส่กระเป๋าครบแล้ว</span>`;
-  speakText("Great job! Mission complete.", { rate: 0.64, fallbackMs: 2600 });
+  feedback.innerHTML = `<strong>Mission complete</strong><span>เล่นครบ 20 ด่านแล้ว</span>`;
+  speakText("Great job. Mission complete.", { rate: 0.58, fallbackMs: 3600 });
   completeBox?.classList.remove("hidden");
   if (completeBox) {
     completeBox.innerHTML = `
       <span class="mini-label">สรุปสำหรับผู้ปกครอง</span>
-      <h3>School Bag Star</h3>
-      <p>วันนี้รู้จักคำศัพท์ 4 คำ: book, pencil, ruler, eraser และฝึกฟังคำสั่งสั้น ๆ เช่น Tap the book.</p>
+      <h3>Picture Word Star</h3>
+      <p>วันนี้เด็กฝึกฟังคำศัพท์และเลือกรูปภาพครบ ${missionItems.length} คำ โดยยังไม่ต้องฝึกประโยคยาว</p>
       <button id="restartMissionButton" class="button secondary" type="button">เล่นอีกครั้ง</button>
       <a class="button primary" href="/learn">กลับหน้าเรียน</a>
     `;
@@ -329,6 +371,8 @@ function completeMission() {
 function restartMission() {
   window.clearTimeout(correctBurstTimer);
   window.clearTimeout(nextPromptTimer);
+  window.clearTimeout(activeSpeechFallbackTimer);
+  window.speechSynthesis?.cancel?.();
   unlockMission();
   currentIndex = 0;
   score = 0;
@@ -337,35 +381,31 @@ function restartMission() {
   correctBurst?.classList.add("hidden");
   completeBox?.classList.add("hidden");
   missionStarted = true;
-  itemsBox?.querySelectorAll(".mission-item").forEach((item) => {
-    item.disabled = false;
-    item.dataset.packed = "0";
-    item.querySelector(".object-feedback-bubble")?.remove();
-    item.classList.remove("correct", "wrong", "target-hint", "target-hint-strong");
-  });
   renderMission();
-  window.setTimeout(speakPrompt, 350);
+  window.setTimeout(speakPrompt, 450);
 }
 
 function speakPrompt() {
   setSpeaking(true);
   playUiSound("prompt");
-  const started = speakText(`Tap the ${currentTarget().word}.`, {
-    rate: 0.64,
-    fallbackMs: 2200,
+  const target = currentTarget();
+  const started = speakText(target.prompt, {
+    rate: 0.58,
+    fallbackMs: estimateSpeechMs(target.prompt, 0.58) + 1200,
     onEnd: () => setSpeaking(false),
   });
   if (!started) {
-    window.setTimeout(() => setSpeaking(false), 900);
+    window.setTimeout(() => setSpeaking(false), 1200);
   }
 }
 
 function speakText(text, options = {}) {
   if (!("speechSynthesis" in window)) return false;
+  window.clearTimeout(activeSpeechFallbackTimer);
   window.speechSynthesis.cancel();
   const utterance = new SpeechSynthesisUtterance(text);
   utterance.lang = "en-US";
-  utterance.rate = options.rate || 0.68;
+  utterance.rate = options.rate || 0.58;
   utterance.pitch = 1.04;
   if (preferredEnglishVoice) utterance.voice = preferredEnglishVoice;
   if (typeof options.onEnd === "function") {
@@ -373,10 +413,10 @@ function speakText(text, options = {}) {
     const finish = () => {
       if (ended) return;
       ended = true;
-      window.clearTimeout(fallbackTimer);
+      window.clearTimeout(activeSpeechFallbackTimer);
       options.onEnd();
     };
-    const fallbackTimer = window.setTimeout(finish, options.fallbackMs || estimateSpeechMs(text, utterance.rate));
+    activeSpeechFallbackTimer = window.setTimeout(finish, options.fallbackMs || estimateSpeechMs(text, utterance.rate) + 1200);
     utterance.onend = finish;
     utterance.onerror = finish;
   }
@@ -416,9 +456,10 @@ function recordAttempt({ correct, selected, target }) {
     selected: selected.word,
     selectedThai: selected.thai,
     correct,
+    round: currentIndex + 1,
     createdAt: new Date().toISOString(),
   });
-  localStorage.setItem("101future.learningAttempts", JSON.stringify(attempts.slice(-80)));
+  localStorage.setItem("101future.learningAttempts", JSON.stringify(attempts.slice(-120)));
 }
 
 function readAttempts() {
@@ -453,34 +494,12 @@ function playUiSound(name) {
   if (context.state === "suspended") context.resume();
 
   const sounds = {
-    start: [
-      [523, 0.1, 0, 0.05],
-      [659, 0.1, 0.09, 0.05],
-      [784, 0.16, 0.18, 0.055],
-    ],
-    prompt: [
-      [740, 0.08, 0, 0.035],
-      [880, 0.08, 0.08, 0.032],
-    ],
-    correct: [
-      [660, 0.11, 0, 0.055],
-      [880, 0.16, 0.11, 0.06],
-      [1046, 0.22, 0.26, 0.05],
-    ],
-    wrong: [
-      [220, 0.12, 0, 0.04, 185],
-      [164, 0.16, 0.11, 0.035, 146],
-    ],
-    drop: [
-      [392, 0.09, 0, 0.035],
-      [294, 0.12, 0.08, 0.03],
-    ],
-    complete: [
-      [523, 0.1, 0, 0.05],
-      [659, 0.1, 0.1, 0.052],
-      [784, 0.1, 0.2, 0.055],
-      [1046, 0.26, 0.32, 0.05],
-    ],
+    start: [[523, 0.1, 0, 0.05], [659, 0.1, 0.09, 0.05], [784, 0.16, 0.18, 0.055]],
+    prompt: [[740, 0.08, 0, 0.035], [880, 0.08, 0.08, 0.032]],
+    correct: [[660, 0.11, 0, 0.055], [880, 0.16, 0.11, 0.06], [1046, 0.22, 0.26, 0.05]],
+    wrong: [[220, 0.12, 0, 0.04, 185], [164, 0.16, 0.11, 0.035, 146]],
+    drop: [[392, 0.09, 0, 0.035], [294, 0.12, 0.08, 0.03]],
+    complete: [[523, 0.1, 0, 0.05], [659, 0.1, 0.1, 0.052], [784, 0.1, 0.2, 0.055], [1046, 0.26, 0.32, 0.05]],
   };
 
   (sounds[name] || []).forEach(([frequency, duration, offset, volume, endFrequency]) => {
@@ -506,7 +525,13 @@ function scheduleTone(context, frequency, duration, offset, volume, endFrequency
 
 function estimateSpeechMs(text, rate) {
   const wordCount = String(text).trim().split(/\s+/).filter(Boolean).length || 1;
-  return Math.max(1500, Math.min(3600, (wordCount * 520) / Math.max(rate, 0.5)));
+  return Math.max(1700, Math.min(5200, (wordCount * 760) / Math.max(rate, 0.5)));
+}
+
+function thingPhrase(item) {
+  if (item.word === "scissors") return "These are scissors";
+  if (item.word === "glue") return "This is glue";
+  return `This is ${withArticle(item.word)}`;
 }
 
 function withArticle(word) {
