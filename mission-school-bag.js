@@ -1,15 +1,16 @@
-const assetVersion = "20260531-icons-v1";
+const assetVersion = "20260531-real-stationery-v1";
 const asset = (name) => `/assets/school-bag/${name}.svg?v=${assetVersion}`;
+const assetPng = (name) => `/assets/school-bag/${name}.png?v=${assetVersion}`;
 
 const missionItems = [
   { word: "book", thai: "หนังสือ", image: asset("book"), prompt: "Tap the book." },
-  { word: "pencil", thai: "ดินสอ", image: asset("pencil"), prompt: "Find the pencil." },
+  { word: "pencil", thai: "ดินสอ", image: assetPng("real-pencil"), prompt: "Find the pencil." },
   { word: "ruler", thai: "ไม้บรรทัด", image: asset("ruler"), prompt: "Touch the ruler." },
   { word: "eraser", thai: "ยางลบ", image: asset("eraser"), prompt: "Choose the eraser." },
   { word: "school bag", thai: "กระเป๋านักเรียน", image: asset("school-bag"), prompt: "Tap the school bag." },
   { word: "notebook", thai: "สมุด", image: asset("notebook"), prompt: "Find the notebook." },
-  { word: "pen", thai: "ปากกา", image: asset("pen"), prompt: "Touch the pen." },
-  { word: "crayon", thai: "สีเทียน", image: asset("crayon"), prompt: "Choose the crayon." },
+  { word: "pen", thai: "ปากกา", image: assetPng("real-pen"), prompt: "Touch the pen." },
+  { word: "crayon", thai: "สีเทียน", image: assetPng("real-crayon"), prompt: "Choose the crayon." },
   { word: "scissors", thai: "กรรไกร", image: asset("scissors"), prompt: "Tap the scissors." },
   { word: "glue", thai: "กาว", image: asset("glue"), prompt: "Find the glue." },
   { word: "sharpener", thai: "กบเหลาดินสอ", image: asset("sharpener"), prompt: "Touch the sharpener." },
@@ -118,7 +119,7 @@ function renderChoices(target) {
   const choices = choiceSetFor(target);
   itemsBox.innerHTML = choices.map((item) => `
     <button class="mission-item mission-object" type="button" draggable="true" data-word="${escapeHtml(item.word)}" data-thai="${escapeHtml(item.thai)}">
-      <img class="object-image" src="${escapeHtml(item.image)}" alt="" />
+      <img class="object-image object-image-${escapeHtml(slugifyWord(item.word))}" src="${escapeHtml(item.image)}" alt="" />
       <strong>${escapeHtml(item.word)}</strong>
       <small>${escapeHtml(item.thai)}</small>
     </button>
@@ -149,6 +150,10 @@ function shuffleStable(items, seed) {
     .map((item, index) => ({ item, sort: Math.sin((seed + 1) * 97 + index * 31) }))
     .sort((a, b) => a.sort - b.sort)
     .map((entry) => entry.item);
+}
+
+function slugifyWord(word) {
+  return String(word).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 }
 
 function chooseItem(word, item) {
