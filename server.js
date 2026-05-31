@@ -292,6 +292,9 @@ const STATIC_ROUTES = new Map([
   ["/mission/this-is", "mission-this-is.html"],
   ["/mission-this-is.html", "mission-this-is.html"],
   ["/mission-this-is.js", "mission-this-is.js"],
+  ["/mission/say-it-back", "mission-say-it-back.html"],
+  ["/mission-say-it-back.html", "mission-say-it-back.html"],
+  ["/mission-say-it-back.js", "mission-say-it-back.js"],
   ["/mission/lab", "mission-lab.html"],
   ["/mission-lab.html", "mission-lab.html"],
   ["/mission-lab.js", "mission-lab.js"],
@@ -373,7 +376,7 @@ async function main() {
   server.listen(PORT, HOST, () => {
     console.log(`101 Future server running at http://${HOST}:${PORT}`);
     if (!process.env.ADMIN_TOKEN) {
-      console.log(`Admin token: ${adminToken}`);
+      console.log(`Admin token generated and saved to ${TOKEN_FILE} (value hidden from logs)`);
     }
   });
 }
