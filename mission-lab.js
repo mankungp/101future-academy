@@ -1,8 +1,12 @@
+const assetVersion = "20260531-real-objects-v2";
+const asset = (name) => `/assets/school-bag/${name}.svg?v=${assetVersion}`;
+const assetPng = (name) => `/assets/school-bag/${name}.png?v=${assetVersion}`;
+
 const labObjects = [
-  { word: "book", thai: "หนังสือ", phrase: "This is a book.", image: "/assets/school-bag/book.svg" },
-  { word: "pencil", thai: "ดินสอ", phrase: "This is a pencil.", image: "/assets/school-bag/pencil.svg" },
-  { word: "ruler", thai: "ไม้บรรทัด", phrase: "This is a ruler.", image: "/assets/school-bag/ruler.svg" },
-  { word: "eraser", thai: "ยางลบ", phrase: "This is an eraser.", image: "/assets/school-bag/eraser.svg" },
+  { word: "book", thai: "หนังสือ", phrase: "This is a book.", image: asset("book") },
+  { word: "pencil", thai: "ดินสอ", phrase: "This is a pencil.", image: assetPng("real-pencil") },
+  { word: "ruler", thai: "ไม้บรรทัด", phrase: "This is a ruler.", image: asset("ruler") },
+  { word: "eraser", thai: "ยางลบ", phrase: "This is an eraser.", image: asset("eraser") },
 ];
 
 const gameConfigs = [
