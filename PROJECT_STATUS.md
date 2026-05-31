@@ -47,6 +47,7 @@ Done:
   - Unit title: `My School Bag`
   - Mission 1: `/mission/school-bag` for 20 non-repeating picture-word rounds
   - Mission 2: `/mission/this-is` for listening to `This is a/an ...` sentences and tapping the matching object
+  - Mission 3: `/mission/say-it-back` for speaking practice of `This is a/an ...`; scripted, no-fail, in-browser word match via SpeechRecognition with a record-and-playback fallback, no real-time AI yet
   - Story: `My School Bag`
   - Vocabulary: school bag, book, pencil, ruler
   - 3-question exercise
@@ -62,6 +63,7 @@ Done:
 - Mission 1 now contains the 20-round picture-word prototype directly; `/mission/lab` redirects back to Mission 1.
 - Mission 1 now has a first sound-design layer: start chime, prompt cue, wrong-answer tone, correct ding, bag-drop sound, and complete fanfare using Web Audio while final human TTS is still pending.
 - Added more visible interaction animation: listening state on the prompt card, wrong-answer object bubble, and a correct item flying into the school bag.
+- Mission 1 visuals were updated toward a more realistic/3D object style. `pencil`, `pen`, and `crayon` use inspected and cropped Canva PNG assets; other objects use polished local SVG assets. Current asset cache marker: `20260531-real-objects-v2`.
 - English ป.1 Unit 1 source doc exists at `ENGLISH_P1_UNIT1.md`.
 - Mission attempts now start saving locally in `localStorage` under `101future.learningAttempts` so repeated mistakes can become parent/AI feedback later.
 
@@ -90,7 +92,7 @@ Payment:
 Learning product:
 
 - Need a real grade-by-grade curriculum map beyond English ป.1 Unit 1.
-- English ป.1 Unit 1 has Mission 1 and Mission 2 prototypes, but still needs Mission 3 speaking and parent summary output.
+- English ป.1 Unit 1 now has Mission 1, Mission 2, and a Mission 3 speaking prototype. Mission 3 still needs a final human TTS voice and, later, server-side speaking records; standalone parent dashboard output is still pending.
 - Need the next animation polish pass: bag open/close, stronger completion badge, and a more finished lesson-end screen.
 - Need first real lessons for English ป.1, then expand grade by grade.
 - Need first real lessons for Math, Science, and Thai later.
@@ -136,7 +138,7 @@ LINE_CALLBACK_URL=https://www.101future.com/auth/line/callback
 3. From Admin, create a payment order from a LINE interest.
 4. Test parent payment page with that order link.
 5. Test KBank callback unlocks learning access.
-6. Build English ป.1 Mission 3: speaking practice for `This is a/an ...`.
+6. Done: English ป.1 Mission 3 speaking practice for `This is a/an ...` at `/mission/say-it-back` (scripted, no-fail). Next: select final human TTS voice and add server-side speaking records.
 7. Generate/select real human TTS voice samples before replacing browser speech.
 8. Create Canva collateral for Unit 1: cover, flashcards, sentence cards, parent summary, completion badge.
 9. Add server-side progress tracking for mission completion and score.
