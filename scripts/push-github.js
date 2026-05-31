@@ -12,6 +12,7 @@ const files = [
   "ENGLISH_P1_UNIT1.md",
   "OPEN_THIS_FIRST.md",
   "PROJECT_STATUS.md",
+  "CODEX_WORK_ORDERS.md",
   "README.md",
   "admin.html",
   "admin.js",
