@@ -1,7 +1,15 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="sharpener">
-  <rect width="120" height="120" rx="18" fill="#ecfeff"/>
-  <rect x="26" y="42" width="68" height="42" rx="10" fill="#06b6d4" stroke="#0e7490" stroke-width="5"/>
-  <ellipse cx="58" cy="63" rx="18" ry="12" fill="#cffafe" stroke="#155e75" stroke-width="4"/>
-  <path d="M82 48l8 8M32 78h52" stroke="#155e75" stroke-width="4" stroke-linecap="round"/>
-  <circle cx="58" cy="63" r="4" fill="#155e75"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" role="img" aria-label="sharpener">
+  <defs>
+    <linearGradient id="sharpBody" x1="58" x2="181" y1="57" y2="129" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#45d7ea"/>
+      <stop offset="1" stop-color="#0891b2"/>
+    </linearGradient>
+  </defs>
+  <rect width="240" height="180" rx="30" fill="#ecfeff"/>
+  <ellipse cx="120" cy="146" rx="56" ry="11" fill="#bae6fd" opacity=".7"/>
+  <rect x="56" y="56" width="128" height="76" rx="18" fill="url(#sharpBody)" stroke="#0e7490" stroke-width="8"/>
+  <ellipse cx="112" cy="94" rx="34" ry="23" fill="#cffafe" stroke="#155e75" stroke-width="7"/>
+  <ellipse cx="112" cy="94" rx="13" ry="9" fill="#155e75"/>
+  <path d="M154 70l18 18M70 120h92" stroke="#155e75" stroke-width="7" stroke-linecap="round"/>
+  <path d="M75 66h58" stroke="#67e8f9" stroke-width="7" stroke-linecap="round" opacity=".9"/>
 </svg>
