@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
     <title>Say It Back | 101 Future Academy</title>
-    <link rel="stylesheet" href="/styles.css?v=20260531-fit-missions-3" />
+    <link rel="stylesheet" href="/styles.css?v=20260531-mission-polish-v1" />
     <style>
       /* Mission 3 speaking UI — kept inline so styles.css stays untouched for parallel edits */
       .say-stage {
@@ -89,6 +89,33 @@
       }
       .say-heard strong { color: #4338ca; }
       .say-hidden { display: none !important; }
+      @media (max-width: 760px) {
+        .say-stage {
+          gap: 8px;
+        }
+        .say-object-card {
+          gap: 12px;
+          padding: 12px;
+        }
+        .say-object-card img {
+          width: 72px;
+          height: 72px;
+        }
+        .say-object-card .say-object-text strong {
+          font-size: 1.18rem;
+        }
+        .say-object-card .say-object-text small {
+          font-size: 0.9rem;
+        }
+        .mic-button {
+          min-height: 58px;
+          padding: 14px 16px;
+          font-size: 1rem;
+        }
+        .say-mic-icon {
+          font-size: 0.95rem;
+        }
+      }
     </style>
   </head>
   <body class="mission-body no-zoom-body">
@@ -149,7 +176,7 @@
           </article>
 
           <div class="say-object-card">
-            <img id="sayObjectImage" class="object-image" src="/assets/school-bag/book.svg" alt="" />
+            <img id="sayObjectImage" class="object-image object-image-book" src="/assets/school-bag/book.svg?v=20260531-real-objects-v2" alt="" />
             <span class="say-object-text">
               <strong id="sayObjectPhrase">This is a book.</strong>
               <small id="sayObjectThai">นี่คือหนังสือ</small>
@@ -158,13 +185,13 @@
 
           <div class="say-mic-row">
             <button id="micButton" class="mic-button" type="button" aria-label="กดเพื่อพูดตาม" disabled>
-              <span class="say-mic-icon" aria-hidden="true">🎤</span>
+              <span class="say-mic-icon" aria-hidden="true">ไมค์</span>
               <span id="micButtonLabel">พูดตาม</span>
             </button>
             <p id="sayHeard" class="say-heard" aria-live="polite"></p>
             <div class="say-secondary-row">
               <button id="playSelfButton" class="button secondary say-hidden" type="button">ฟังเสียงตัวเอง</button>
-              <button id="iSaidItButton" class="button secondary say-hidden" type="button">พูดแล้ว ✓ ไปต่อ</button>
+              <button id="iSaidItButton" class="button secondary say-hidden" type="button">พูดแล้ว ไปต่อ</button>
             </div>
           </div>
         </div>
@@ -173,6 +200,6 @@
       </section>
     </main>
 
-    <script src="/mission-say-it-back.js?v=20260531-say-it-back-v1" defer></script>
+    <script src="/mission-say-it-back.js?v=20260531-mission-polish-v1" defer></script>
   </body>
 </html>
