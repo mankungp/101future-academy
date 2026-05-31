@@ -27,6 +27,8 @@ const files = [
   "learn.js",
   "mission-school-bag.html",
   "mission-school-bag.js",
+  "mission-lab.html",
+  "mission-lab.js",
   "mission-this-is.html",
   "mission-this-is.js",
   "package-lock.json",
