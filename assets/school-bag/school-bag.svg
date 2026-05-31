@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="school bag">
+  <rect width="120" height="120" rx="18" fill="#eef4ff"/>
+  <path d="M42 42v-8c0-11 8-18 18-18s18 7 18 18v8" fill="none" stroke="#172554" stroke-width="8" stroke-linecap="round"/>
+  <rect x="24" y="38" width="72" height="62" rx="12" fill="#3157ff"/>
+  <rect x="34" y="54" width="52" height="32" rx="8" fill="#5b78ff"/>
+  <path d="M24 66h72" stroke="#172554" stroke-width="5" opacity=".3"/>
+  <circle cx="60" cy="70" r="5" fill="#fff"/>
+</svg>
