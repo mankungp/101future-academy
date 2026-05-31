@@ -50,6 +50,8 @@ const files = [
   "mission-lab.js",
   "mission-this-is.html",
   "mission-this-is.js",
+  "mission-say-it-back.html",
+  "mission-say-it-back.js",
   "package-lock.json",
   "package.json",
   "pay.html",
