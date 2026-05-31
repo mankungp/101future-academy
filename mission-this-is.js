@@ -27,6 +27,7 @@ let preferredEnglishVoice = null;
 let missionStarted = false;
 let audioContext = null;
 
+installNoZoomGuard();
 loadVoices();
 if ("speechSynthesis" in window) {
   window.speechSynthesis.addEventListener?.("voiceschanged", loadVoices);
@@ -458,4 +459,22 @@ function escapeHtml(value) {
       "'": "&#039;",
     }[char];
   });
+}
+
+function installNoZoomGuard() {
+  const prevent = (event) => event.preventDefault();
+  const isLockedMission = () => document.body?.classList.contains("no-zoom-body");
+  document.addEventListener("gesturestart", prevent, { passive: false });
+  document.addEventListener("gesturechange", prevent, { passive: false });
+  document.addEventListener("gestureend", prevent, { passive: false });
+  document.addEventListener("touchmove", (event) => {
+    if (event.touches && (event.touches.length > 1 || isLockedMission())) event.preventDefault();
+  }, { passive: false });
+
+  let lastTouchEnd = 0;
+  document.addEventListener("touchend", (event) => {
+    const now = Date.now();
+    if (now - lastTouchEnd <= 320) event.preventDefault();
+    lastTouchEnd = now;
+  }, { passive: false });
 }
