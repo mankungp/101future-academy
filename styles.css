@@ -1963,6 +1963,16 @@ h3 {
   object-fit: contain;
 }
 
+.object-image-crayon {
+  width: min(150px, 92%);
+}
+
+.object-image-pencil,
+.object-image-pen {
+  width: min(86px, 62%);
+  height: 118px;
+}
+
 .object-shape {
   position: relative;
   display: block;
@@ -2695,6 +2705,17 @@ h3 {
     height: 58px;
   }
 
+  .object-image-crayon {
+    width: min(128px, 94%);
+    height: 58px;
+  }
+
+  .object-image-pencil,
+  .object-image-pen {
+    width: min(54px, 44%);
+    height: 82px;
+  }
+
   .object-shape {
     width: 50px;
     height: 50px;
@@ -3217,6 +3238,17 @@ body.no-zoom-body {
     height: 58px;
   }
 
+  .no-zoom-body .object-image-crayon {
+    width: min(132px, 94%);
+    height: 56px;
+  }
+
+  .no-zoom-body .object-image-pencil,
+  .no-zoom-body .object-image-pen {
+    width: min(54px, 44%);
+    height: 84px;
+  }
+
   .no-zoom-body .object-feedback-bubble {
     inset: 4px 4px auto auto;
     min-width: 58px;
@@ -3387,6 +3419,15 @@ body.no-zoom-body {
 
   .no-zoom-body .object-image {
     height: 46px;
+  }
+
+  .no-zoom-body .object-image-crayon {
+    height: 46px;
+  }
+
+  .no-zoom-body .object-image-pencil,
+  .no-zoom-body .object-image-pen {
+    height: 70px;
   }
 
   .no-zoom-body .mission-feedback-large {
