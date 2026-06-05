@@ -1,139 +1,33 @@
-const assetVersion = "20260531-real-objects-v2";
-const asset = (name) => `/assets/school-bag/${name}.svg?v=${assetVersion}`;
-const assetPng = (name) => `/assets/school-bag/${name}.png?v=${assetVersion}`;
-
-const labObjects = [
-  { word: "book", thai: "หนังสือ", phrase: "This is a book.", image: asset("book") },
-  { word: "pencil", thai: "ดินสอ", phrase: "This is a pencil.", image: assetPng("real-pencil") },
-  { word: "ruler", thai: "ไม้บรรทัด", phrase: "This is a ruler.", image: asset("ruler") },
-  { word: "eraser", thai: "ยางลบ", phrase: "This is an eraser.", image: asset("eraser") },
-];
-
-const gameConfigs = [
-  game("word-hunt", "Word Hunt", "ฟังคำศัพท์เดี่ยว แล้วแตะของให้ถูก", "word", (item) => ({
-    speech: `Tap the ${item.word}.`,
-    visible: `Tap the ${item.word}.`,
-    target: item.word,
-    explain: `${item.word} = ${item.thai}`,
-  })),
-  game("this-is", "This Is...", "ฟังประโยค This is a/an ... แล้วแตะรูป", "sentence", (item) => ({
-    speech: item.phrase,
-    visible: item.phrase,
-    target: item.word,
-    explain: `${item.phrase} = นี่คือ${item.thai}`,
-  })),
-  game("i-have", "I Have...", "ฟังประโยค I have a/an ... แล้วแตะของ", "word", (item) => ({
-    speech: `I have ${withArticle(item.word)}.`,
-    visible: `I have ${withArticle(item.word)}.`,
-    target: item.word,
-    explain: `I have ${withArticle(item.word)}. = ฉันมี${item.thai}`,
-  })),
-  game("meaning-match", "Meaning Match", "ดูคำศัพท์กับคำแปล แล้วแตะรูปให้ตรง", "thai", (item) => ({
-    speech: `${item.word} means ${item.thai}. Tap the ${item.word}.`,
-    visible: `${item.word} = ${item.thai}`,
-    target: item.word,
-    explain: `${item.word} แปลว่า ${item.thai}`,
-  })),
-  game("classroom-tap", "Classroom Tap", "ฟังคำสั่งสั้นในห้องเรียน", "word", (item) => ({
-    speech: `Find the ${item.word}.`,
-    visible: `Find the ${item.word}.`,
-    target: item.word,
-    explain: `Find = หา / ${item.word} = ${item.thai}`,
-  })),
-  game("listen-carefully", "Listen Carefully", "ฟังคำซ้ำช้า ๆ แล้วแตะ", "image", (item) => ({
-    speech: `${item.word}. ${item.word}. Tap the ${item.word}.`,
-    visible: `${item.word}. ${item.word}.`,
-    target: item.word,
-    explain: `ได้ยินคำว่า ${item.word}`,
-  })),
-  game("pack-again", "Pack Again", "ทบทวนของในกระเป๋าแบบเร็ว", "word", (item) => ({
-    speech: `Put the ${item.word} in the bag.`,
-    visible: `Put the ${item.word} in the bag.`,
-    target: item.word,
-    explain: `Put in the bag = ใส่ในกระเป๋า`,
-  })),
-  game("article-a-an", "A or An", "ฝึกฟัง a/an จากประโยคจริง", "sentence", (item) => ({
-    speech: `This is ${withArticle(item.word)}.`,
-    visible: `This is ${withArticle(item.word)}.`,
-    target: item.word,
-    explain: item.word === "eraser" ? "eraser ใช้ an" : `${item.word} ใช้ a`,
-  })),
-  game("my-item", "My Item", "ฟัง My แล้วเลือกของ", "word", (item) => ({
-    speech: `This is my ${item.word}.`,
-    visible: `This is my ${item.word}.`,
-    target: item.word,
-    explain: `my ${item.word} = ${item.thai}ของฉัน`,
-  })),
-  game("touch-and-say", "Touch And Say", "แตะให้ถูก แล้วดูประโยคสำหรับพูดตาม", "sentence", (item) => ({
-    speech: `Touch the ${item.word}.`,
-    visible: `Touch the ${item.word}.`,
-    target: item.word,
-    explain: `พูดตาม: ${item.phrase}`,
-  })),
-  game("school-words", "School Words", "แยกคำศัพท์ของใช้ในโรงเรียน", "word", (item) => ({
-    speech: `School word: ${item.word}.`,
-    visible: `School word: ${item.word}`,
-    target: item.word,
-    explain: `${item.word} เป็นของใช้ในโรงเรียน`,
-  })),
-  game("hear-sentence", "Hear The Sentence", "ฟังประโยคเต็มแล้วเลือกภาพ", "image", (item) => ({
-    speech: `Look. ${item.phrase}`,
-    visible: `Look. ${item.phrase}`,
-    target: item.word,
-    explain: `ประโยคคือ ${item.phrase}`,
-  })),
-  game("teacher-says", "Teacher Says", "เหมือนครูบอกในห้องเรียน", "word", (item) => ({
-    speech: `Teacher says, tap the ${item.word}.`,
-    visible: `Teacher says: tap the ${item.word}.`,
-    target: item.word,
-    explain: `Teacher says = ครูบอกว่า`,
-  })),
-  game("quick-check", "Quick Check", "เช็กว่าเด็กจำคำได้เร็วไหม", "word", (item) => ({
-    speech: `${item.word}.`,
-    visible: item.word,
-    target: item.word,
-    explain: `จำคำว่า ${item.word} ได้แล้ว`,
-  })),
-  game("thai-clue", "Thai Clue", "ใช้คำใบ้ภาษาไทย แล้วแตะคำอังกฤษ", "thai", (item) => ({
-    speech: `Tap ${withArticle(item.word)}.`,
-    visible: `แตะ: ${item.thai}`,
-    target: item.word,
-    explain: `${item.thai} คือ ${item.word}`,
-  })),
-  game("what-is-this", "What Is This?", "ฟังคำถามง่าย แล้วแตะคำตอบ", "sentence", (item) => ({
-    speech: `What is this? This is ${withArticle(item.word)}.`,
-    visible: `What is this?`,
-    target: item.word,
-    explain: `คำตอบคือ ${item.phrase}`,
-  })),
-  game("slow-listen", "Slow Listen", "ฟังช้าพิเศษสำหรับเด็กเล็ก", "image", (item) => ({
-    speech: `Listen. ${item.word}. Tap the ${item.word}.`,
-    visible: `Listen... ${item.word}`,
-    target: item.word,
-    explain: `ฟังช้า ๆ: ${item.word}`,
-  })),
-  game("sentence-review", "Sentence Review", "ทวนประโยค This is... อีกครั้ง", "sentence", (item) => ({
-    speech: `${item.phrase} Tap the picture.`,
-    visible: item.phrase,
-    target: item.word,
-    explain: `จับคู่ประโยคกับภาพ`,
-  })),
-  game("parent-check", "Parent Check", "ด่านสั้นให้ผู้ปกครองดูว่าเด็กจำอะไรได้", "word", (item) => ({
-    speech: `Can you find the ${item.word}?`,
-    visible: `Can you find the ${item.word}?`,
-    target: item.word,
-    explain: `เด็กหา ${item.word} ได้`,
-  })),
-  game("unit-review", "Unit Review", "รวมคำกับประโยคก่อนจบชุด", "sentence", (item, index) => ({
-    speech: index % 2 === 0 ? `Tap the ${item.word}.` : item.phrase,
-    visible: index % 2 === 0 ? `Tap the ${item.word}.` : item.phrase,
-    target: item.word,
-    explain: index % 2 === 0 ? `${item.word} = ${item.thai}` : item.phrase,
-  })),
-];
+const curriculumUrl = "/curriculum/english-p1.json";
+const imageBase = "/assets/english-p1/images/";
+const audioBase = "/assets/english-p1/audio/";
+const schoolBagAssetVersion = "20260531-real-objects-v2";
+const schoolBagFallbackImages = new Set([
+  "apple",
+  "ball",
+  "banana",
+  "board",
+  "book",
+  "bottle",
+  "chair",
+  "clock",
+  "crayon",
+  "desk",
+  "eraser",
+  "glue",
+  "lunch-box",
+  "notebook",
+  "pen",
+  "pencil",
+  "ruler",
+  "school-bag",
+  "scissors",
+  "sharpener",
+]);
 
 const gameList = document.querySelector("#gameList");
 const gameSelect = document.querySelector("#gameSelect");
+const labEyebrow = document.querySelector("#labEyebrow");
 const labTitle = document.querySelector("#labTitle");
 const labSubtitle = document.querySelector("#labSubtitle");
 const gameBadge = document.querySelector("#gameBadge");
@@ -151,77 +45,157 @@ const missionScreen = document.querySelector(".mission-screen");
 const correctBurst = document.querySelector("#correctBurst");
 const correctBurstWord = document.querySelector("#correctBurstWord");
 
-let selectedGameIndex = gameIndexFromUrl();
+const params = new URLSearchParams(location.search);
+let curriculum = null;
+let playableUnits = [];
+let currentUnitIndex = 0;
 let currentRound = 0;
 let score = 0;
 let missionStarted = false;
 let isTransitioning = false;
 let correctBurstTimer = 0;
 let nextPromptTimer = 0;
-let preferredEnglishVoice = null;
 let audioContext = null;
+let activeTeacherAudio = null;
+let teacherAudioToken = 0;
 
 installNoZoomGuard();
-loadVoices();
-if ("speechSynthesis" in window) {
-  window.speechSynthesis.addEventListener?.("voiceschanged", loadVoices);
-  window.speechSynthesis.onvoiceschanged = loadVoices;
-}
-
-renderGameList();
-loadGame(selectedGameIndex);
+loadCurriculum().catch((error) => {
+  if (labTitle) labTitle.textContent = "โหลดบทเรียนไม่สำเร็จ";
+  if (feedback) feedback.innerHTML = `<strong>ขออภัย</strong><span>${escapeHtml(error.message || "ไม่พบไฟล์หลักสูตร")}</span>`;
+});
 
 gameSelect?.addEventListener("change", () => {
-  loadGame(Number(gameSelect.value || 0));
+  loadUnitByIndex(Number(gameSelect.value || 0), { reset: true, updateUrl: true });
 });
 
 soundButton?.addEventListener("click", () => {
   if (!missionStarted) {
-    startGame();
+    startMission();
     return;
   }
-  speakPrompt();
+  playPromptAudio();
 });
 
-function game(id, title, description, choiceLabel, makeQuestion) {
+async function loadCurriculum() {
+  const response = await fetch(curriculumUrl);
+  if (!response.ok) throw new Error("โหลด curriculum/english-p1.json ไม่ได้");
+  curriculum = await response.json();
+  playableUnits = (curriculum.units || [])
+    .filter((unit) => Number(unit.order) >= 2)
+    .map(normalizeUnit)
+    .filter((unit) => unit.entries.length);
+  if (!playableUnits.length) throw new Error("ยังไม่มี unit ที่เล่นได้");
+  currentUnitIndex = initialUnitIndex();
+  renderUnitPicker();
+  loadUnitByIndex(currentUnitIndex, { reset: true, updateUrl: false });
+}
+
+function normalizeUnit(unit) {
+  const entries = (unit.vocab || unit.items || [])
+    .map((entry, index) => normalizeEntry(unit, entry, index))
+    .filter((entry) => entry.key && entry.label && entry.audio);
   return {
-    id,
-    title,
-    description,
-    choiceLabel,
-    questions: labObjects.map((item, index) => makeQuestion(item, index)),
+    id: unit.id,
+    order: Number(unit.order || 0),
+    title: unit.title || `Unit ${unit.order}`,
+    theme: unit.theme || "",
+    status: unit.status || "",
+    lessonId: lessonIdForUnit(unit),
+    entries,
   };
 }
 
-function gameIndexFromUrl() {
-  const params = new URLSearchParams(location.search);
-  const raw = Number(params.get("game") || 1);
-  return Number.isFinite(raw) ? Math.max(0, Math.min(gameConfigs.length - 1, raw - 1)) : 0;
+function normalizeEntry(unit, entry, index) {
+  const key = entry.key || entry.letter || entry.en || `item-${index + 1}`;
+  const image = entry.image || key;
+  const audio = entry.audio || key;
+  const english = entry.en || entry.word || entry.letter || key;
+  const label = unit.id === "u2-abc-phonics" && entry.letter
+    ? `${entry.letter.toUpperCase()} · ${entry.en}`
+    : english;
+  const prompt = promptForEntry(unit, entry, label);
+  return {
+    key: String(key),
+    imageKey: String(image),
+    audioKey: String(audio),
+    label: String(label),
+    english: String(english),
+    thai: String(entry.th || entry.sound || ""),
+    prompt,
+    sentence: String(entry.sentence || prompt),
+    imageSrc: resolveImageSrc(unit, image),
+    fallbackImageSrc: resolveFallbackImageSrc(unit, image),
+    audio: `${audioBase}${encodeURIComponent(audio)}.mp3`,
+  };
 }
 
-function renderGameList() {
+function promptForEntry(unit, entry, label) {
+  if (unit.id === "u2-abc-phonics" && entry.letter) return `Find ${entry.en}.`;
+  if (unit.id === "u4-classroom-commands") return `Listen. ${entry.en || label}`;
+  if (unit.id === "u5-numbers-1-20") return `Find number ${entry.digit || entry.en}.`;
+  if (unit.id === "u6-colors") return `What color is it? ${entry.en || label}.`;
+  if (unit.id === "u7-my-family") return `Who is it? ${entry.en || label}.`;
+  if (unit.id === "u11-feelings") return `How are you? ${entry.en || label}.`;
+  return `What is it? ${entry.en || label}.`;
+}
+
+function resolveImageSrc(unit, image) {
+  if (!image) return "";
+  const value = String(image);
+  if (value.startsWith("/")) return value;
+  if (unit.order === 1) return schoolBagImage(value);
+  return `${imageBase}${encodeURIComponent(value)}.png`;
+}
+
+function resolveFallbackImageSrc(unit, image) {
+  if (!image) return "";
+  const value = String(image);
+  if (unit.order === 1) return "";
+  if (schoolBagFallbackImages.has(value)) return schoolBagImage(value);
+  return "";
+}
+
+function schoolBagImage(image) {
+  return `/assets/school-bag/${encodeURIComponent(image)}.svg?v=${schoolBagAssetVersion}`;
+}
+
+function lessonIdForUnit(unit) {
+  const order = Number(unit.order || 0);
+  const existing = window.FutureGamification?.lessons?.find((lesson) => lesson.unit === `Unit ${order}` && lesson.title === unit.title);
+  return existing?.id || `english-p1-unit${order}-${slugify(unit.title)}`;
+}
+
+function initialUnitIndex() {
+  const unitParam = params.get("unit") || "";
+  const idParam = params.get("id") || "";
+  const order = Number(unitParam);
+  const foundById = idParam ? playableUnits.findIndex((unit) => unit.id === idParam) : -1;
+  if (foundById >= 0) return foundById;
+  const foundByOrder = Number.isFinite(order) ? playableUnits.findIndex((unit) => unit.order === order) : -1;
+  return foundByOrder >= 0 ? foundByOrder : 0;
+}
+
+function renderUnitPicker() {
   if (gameSelect) {
-    gameSelect.innerHTML = gameConfigs.map((gameItem, index) => `
-      <option value="${index}">${String(index + 1).padStart(2, "0")} · ${escapeHtml(gameItem.title)}</option>
+    gameSelect.innerHTML = playableUnits.map((unit, index) => `
+      <option value="${index}">Unit ${unit.order} · ${escapeHtml(unit.title)}</option>
     `).join("");
-    gameSelect.value = String(selectedGameIndex);
   }
   if (!gameList) return;
-  gameList.innerHTML = gameConfigs.map((gameItem, index) => `
-    <button class="game-picker ${index === selectedGameIndex ? "active" : ""}" type="button" data-game-index="${index}">
-      <span>${String(index + 1).padStart(2, "0")}</span>
-      <strong>${escapeHtml(gameItem.title)}</strong>
+  gameList.innerHTML = playableUnits.map((unit, index) => `
+    <button class="game-picker ${index === currentUnitIndex ? "active" : ""}" type="button" data-unit-index="${index}">
+      <span>${String(unit.order).padStart(2, "0")}</span>
+      <strong>${escapeHtml(unit.title)}</strong>
     </button>
   `).join("");
   gameList.querySelectorAll(".game-picker").forEach((button) => {
-    button.addEventListener("click", () => {
-      loadGame(Number(button.dataset.gameIndex || 0));
-    });
+    button.addEventListener("click", () => loadUnitByIndex(Number(button.dataset.unitIndex || 0), { reset: true, updateUrl: true }));
   });
 }
 
-function loadGame(index) {
-  selectedGameIndex = Math.max(0, Math.min(gameConfigs.length - 1, index));
+function loadUnitByIndex(index, options = {}) {
+  currentUnitIndex = Math.max(0, Math.min(playableUnits.length - 1, index));
   currentRound = 0;
   score = 0;
   missionStarted = false;
@@ -232,118 +206,170 @@ function loadGame(index) {
   completeBox?.classList.add("hidden");
   missionScreen?.classList.add("awaiting-start");
   missionScreen?.classList.remove("is-transitioning", "is-speaking");
-  renderGameList();
-  renderGameShell();
+  if (gameSelect) gameSelect.value = String(currentUnitIndex);
+  renderUnitPicker();
+  renderUnitShell();
   renderChoices();
   setStartButton();
+  if (options.updateUrl) {
+    const unit = currentUnit();
+    history.replaceState(null, "", `/mission/lab?unit=${unit.order}&reset=1`);
+  }
+  if (options.reset) {
+    localStorage.removeItem(storageKey(currentUnit()));
+  }
 }
 
-function currentGame() {
-  return gameConfigs[selectedGameIndex] || gameConfigs[0];
+function currentUnit() {
+  return playableUnits[currentUnitIndex] || playableUnits[0];
 }
 
 function currentQuestion() {
-  return currentGame().questions[currentRound] || currentGame().questions[0];
+  return currentUnit().entries[currentRound] || currentUnit().entries[0];
 }
 
-function renderGameShell() {
-  const gameItem = currentGame();
-  if (labTitle) labTitle.textContent = "Mission Lab";
-  if (labSubtitle) labSubtitle.textContent = "20 เกมสั้นสำหรับลองกับเด็ก ป.1";
-  if (gameBadge) gameBadge.textContent = `Game ${String(selectedGameIndex + 1).padStart(2, "0")}`;
-  if (gameTitle) gameTitle.textContent = gameItem.title;
-  if (gameDescription) gameDescription.textContent = gameItem.description;
-  if (stars) stars.textContent = `${score}/${gameItem.questions.length}`;
-  if (promptHint) promptHint.textContent = "กดเริ่ม แล้วฟังโจทย์";
+function currentChoices() {
+  const entries = currentUnit().entries;
+  const target = currentQuestion();
+  const choices = [target];
+  let offset = 1;
+  while (choices.length < Math.min(4, entries.length) && offset <= entries.length + 4) {
+    const candidate = entries[(currentRound + offset * 2 + currentUnit().order) % entries.length];
+    if (candidate && !choices.some((item) => item.key === candidate.key)) choices.push(candidate);
+    offset += 1;
+  }
+  return rotateChoices(choices, currentRound + currentUnit().order);
+}
+
+function rotateChoices(choices, amount) {
+  if (!choices.length) return choices;
+  const copy = [...choices];
+  const steps = amount % copy.length;
+  return copy.slice(steps).concat(copy.slice(0, steps));
+}
+
+function renderUnitShell() {
+  const unit = currentUnit();
+  const total = unit.entries.length;
+  if (labEyebrow) labEyebrow.textContent = `English Mission · ป.1 · Unit ${unit.order}`;
+  if (labTitle) labTitle.textContent = unit.title;
+  if (labSubtitle) labSubtitle.textContent = `ฝึก ${total} คำด้วยรูปและเสียงครูจาก cache`;
+  if (gameBadge) gameBadge.textContent = `Unit ${unit.order}`;
+  if (gameTitle) gameTitle.textContent = unit.title;
+  if (gameDescription) gameDescription.textContent = descriptionForUnit(unit);
+  if (stars) stars.textContent = `${score}/${total}`;
+  if (promptHint) promptHint.textContent = "กดเริ่ม แล้วฟังคำแรก";
   if (promptText) promptText.textContent = "Ready?";
   if (feedback) {
-    feedback.innerHTML = `<strong>${escapeHtml(gameItem.title)}</strong><span>${escapeHtml(gameItem.description)}</span>`;
+    feedback.innerHTML = `<strong>${escapeHtml(unit.title)}</strong><span>รูปโหลดจาก ${escapeHtml(imageBase)} และเสียงจาก ${escapeHtml(audioBase)}</span>`;
   }
   renderRoundProgress();
-}
-
-function renderChoices() {
-  const gameItem = currentGame();
-  if (!itemsBox) return;
-  itemsBox.innerHTML = labObjects.map((item) => choiceMarkup(item, gameItem.choiceLabel)).join("");
-  itemsBox.querySelectorAll(".mission-item").forEach((button) => {
-    button.addEventListener("click", () => chooseItem(button.dataset.word || "", button));
+  window.FutureGamification?.initMissionShell({
+    lessonId: unit.lessonId,
+    title: unit.title,
+    totalQuestions: total,
+    mascotEmotion: "greeting",
+    mascotText: "น้องฟิวจะช่วยฟังทีละคำ แตะผิดก็ลองใหม่ได้",
   });
 }
 
-function choiceMarkup(item, mode) {
-  const label = {
-    sentence: item.phrase,
-    thai: item.thai,
-    image: item.word,
-    word: item.word,
-  }[mode] || item.word;
-  const sublabel = {
-    sentence: `นี่คือ${item.thai}`,
-    thai: item.word,
-    image: item.thai,
-    word: item.thai,
-  }[mode] || item.thai;
+function descriptionForUnit(unit) {
+  if (unit.id === "u2-abc-phonics") return "ฟังเสียงตัวอักษร แล้วแตะรูปคำศัพท์ให้ถูก";
+  if (unit.id === "u4-classroom-commands") return "ฟังคำสั่งในห้องเรียน แล้วแตะภาพท่าทางให้ตรง";
+  if (unit.id === "u5-numbers-1-20") return "ฟังตัวเลข แล้วแตะรูปจำนวนให้ตรง";
+  if (unit.id === "u6-colors") return "ฟังสี แล้วแตะภาพสีให้ถูก";
+  return "ฟังคำศัพท์ แล้วแตะรูปภาพให้ตรงกับเสียงที่ได้ยิน";
+}
 
+function renderChoices() {
+  if (!itemsBox) return;
+  const choices = missionStarted ? currentChoices() : currentUnit().entries.slice(0, Math.min(4, currentUnit().entries.length));
+  itemsBox.innerHTML = choices.map(choiceMarkup).join("");
+  itemsBox.querySelectorAll(".mission-item").forEach((button) => {
+    button.addEventListener("click", () => chooseItem(button.dataset.key || "", button));
+  });
+  installImageFallbacks(itemsBox);
+}
+
+function choiceMarkup(item) {
   return `
-    <button class="mission-item mission-object lab-choice" type="button" data-word="${escapeHtml(item.word)}" data-thai="${escapeHtml(item.thai)}">
-      <img class="object-image" src="${escapeHtml(item.image)}" alt="" />
-      <strong>${escapeHtml(label)}</strong>
-      <small>${escapeHtml(sublabel)}</small>
+    <button class="mission-item mission-object lab-choice" type="button" data-key="${escapeHtml(item.key)}" data-thai="${escapeHtml(item.thai)}">
+      <img class="object-image" src="${escapeHtml(item.imageSrc)}" data-fallback-src="${escapeHtml(item.fallbackImageSrc)}" alt="" />
+      <span class="object-image-placeholder" aria-hidden="true">${escapeHtml(item.label.slice(0, 2).toUpperCase())}</span>
+      <strong>${escapeHtml(item.label)}</strong>
+      <small>${escapeHtml(item.thai || item.sentence)}</small>
     </button>
   `;
 }
 
-function startGame() {
+function installImageFallbacks(root) {
+  root.querySelectorAll("img.object-image").forEach((img) => {
+    img.addEventListener("error", () => {
+      const fallback = img.dataset.fallbackSrc || "";
+      if (fallback && img.src !== new URL(fallback, location.href).href) {
+        img.src = fallback;
+        img.dataset.fallbackSrc = "";
+        return;
+      }
+      img.classList.add("is-missing");
+      img.setAttribute("alt", "รูปภาพยังไม่พร้อม");
+      img.closest(".mission-item")?.classList.add("has-missing-image");
+    }, { once: false });
+  });
+}
+
+function startMission() {
   unlockAudio();
   playUiSound("start");
   missionStarted = true;
   completeBox?.classList.add("hidden");
   renderQuestion();
-  window.setTimeout(speakPrompt, 420);
+  window.setTimeout(playPromptAudio, 380);
 }
 
 function renderQuestion() {
   const question = currentQuestion();
   setReplayButton();
-  if (promptHint) promptHint.textContent = "ฟังแล้วแตะคำตอบ";
-  if (promptText) promptText.textContent = question.visible;
-  if (stars) stars.textContent = `${score}/${currentGame().questions.length}`;
+  if (promptHint) promptHint.textContent = `ข้อ ${currentRound + 1}/${currentUnit().entries.length}`;
+  if (promptText) promptText.textContent = question.prompt;
+  if (stars) stars.textContent = `${score}/${currentUnit().entries.length}`;
   if (feedback) {
-    feedback.innerHTML = `<strong>โจทย์ที่ ${currentRound + 1}</strong><span>${escapeHtml(question.visible)}</span>`;
+    feedback.innerHTML = `<strong>ฟังเสียงครู</strong><span>แตะรูปที่ตรงกับคำที่ได้ยิน</span>`;
   }
   missionScreen?.classList.remove("awaiting-start");
+  renderChoices();
   renderRoundProgress();
-  itemsBox?.querySelectorAll(".mission-item").forEach((item) => {
-    item.disabled = false;
-    item.classList.remove("correct", "wrong", "target-hint", "target-hint-strong");
-    item.querySelector(".object-feedback-bubble")?.remove();
-    item.classList.toggle("target-hint", item.dataset.word === question.target);
-  });
 }
 
-function chooseItem(word, item) {
-  if (!missionStarted || isTransitioning || !word || !item) return;
+function chooseItem(key, item) {
+  if (!missionStarted || isTransitioning || !key || !item) return;
   unlockAudio();
   const question = currentQuestion();
-  const selected = labObjects.find((entry) => entry.word === word) || { word, thai: item.dataset.thai || "" };
-  const target = labObjects.find((entry) => entry.word === question.target) || selected;
-  if (word !== question.target) {
+  const selected = currentChoices().find((entry) => entry.key === key) || currentUnit().entries.find((entry) => entry.key === key) || question;
+  if (key !== question.key) {
     item.classList.remove("wrong");
     void item.offsetWidth;
     item.classList.add("wrong");
     playUiSound("wrong");
     showWrongBubble(item, selected);
-    recordAttempt({ correct: false, selected, target, question });
-    const phrase = `No, this is ${withArticle(selected.word)}.`;
+    recordAttempt({ correct: false, selected, target: question });
+    window.FutureGamification?.recordQuestion({
+      lessonId: currentUnit().lessonId,
+      questionId: question.key,
+      correct: false,
+      target: question.label,
+      selected: selected.label,
+      skillTag: question.key,
+      totalQuestions: currentUnit().entries.length,
+    });
     if (feedback) {
       feedback.innerHTML = `
-        <strong>${escapeHtml(phrase)}</strong>
-        <span>โจทย์ถามหา ${escapeHtml(target.word)} (${escapeHtml(target.thai)}) ลองแตะอีกครั้ง</span>
+        <strong>ยังไม่ใช่</strong>
+        <span>อันนี้คือ ${escapeHtml(selected.label)} (${escapeHtml(selected.thai)}) ลองหา ${escapeHtml(question.label)} อีกครั้ง</span>
       `;
     }
-    highlightTarget(question.target);
-    speakText(phrase, { rate: 0.64, fallbackMs: 2300 });
+    highlightTarget(question.key);
+    playAudioSequence([selected.audio]);
     return;
   }
 
@@ -351,82 +377,112 @@ function chooseItem(word, item) {
   void item.offsetWidth;
   item.classList.add("correct");
   playUiSound("correct");
-  showCorrectBurst(question.explain);
+  showCorrectBurst(`${question.label} = ${question.thai || question.sentence}`);
   lockMission();
-  recordAttempt({ correct: true, selected: target, target, question });
+  recordAttempt({ correct: true, selected: question, target: question });
+  window.FutureGamification?.recordQuestion({
+    lessonId: currentUnit().lessonId,
+    questionId: question.key,
+    correct: true,
+    target: question.label,
+    selected: question.label,
+    skillTag: question.key,
+    totalQuestions: currentUnit().entries.length,
+  });
   score += 1;
   currentRound += 1;
-  if (stars) stars.textContent = `${score}/${currentGame().questions.length}`;
+  if (stars) stars.textContent = `${score}/${currentUnit().entries.length}`;
   if (feedback) {
-    feedback.innerHTML = `<strong>Yes, correct!</strong><span>${escapeHtml(question.explain)}</span>`;
+    feedback.innerHTML = `<strong>Yes, correct!</strong><span>${escapeHtml(question.label)} = ${escapeHtml(question.thai || question.sentence)}</span>`;
   }
   renderRoundProgress();
   const startedAt = Date.now();
-  const advanceAfterPraise = () => {
-    const waitMs = Math.max(0, 2300 - (Date.now() - startedAt));
-    window.clearTimeout(nextPromptTimer);
-    nextPromptTimer = window.setTimeout(advanceGame, waitMs);
-  };
-  const speechStarted = speakText(`Yes, correct. ${question.explain}`, {
-    rate: 0.62,
-    fallbackMs: 3300,
-    onEnd: advanceAfterPraise,
+  playAudioSequence(["/assets/english-p1/audio/correct.mp3", question.audio], {
+    onEnd: () => {
+      const waitMs = Math.max(0, 1800 - (Date.now() - startedAt));
+      window.clearTimeout(nextPromptTimer);
+      nextPromptTimer = window.setTimeout(advanceMission, waitMs);
+    },
   });
-  if (!speechStarted) {
-    window.clearTimeout(nextPromptTimer);
-    nextPromptTimer = window.setTimeout(advanceGame, 2300);
-  }
 }
 
-function advanceGame() {
-  if (currentRound >= currentGame().questions.length) {
+function advanceMission() {
+  if (currentRound >= currentUnit().entries.length) {
     unlockMission();
-    completeGame();
+    completeMission();
     return;
   }
   renderQuestion();
   unlockMission();
-  window.setTimeout(speakPrompt, 320);
+  window.setTimeout(playPromptAudio, 320);
 }
 
-function completeGame() {
+function completeMission() {
   missionStarted = false;
   playUiSound("complete");
-  if (promptHint) promptHint.textContent = "เกมนี้จบแล้ว";
+  const unit = currentUnit();
+  const rewardSummary = window.FutureGamification?.completeLesson({
+    lessonId: unit.lessonId,
+    title: unit.title,
+    score,
+    totalQuestions: unit.entries.length,
+  });
+  if (promptHint) promptHint.textContent = "Unit นี้จบแล้ว";
   if (promptText) promptText.textContent = "Great job!";
   if (feedback) {
-    feedback.innerHTML = `<strong>Game complete</strong><span>${escapeHtml(currentGame().title)} จบแล้ว ลองเกมถัดไปได้เลย</span>`;
+    feedback.innerHTML = `<strong>Unit complete</strong><span>${escapeHtml(unit.title)} จบแล้ว รูปและเสียงเล่นจาก cache สำเร็จ</span>`;
   }
   completeBox?.classList.remove("hidden");
   if (completeBox) {
-    const nextIndex = (selectedGameIndex + 1) % gameConfigs.length;
+    const nextUnitIndex = Math.min(currentUnitIndex + 1, playableUnits.length - 1);
     completeBox.innerHTML = `
-      <span class="mini-label">Game Complete</span>
-      <h3>${escapeHtml(currentGame().title)}</h3>
-      <p>คะแนน ${score}/${currentGame().questions.length} เกมนี้ใช้ดูว่าเด็กฟังโจทย์แล้วแตะได้มั่นใจแค่ไหน</p>
-      <button id="replayGameButton" class="button secondary" type="button">เล่นซ้ำ</button>
-      <button id="nextGameButton" class="button primary" type="button">เกมถัดไป</button>
+      <span class="mini-label">Unit Complete</span>
+      <h3>${escapeHtml(unit.title)}</h3>
+      <p>คะแนน ${score}/${unit.entries.length} ใช้ทวนคำศัพท์ รูปภาพ และเสียงของ Unit นี้</p>
+      <div class="mission-result-stats" aria-label="ผลการเล่น">
+        <span>Words: ${unit.entries.length}</span>
+        <span>Score: ${score}/${unit.entries.length}</span>
+      </div>
+      ${window.FutureGamification?.renderLessonReward(rewardSummary) || ""}
+      <button id="replayGameButton" class="button secondary" type="button">Play again</button>
+      <button id="nextGameButton" class="button primary" type="button">Unit ถัดไป</button>
+      <a class="button secondary" href="/learn">Back</a>
     `;
-    completeBox.querySelector("#replayGameButton")?.addEventListener("click", () => loadGame(selectedGameIndex));
-    completeBox.querySelector("#nextGameButton")?.addEventListener("click", () => loadGame(nextIndex));
+    completeBox.querySelector("#replayGameButton")?.addEventListener("click", () => loadUnitByIndex(currentUnitIndex, { reset: true, updateUrl: true }));
+    completeBox.querySelector("#nextGameButton")?.addEventListener("click", () => loadUnitByIndex(nextUnitIndex, { reset: true, updateUrl: true }));
   }
+  window.FutureGamification?.showCelebration({
+    title: "ผ่าน Unit แล้ว!",
+    message: `${unit.title} จบแล้ว ได้ดาวและ XP จากคำศัพท์ชุดนี้`,
+    summary: rewardSummary,
+  });
   setStartButton();
-  recordGameComplete();
+  saveProgress();
 }
 
 function renderRoundProgress() {
   if (!roundProgress) return;
-  roundProgress.innerHTML = currentGame().questions.map((question, index) => {
-    const target = labObjects.find((item) => item.word === question.target);
+  roundProgress.innerHTML = currentUnit().entries.map((entry, index) => {
     const status = index < currentRound ? "done" : index === currentRound ? "active" : "";
-    return `<span class="${status}">${escapeHtml(target?.word || question.target)}</span>`;
+    return `<span class="${status}">${escapeHtml(shortLabel(entry))}</span>`;
   }).join("");
+}
+
+function shortLabel(entry) {
+  return entry.english.length > 12 ? entry.english.slice(0, 11) : entry.english;
+}
+
+function playPromptAudio() {
+  const question = currentQuestion();
+  setSpeaking(true);
+  playUiSound("prompt");
+  playAudioSequence([question.audio], { onEnd: () => setSpeaking(false) });
 }
 
 function setStartButton() {
   if (!soundButton) return;
-  soundButton.textContent = "Start Game";
-  soundButton.setAttribute("aria-label", "เริ่มเกม");
+  soundButton.textContent = "Start Mission";
+  soundButton.setAttribute("aria-label", "เริ่ม Mission");
   soundButton.classList.add("start-button");
 }
 
@@ -437,20 +493,9 @@ function setReplayButton() {
   soundButton.classList.remove("start-button");
 }
 
-function speakPrompt() {
-  setSpeaking(true);
-  playUiSound("prompt");
-  const started = speakText(currentQuestion().speech, {
-    rate: 0.6,
-    fallbackMs: 2900,
-    onEnd: () => setSpeaking(false),
-  });
-  if (!started) window.setTimeout(() => setSpeaking(false), 1100);
-}
-
-function highlightTarget(word) {
+function highlightTarget(key) {
   itemsBox?.querySelectorAll(".mission-item").forEach((node) => {
-    node.classList.toggle("target-hint-strong", node.dataset.word === word);
+    node.classList.toggle("target-hint-strong", node.dataset.key === key);
   });
   window.setTimeout(() => {
     itemsBox?.querySelectorAll(".mission-item").forEach((node) => node.classList.remove("target-hint-strong"));
@@ -461,7 +506,7 @@ function showWrongBubble(item, selected) {
   item.querySelector(".object-feedback-bubble")?.remove();
   const bubble = document.createElement("span");
   bubble.className = "object-feedback-bubble wrong-bubble";
-  bubble.innerHTML = `<strong>${escapeHtml(selected.word)}</strong><small>${escapeHtml(selected.thai)}</small>`;
+  bubble.innerHTML = `<strong>${escapeHtml(selected.label)}</strong><small>${escapeHtml(selected.thai)}</small>`;
   item.append(bubble);
   window.setTimeout(() => bubble.remove(), 1700);
 }
@@ -489,30 +534,22 @@ function unlockMission() {
   missionScreen?.classList.remove("is-transitioning");
 }
 
-function recordAttempt({ correct, selected, target, question }) {
+function setSpeaking(isSpeaking) {
+  missionScreen?.classList.toggle("is-speaking", Boolean(isSpeaking));
+}
+
+function recordAttempt({ correct, selected, target }) {
   const attempts = readAttempts();
   attempts.push({
-    mission: "english-p1-mission-lab",
-    game: currentGame().id,
-    gameTitle: currentGame().title,
-    prompt: question.visible,
-    target: target.word,
-    selected: selected.word,
+    mission: "english-p1-curriculum-lab",
+    unit: currentUnit().id,
+    unitTitle: currentUnit().title,
+    target: target.label,
+    selected: selected.label,
     correct,
     createdAt: new Date().toISOString(),
   });
-  localStorage.setItem("101future.learningAttempts", JSON.stringify(attempts.slice(-120)));
-}
-
-function recordGameComplete() {
-  const completed = readCompletedGames();
-  completed[currentGame().id] = {
-    title: currentGame().title,
-    score,
-    total: currentGame().questions.length,
-    completedAt: new Date().toISOString(),
-  };
-  localStorage.setItem("101future.missionLab.completed", JSON.stringify(completed));
+  localStorage.setItem("101future.learningAttempts", JSON.stringify(attempts.slice(-160)));
 }
 
 function readAttempts() {
@@ -524,64 +561,57 @@ function readAttempts() {
   }
 }
 
-function readCompletedGames() {
+function saveProgress() {
   try {
-    const parsed = JSON.parse(localStorage.getItem("101future.missionLab.completed") || "{}");
-    return parsed && typeof parsed === "object" ? parsed : {};
+    localStorage.setItem(storageKey(currentUnit()), JSON.stringify({ currentRound, score, savedAt: new Date().toISOString() }));
   } catch {
-    return {};
+    /* ignore storage */
   }
 }
 
-function speakText(text, options = {}) {
-  if (!("speechSynthesis" in window)) return false;
-  window.speechSynthesis.cancel();
-  const utterance = new SpeechSynthesisUtterance(text);
-  utterance.lang = "en-US";
-  utterance.rate = options.rate || 0.64;
-  utterance.pitch = 1.04;
-  if (preferredEnglishVoice) utterance.voice = preferredEnglishVoice;
-  if (typeof options.onEnd === "function") {
-    let ended = false;
+function storageKey(unit) {
+  return `101future.curriculumLab.${unit.id}`;
+}
+
+async function playAudioSequence(files, options = {}) {
+  teacherAudioToken += 1;
+  const token = teacherAudioToken;
+  stopActiveAudio();
+  for (const file of files.filter(Boolean)) {
+    if (token !== teacherAudioToken) return;
+    await playAudioFile(file, token);
+  }
+  if (token === teacherAudioToken && typeof options.onEnd === "function") options.onEnd();
+}
+
+function playAudioFile(file, token) {
+  return new Promise((resolve) => {
+    const audio = new Audio(file);
+    activeTeacherAudio = audio;
     const finish = () => {
-      if (ended) return;
-      ended = true;
-      window.clearTimeout(fallbackTimer);
-      options.onEnd();
+      audio.removeEventListener("ended", finish);
+      audio.removeEventListener("error", finish);
+      if (activeTeacherAudio === audio) activeTeacherAudio = null;
+      resolve();
     };
-    const fallbackTimer = window.setTimeout(finish, options.fallbackMs || estimateSpeechMs(text, utterance.rate));
-    utterance.onend = finish;
-    utterance.onerror = finish;
+    audio.addEventListener("ended", finish, { once: true });
+    audio.addEventListener("error", finish, { once: true });
+    audio.play().catch(finish);
+    window.setTimeout(() => {
+      if (token === teacherAudioToken && activeTeacherAudio === audio) finish();
+    }, 5200);
+  });
+}
+
+function stopActiveAudio() {
+  if (!activeTeacherAudio) return;
+  try {
+    activeTeacherAudio.pause();
+    activeTeacherAudio.currentTime = 0;
+  } catch {
+    /* ignore audio cleanup */
   }
-  window.speechSynthesis.speak(utterance);
-  return true;
-}
-
-function loadVoices() {
-  if (!("speechSynthesis" in window)) return;
-  const voices = window.speechSynthesis.getVoices();
-  const englishVoices = voices.filter((voice) => voice.lang?.toLowerCase().startsWith("en"));
-  const preferredNames = [
-    "ava",
-    "samantha",
-    "google us english",
-    "microsoft jenny",
-    "microsoft aria",
-    "natural",
-    "premium",
-    "enhanced",
-    "neural",
-    "alex",
-  ];
-  preferredEnglishVoice =
-    preferredNames.map((name) => englishVoices.find((voice) => voice.name.toLowerCase().includes(name))).find(Boolean) ||
-    englishVoices.find((voice) => voice.lang === "en-US") ||
-    englishVoices[0] ||
-    null;
-}
-
-function setSpeaking(isSpeaking) {
-  missionScreen?.classList.toggle("is-speaking", Boolean(isSpeaking));
+  activeTeacherAudio = null;
 }
 
 function unlockAudio() {
@@ -648,24 +678,16 @@ function installNoZoomGuard() {
   }, { passive: false });
 }
 
-function estimateSpeechMs(text, rate) {
-  const wordCount = String(text).trim().split(/\s+/).filter(Boolean).length || 1;
-  return Math.max(1800, Math.min(4400, (wordCount * 620) / Math.max(rate, 0.5)));
-}
-
-function withArticle(word) {
-  const article = /^[aeiou]/i.test(word) ? "an" : "a";
-  return `${article} ${word}`;
+function slugify(value) {
+  return String(value).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 }
 
 function escapeHtml(value) {
-  return String(value).replace(/[&<>"']/g, (char) => {
-    return {
-      "&": "&amp;",
-      "<": "&lt;",
-      ">": "&gt;",
-      '"': "&quot;",
-      "'": "&#039;",
-    }[char];
-  });
+  return String(value ?? "").replace(/[&<>"']/g, (char) => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#039;",
+  })[char]);
 }
