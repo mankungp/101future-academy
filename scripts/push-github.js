@@ -6,7 +6,7 @@ const repo = "101future-academy";
 const branch = "main";
 const root = path.resolve(__dirname, "..");
 
-const files = [
+const baseFiles = [
   ".gitignore",
   "EDTECH_10_PHASES.md",
   "ENGLISH_P1_UNIT1.md",
@@ -41,7 +41,8 @@ const files = [
   "assets/school-bag/ball.svg",
   "assets/school-bag/bottle.svg",
   "assets/school-bag/lunch-box.svg",
-  "data/.gitkeep",
+  "assets/gamification.js",
+  "curriculum/english-p1.json",
   "index.html",
   "learn.html",
   "learn.js",
@@ -63,6 +64,21 @@ const files = [
   "server.js",
   "styles.css",
   "terms.html",
+];
+
+const generatedFileGroups = [
+  {
+    dir: "assets/english-p1/audio",
+    include: (name) => name.endsWith(".mp3"),
+  },
+  {
+    dir: "assets/english-p1/images",
+    include: (name) => name.endsWith(".png"),
+  },
+  {
+    dir: "assets/mascot",
+    include: (name) => /^futuree-.*\.jpg$/i.test(name),
+  },
 ];
 
 async function gh(pathname, options = {}) {
@@ -124,8 +140,22 @@ function encodeURIComponentPath(file) {
   return file.split("/").map(encodeURIComponent).join("/");
 }
 
+async function collectAllowedFiles() {
+  const generatedFiles = [];
+  for (const group of generatedFileGroups) {
+    const names = await fs.readdir(path.join(root, group.dir));
+    for (const name of names) {
+      if (name.includes("/") || name.includes("\\") || name.startsWith(".")) continue;
+      if (!group.include(name)) continue;
+      generatedFiles.push(`${group.dir}/${name}`);
+    }
+  }
+  return [...new Set([...baseFiles, ...generatedFiles])].sort();
+}
+
 async function main() {
   if (!process.env.GITHUB_TOKEN) throw new Error("GITHUB_TOKEN is required");
+  const files = await collectAllowedFiles();
   const targetFiles = process.argv.slice(2);
   const publishFiles = targetFiles.length ? targetFiles : files;
   let changed = 0;
