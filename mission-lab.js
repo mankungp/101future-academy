@@ -24,6 +24,27 @@ const schoolBagFallbackImages = new Set([
   "scissors",
   "sharpener",
 ]);
+const gameModes = [
+  {
+    id: "word-match",
+    title: "จับคู่รูป-คำ",
+    label: "Match",
+    prompt: "ดูรูป แล้วแตะคำที่ตรงกัน",
+  },
+  {
+    id: "bag-drag",
+    title: "ลากเข้าเป้าหมาย",
+    label: "Drag",
+    prompt: "ลากหรือแตะรูปที่ได้ยิน",
+  },
+  {
+    id: "speed-tap",
+    title: "Speed Tap",
+    label: "Speed",
+    prompt: "แตะให้ทันก่อนดาวหมดเวลา",
+  },
+];
+const SPEED_TAP_MS = 6200;
 
 const gameList = document.querySelector("#gameList");
 const gameSelect = document.querySelector("#gameSelect");
@@ -42,6 +63,7 @@ const feedback = document.querySelector("#missionFeedback");
 const completeBox = document.querySelector("#missionComplete");
 const soundButton = document.querySelector("#missionSoundButton");
 const missionScreen = document.querySelector(".mission-screen");
+const teacherCard = document.querySelector(".lab-teacher-card");
 const correctBurst = document.querySelector("#correctBurst");
 const correctBurstWord = document.querySelector("#correctBurstWord");
 
@@ -55,6 +77,10 @@ let missionStarted = false;
 let isTransitioning = false;
 let correctBurstTimer = 0;
 let nextPromptTimer = 0;
+let speedTimer = 0;
+let speedTickTimer = 0;
+let currentModeId = gameModes[0].id;
+let pointerDrag = null;
 let audioContext = null;
 let activeTeacherAudio = null;
 let teacherAudioToken = 0;
@@ -202,6 +228,8 @@ function loadUnitByIndex(index, options = {}) {
   isTransitioning = false;
   window.clearTimeout(correctBurstTimer);
   window.clearTimeout(nextPromptTimer);
+  clearSpeedTimer();
+  currentModeId = gameModeForRound(currentUnit(), 0).id;
   correctBurst?.classList.add("hidden");
   completeBox?.classList.add("hidden");
   missionScreen?.classList.add("awaiting-start");
@@ -251,12 +279,13 @@ function rotateChoices(choices, amount) {
 function renderUnitShell() {
   const unit = currentUnit();
   const total = unit.entries.length;
+  const mode = gameModeForRound(unit, currentRound);
   if (labEyebrow) labEyebrow.textContent = `English Mission · ป.1 · Unit ${unit.order}`;
   if (labTitle) labTitle.textContent = unit.title;
-  if (labSubtitle) labSubtitle.textContent = `ฝึก ${total} คำด้วยรูปภาพน่ารักและเสียงครู`;
-  if (gameBadge) gameBadge.textContent = `Unit ${unit.order}`;
+  if (labSubtitle) labSubtitle.textContent = `ฝึก ${total} คำด้วย 3 เกมสั้น ๆ รูปภาพ และเสียงครู`;
+  if (gameBadge) gameBadge.textContent = `Unit ${unit.order} · ${mode.label}`;
   if (gameTitle) gameTitle.textContent = unit.title;
-  if (gameDescription) gameDescription.textContent = descriptionForUnit(unit);
+  if (gameDescription) gameDescription.innerHTML = modeIntroMarkup(mode, currentQuestion(), false);
   if (stars) stars.textContent = `${score}/${total}`;
   if (promptHint) promptHint.textContent = "กดเริ่ม แล้วฟังคำแรก";
   if (promptText) promptText.textContent = "Ready?";
@@ -283,17 +312,43 @@ function descriptionForUnit(unit) {
 
 function renderChoices() {
   if (!itemsBox) return;
+  const mode = gameModeForRound(currentUnit(), currentRound);
+  currentModeId = mode.id;
+  missionScreen?.setAttribute("data-game-mode", mode.id);
+  itemsBox.dataset.gameMode = mode.id;
+  itemsBox.dataset.targetKey = currentQuestion()?.key || "";
+  itemsBox.classList.remove("word-match-game", "bag-drag-game", "speed-tap-game");
+  itemsBox.classList.add(`${mode.id}-game`);
+  renderModeStage(mode);
   const choices = missionStarted ? currentChoices() : currentUnit().entries.slice(0, Math.min(4, currentUnit().entries.length));
   itemsBox.innerHTML = choices.map(choiceMarkup).join("");
   itemsBox.querySelectorAll(".mission-item").forEach((button) => {
     button.addEventListener("click", () => chooseItem(button.dataset.key || "", button));
+    button.addEventListener("dragstart", (event) => {
+      if (currentModeId !== "bag-drag") return;
+      event.dataTransfer?.setData("text/plain", button.dataset.key || "");
+      button.classList.add("is-dragging");
+    });
+    button.addEventListener("dragend", () => button.classList.remove("is-dragging"));
+    button.addEventListener("pointerdown", startPointerDrag);
+    button.addEventListener("mousedown", startMouseDrag);
   });
   installImageFallbacks(itemsBox);
 }
 
 function choiceMarkup(item) {
+  const mode = currentMode();
+  if (mode.id === "word-match") {
+    return `
+      <button class="mission-item mission-object lab-choice word-match-choice" type="button" data-key="${escapeHtml(item.key)}" data-thai="${escapeHtml(item.thai)}">
+        <span class="game-word-card">${escapeHtml(item.label)}</span>
+        <small>${escapeHtml(item.thai || item.sentence)}</small>
+      </button>
+    `;
+  }
+
   return `
-    <button class="mission-item mission-object lab-choice" type="button" data-key="${escapeHtml(item.key)}" data-thai="${escapeHtml(item.thai)}">
+    <button class="mission-item mission-object lab-choice" type="button" ${mode.id === "bag-drag" ? "draggable=\"true\"" : ""} data-key="${escapeHtml(item.key)}" data-thai="${escapeHtml(item.thai)}">
       <img class="object-image" src="${escapeHtml(item.imageSrc)}" data-fallback-src="${escapeHtml(item.fallbackImageSrc)}" alt="" />
       <span class="object-image-placeholder" aria-hidden="true">${escapeHtml(item.label.slice(0, 2).toUpperCase())}</span>
       <strong>${escapeHtml(item.label)}</strong>
@@ -329,12 +384,15 @@ function startMission() {
 
 function renderQuestion() {
   const question = currentQuestion();
+  const mode = gameModeForRound(currentUnit(), currentRound);
+  currentModeId = mode.id;
+  clearSpeedTimer();
   setReplayButton();
-  if (promptHint) promptHint.textContent = `ข้อ ${currentRound + 1}/${currentUnit().entries.length}`;
-  if (promptText) promptText.textContent = question.prompt;
+  if (promptHint) promptHint.textContent = `ข้อ ${currentRound + 1}/${currentUnit().entries.length} · ${mode.title}`;
+  if (promptText) promptText.textContent = promptForGameMode(mode, question);
   if (stars) stars.textContent = `${score}/${currentUnit().entries.length}`;
   if (feedback) {
-    feedback.innerHTML = `<strong>ฟังเสียงครู</strong><span>แตะรูปที่ตรงกับคำที่ได้ยิน</span>`;
+    feedback.innerHTML = `<strong>${escapeHtml(mode.title)}</strong><span>${escapeHtml(mode.prompt)}</span>`;
   }
   missionScreen?.classList.remove("awaiting-start");
   renderChoices();
@@ -344,6 +402,7 @@ function renderQuestion() {
 function chooseItem(key, item) {
   if (!missionStarted || isTransitioning || !key || !item) return;
   unlockAudio();
+  clearSpeedTimer();
   const question = currentQuestion();
   const selected = currentChoices().find((entry) => entry.key === key) || currentUnit().entries.find((entry) => entry.key === key) || question;
   if (key !== question.key) {
@@ -370,6 +429,7 @@ function chooseItem(key, item) {
     }
     highlightTarget(question.key);
     playAudioSequence([selected.audio]);
+    if (currentModeId === "speed-tap") window.setTimeout(() => startSpeedTimer(), 1100);
     return;
   }
 
@@ -407,6 +467,7 @@ function chooseItem(key, item) {
 }
 
 function advanceMission() {
+  clearSpeedTimer();
   if (currentRound >= currentUnit().entries.length) {
     unlockMission();
     completeMission();
@@ -419,6 +480,7 @@ function advanceMission() {
 
 function completeMission() {
   missionStarted = false;
+  clearSpeedTimer();
   playUiSound("complete");
   const unit = currentUnit();
   const rewardSummary = window.FutureGamification?.completeLesson({
@@ -458,6 +520,205 @@ function completeMission() {
   });
   setStartButton();
   saveProgress();
+}
+
+function gameModeForRound(unit, round) {
+  const safeRound = Math.max(0, Number(round || 0));
+  return gameModes[(Number(unit?.order || 0) + safeRound) % gameModes.length] || gameModes[0];
+}
+
+function currentMode() {
+  return gameModes.find((mode) => mode.id === currentModeId) || gameModes[0];
+}
+
+function promptForGameMode(mode, question) {
+  if (mode.id === "word-match") return `Which word matches this picture?`;
+  if (mode.id === "bag-drag") return `Put ${question.label} in the target.`;
+  if (mode.id === "speed-tap") return `Quick! Tap ${question.label}.`;
+  return question.prompt;
+}
+
+function renderModeStage(mode) {
+  const question = currentQuestion();
+  if (gameBadge) gameBadge.textContent = `Unit ${currentUnit().order} · ${mode.label}`;
+  if (gameDescription) {
+    gameDescription.innerHTML = modeIntroMarkup(mode, question, missionStarted);
+    installImageFallbacks(gameDescription);
+  }
+  teacherCard?.classList.remove("word-match-target", "bag-drop-target", "speed-tap-target", "is-drop-ready");
+  teacherCard?.classList.add(`${mode.id === "word-match" ? "word-match" : mode.id === "bag-drag" ? "bag-drop" : "speed-tap"}-target`);
+  installDropTarget(mode);
+  if (mode.id === "speed-tap" && missionStarted) startSpeedTimer();
+}
+
+function modeIntroMarkup(mode, question, isLive) {
+  if (!question) return escapeHtml(descriptionForUnit(currentUnit()));
+  if (mode.id === "word-match") {
+    return `
+      <span class="mode-pill">จับคู่รูป-คำ</span>
+      <span class="game-target-row">
+        <img class="object-image game-target-thumb" src="${escapeHtml(question.imageSrc)}" data-fallback-src="${escapeHtml(question.fallbackImageSrc)}" alt="" />
+        <b>แตะคำที่ตรงกับรูปนี้</b>
+      </span>
+    `;
+  }
+  if (mode.id === "bag-drag") {
+    return `
+      <span class="mode-pill">ลากหรือแตะ</span>
+      <span class="bag-target-badge">🎒 ${escapeHtml(question.label)}</span>
+      <small>ลากการ์ดมาใส่ตรงนี้ หรือแตะรูปก็ได้</small>
+    `;
+  }
+  if (mode.id === "speed-tap") {
+    return `
+      <span class="mode-pill">Speed Tap</span>
+      <span class="speed-meter" aria-label="เวลาในรอบนี้"><b id="speedMeterFill"></b></span>
+      <small>${isLive ? `แตะ ${escapeHtml(question.label)} ก่อนดาวหมดเวลา` : "กด Start แล้วลองแตะให้ทัน"}</small>
+    `;
+  }
+  return escapeHtml(descriptionForUnit(currentUnit()));
+}
+
+function installDropTarget(mode) {
+  if (!teacherCard) return;
+  teacherCard.ondragover = null;
+  teacherCard.ondragleave = null;
+  teacherCard.ondrop = null;
+  if (mode.id !== "bag-drag") return;
+  teacherCard.ondragover = (event) => {
+    event.preventDefault();
+    teacherCard.classList.add("is-drop-ready");
+  };
+  teacherCard.ondragleave = () => teacherCard.classList.remove("is-drop-ready");
+  teacherCard.ondrop = (event) => {
+    event.preventDefault();
+    teacherCard.classList.remove("is-drop-ready");
+    const key = event.dataTransfer?.getData("text/plain") || "";
+    const button = findChoiceButton(key);
+    if (button) chooseItem(key, button);
+  };
+}
+
+function findChoiceButton(key) {
+  return [...(itemsBox?.querySelectorAll(".mission-item") || [])].find((button) => button.dataset.key === key) || null;
+}
+
+function startSpeedTimer() {
+  clearSpeedTimer();
+  if (!missionStarted || isTransitioning || currentModeId !== "speed-tap") return;
+  const questionKey = currentQuestion()?.key;
+  const startedAt = Date.now();
+  const fill = document.querySelector("#speedMeterFill");
+  const tick = () => {
+    const remaining = Math.max(0, SPEED_TAP_MS - (Date.now() - startedAt));
+    const ratio = Math.max(0, Math.min(1, remaining / SPEED_TAP_MS));
+    if (fill) fill.style.transform = `scaleX(${ratio})`;
+    if (ratio <= 0.34) missionScreen?.classList.add("speed-warning");
+  };
+  tick();
+  speedTickTimer = window.setInterval(tick, 120);
+  speedTimer = window.setTimeout(() => handleSpeedTimeout(questionKey), SPEED_TAP_MS);
+}
+
+function clearSpeedTimer() {
+  window.clearTimeout(speedTimer);
+  window.clearInterval(speedTickTimer);
+  speedTimer = 0;
+  speedTickTimer = 0;
+  missionScreen?.classList.remove("speed-warning");
+}
+
+function startPointerDrag(event) {
+  if (currentModeId !== "bag-drag") return;
+  const button = event.currentTarget;
+  if (!button || button.disabled) return;
+  pointerDrag = {
+    key: button.dataset.key || "",
+    button,
+    startX: event.clientX,
+    startY: event.clientY,
+    active: false,
+  };
+  button.setPointerCapture?.(event.pointerId);
+  button.addEventListener("pointermove", movePointerDrag);
+  button.addEventListener("pointerup", finishPointerDrag, { once: true });
+  button.addEventListener("pointercancel", cancelPointerDrag, { once: true });
+}
+
+function startMouseDrag(event) {
+  if (currentModeId !== "bag-drag" || event.button !== 0) return;
+  const button = event.currentTarget;
+  if (!button || button.disabled) return;
+  pointerDrag = {
+    key: button.dataset.key || "",
+    button,
+    startX: event.clientX,
+    startY: event.clientY,
+    active: false,
+  };
+  document.addEventListener("mousemove", movePointerDrag);
+  document.addEventListener("mouseup", finishPointerDrag, { once: true });
+}
+
+function movePointerDrag(event) {
+  if (!pointerDrag) return;
+  const distance = Math.hypot(event.clientX - pointerDrag.startX, event.clientY - pointerDrag.startY);
+  if (distance > 8) {
+    pointerDrag.active = true;
+    pointerDrag.button.classList.add("is-dragging");
+  }
+  teacherCard?.classList.toggle("is-drop-ready", pointerDrag.active && isPointInTeacher(event.clientX, event.clientY));
+}
+
+function finishPointerDrag(event) {
+  if (!pointerDrag) return;
+  const drag = pointerDrag;
+  cleanupPointerDrag();
+  if (drag.active && isPointInTeacher(event.clientX, event.clientY)) {
+    event.preventDefault();
+    chooseItem(drag.key, drag.button);
+  }
+}
+
+function cancelPointerDrag() {
+  cleanupPointerDrag();
+}
+
+function cleanupPointerDrag() {
+  if (!pointerDrag) return;
+  pointerDrag.button.classList.remove("is-dragging");
+  pointerDrag.button.removeEventListener("pointermove", movePointerDrag);
+  document.removeEventListener("mousemove", movePointerDrag);
+  teacherCard?.classList.remove("is-drop-ready");
+  pointerDrag = null;
+}
+
+function isPointInTeacher(x, y) {
+  if (!teacherCard) return false;
+  const rect = teacherCard.getBoundingClientRect();
+  return x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom;
+}
+
+function handleSpeedTimeout(questionKey) {
+  if (!missionStarted || isTransitioning || currentModeId !== "speed-tap" || currentQuestion()?.key !== questionKey) return;
+  clearSpeedTimer();
+  const question = currentQuestion();
+  playUiSound("wrong");
+  if (feedback) {
+    feedback.innerHTML = `<strong>เกือบแล้ว</strong><span>ลองแตะ ${escapeHtml(question.label)} อีกครั้งนะ</span>`;
+  }
+  highlightTarget(question.key);
+  recordAttempt({ correct: false, selected: { label: "time-out", thai: "หมดเวลา" }, target: question });
+  window.FutureGamification?.recordQuestion({
+    lessonId: currentUnit().lessonId,
+    questionId: question.key,
+    correct: false,
+    target: question.label,
+    selected: "time-out",
+    skillTag: question.key,
+    totalQuestions: currentUnit().entries.length,
+  });
+  window.FutureGamification?.setMascot("encourage", "เกือบแล้ว ลองแตะอีกที!", { sound: true });
 }
 
 function renderRoundProgress() {
