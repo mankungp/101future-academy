@@ -45,6 +45,24 @@
         </article>
       </section>
 
+      <section class="lesson-panel gamified-overview" aria-labelledby="learningMapTitle">
+        <div class="gamified-overview-head">
+          <div>
+            <p class="eyebrow">Learning map</p>
+            <h2 id="learningMapTitle">เส้นทางเก็บดาว English ป.1</h2>
+            <p>เรียนเป็นด่านสั้น ๆ ผ่านแล้วติดเครื่องหมาย ✓ ด่านปัจจุบันเด่น และด่านถัดไปล็อกไว้ให้เห็นเป้าหมาย</p>
+          </div>
+          <div class="daily-goal-card">
+            <span>Daily goal</span>
+            <strong>5 ดาว / วัน</strong>
+            <small>ครบแล้วปลดล็อกสติกเกอร์น้องฟิวเจอร์</small>
+          </div>
+        </div>
+        <div id="learningMap" class="learning-map" aria-label="เส้นทางบทเรียน"></div>
+      </section>
+
+      <section id="parentProgressPanel" class="lesson-panel parent-progress-panel" aria-live="polite"></section>
+
       <section class="login-card access-card">
         <div>
           <p class="eyebrow">เข้าเรียนด้วย LINE</p>
@@ -91,7 +109,7 @@
         <div>
           <p class="eyebrow">English ป.1 · Unit 1</p>
           <h2 id="englishPreviewTitle">My School Bag</h2>
-          <p>เริ่มจากคำศัพท์ของใช้ในห้องเรียน แล้วต่อเป็นประโยคสั้น ๆ แบบ This is a/an ... เด็กฟัง แตะ ตอบผิดรู้ทันที และค่อยต่อไปฝึกพูด</p>
+          <p>เริ่มจากคำศัพท์ของใช้ในห้องเรียน ต่อด้วยเกมถามตอบ What is it? และค่อยไปฝึกพูดประโยคสั้นแบบเล่นสนุก</p>
         </div>
         <div class="unit-roadmap" aria-label="ลำดับบทเรียน Unit 1">
           <article>
@@ -102,8 +120,8 @@
           </article>
           <article>
             <span class="mini-label">Mission 2</span>
-            <h3>This Is My School Bag</h3>
-            <p>ฟังประโยค This is a/an ... แล้วแตะรูปที่ตรงกับประโยค</p>
+            <h3>What Is It?</h3>
+            <p>ดูรูป ฟังคำถาม What is it? แล้วเลือกคำตอบ It is a/an ... ให้ตรงกับภาพ</p>
             <a class="button primary" href="/mission/this-is?reset=1">เริ่ม Mission 2</a>
           </article>
           <article>
@@ -188,6 +206,7 @@
         <div id="lessonList" class="lesson-grid"></div>
       </section>
     </main>
-    <script src="/learn.js?v=20260531-mission1-20-v6" defer></script>
+    <script src="/assets/gamification.js?v=20260604-gamification-v1" defer></script>
+    <script src="/learn.js?v=20260604-gamification-v1" defer></script>
   </body>
 </html>
