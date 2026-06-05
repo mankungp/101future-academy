@@ -2518,6 +2518,7 @@ h3 {
 }
 
 .future-mascot-card {
+  position: relative;
   display: grid;
   grid-template-columns: 58px minmax(0, 1fr);
   gap: 10px;
@@ -2527,6 +2528,11 @@ h3 {
   background: linear-gradient(135deg, rgba(238, 244, 255, 0.95), rgba(255, 255, 255, 0.95));
   border: 1px solid rgba(49, 87, 255, 0.16);
   border-radius: 8px;
+  overflow: hidden;
+  transition:
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    background 180ms ease;
 }
 
 .future-mascot-card img {
@@ -2536,6 +2542,8 @@ h3 {
   border: 2px solid #fff;
   border-radius: 50%;
   box-shadow: 0 8px 18px rgba(17, 24, 39, 0.16);
+  animation: mascot-bob 3.4s ease-in-out infinite;
+  transform-origin: 50% 80%;
 }
 
 .future-mascot-card img.image-missing {
@@ -2556,6 +2564,62 @@ h3 {
   font-size: 15px;
   line-height: 1.25;
   overflow-wrap: anywhere;
+}
+
+.future-mascot-card::after {
+  content: "";
+  position: absolute;
+  inset: auto 14px 8px auto;
+  width: 10px;
+  height: 10px;
+  background: rgba(255, 255, 255, 0.9);
+  border-right: 1px solid rgba(49, 87, 255, 0.14);
+  border-bottom: 1px solid rgba(49, 87, 255, 0.14);
+  transform: rotate(45deg);
+}
+
+.future-mascot-card[data-emotion="correct"] {
+  background: linear-gradient(135deg, rgba(237, 255, 244, 0.96), rgba(255, 255, 255, 0.96));
+  border-color: rgba(6, 199, 85, 0.38);
+  box-shadow: 0 10px 28px rgba(6, 199, 85, 0.12);
+}
+
+.future-mascot-card[data-emotion="encourage"] {
+  background: linear-gradient(135deg, rgba(255, 247, 230, 0.96), rgba(255, 255, 255, 0.96));
+  border-color: rgba(245, 179, 53, 0.42);
+}
+
+.future-mascot-card[data-emotion="celebrate"] {
+  background:
+    radial-gradient(circle at 88% 20%, rgba(245, 179, 53, 0.2), transparent 28%),
+    linear-gradient(135deg, rgba(238, 244, 255, 0.96), rgba(237, 255, 244, 0.98));
+  border-color: rgba(49, 87, 255, 0.3);
+  box-shadow: 0 12px 34px rgba(49, 87, 255, 0.14);
+}
+
+.future-mascot-card[data-emotion="sleepy"] {
+  background: linear-gradient(135deg, rgba(238, 244, 255, 0.82), rgba(255, 255, 255, 0.9));
+  border-color: rgba(91, 100, 117, 0.22);
+}
+
+.future-mascot-card[data-emotion="correct"] img,
+.future-mascot-card[data-emotion="celebrate"] img {
+  animation: mascot-bob 2.2s ease-in-out infinite, mascot-glow 1.4s ease-in-out infinite;
+}
+
+.future-mascot-card[data-emotion="encourage"] img {
+  animation: mascot-encourage 2.4s ease-in-out infinite;
+}
+
+.future-mascot-card[data-emotion="sleepy"] img {
+  animation: mascot-sleepy 4.2s ease-in-out infinite;
+}
+
+.future-mascot-card.is-mascot-pop img {
+  animation-name: mascot-pop, mascot-bob;
+  animation-duration: 520ms, 3.4s;
+  animation-timing-function: cubic-bezier(0.2, 1.35, 0.22, 1), ease-in-out;
+  animation-iteration-count: 1, infinite;
 }
 
 .gamification-meters {
@@ -2717,6 +2781,33 @@ h3 {
   16% { opacity: 1; transform: translateY(-6px) scale(1.04); }
   72% { opacity: 1; transform: translateY(-10px) scale(1); }
   100% { opacity: 0; transform: translateY(-18px) scale(0.98); }
+}
+
+@keyframes mascot-bob {
+  0%, 100% { transform: translateY(0) rotate(-1deg); }
+  50% { transform: translateY(-4px) rotate(1deg); }
+}
+
+@keyframes mascot-pop {
+  0% { transform: scale(0.88) translateY(4px); }
+  60% { transform: scale(1.08) translateY(-5px); }
+  100% { transform: scale(1) translateY(0); }
+}
+
+@keyframes mascot-glow {
+  0%, 100% { box-shadow: 0 8px 18px rgba(17, 24, 39, 0.16), 0 0 0 rgba(6, 199, 85, 0); }
+  50% { box-shadow: 0 10px 24px rgba(17, 24, 39, 0.18), 0 0 0 6px rgba(6, 199, 85, 0.14); }
+}
+
+@keyframes mascot-encourage {
+  0%, 100% { transform: translateX(0) rotate(0deg); }
+  35% { transform: translateX(-2px) rotate(-1deg); }
+  70% { transform: translateX(2px) rotate(1deg); }
+}
+
+@keyframes mascot-sleepy {
+  0%, 100% { transform: translateY(0) scale(1); filter: saturate(0.82); }
+  50% { transform: translateY(3px) scale(0.98); filter: saturate(0.72); }
 }
 
 @keyframes celebration-card-pop {
