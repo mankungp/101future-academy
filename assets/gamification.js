@@ -384,6 +384,8 @@
   let mascotSoundToken = 0;
   let mascotAudio = null;
   let lastMascotSoundAt = 0;
+  let lastDisplayedXp = null;
+  let lastDisplayedDailyStars = null;
 
   function defaultState() {
     return {
@@ -657,8 +659,22 @@
     const dailyStars = document.querySelector("#gameHudDailyStars");
     const xp = document.querySelector("#gameHudXp");
     const streak = document.querySelector("#gameHudStreak");
-    if (dailyStars) dailyStars.textContent = `${Math.min(Number(state.daily.stars || 0), DAILY_GOAL_STARS)}/${DAILY_GOAL_STARS}`;
-    if (xp) xp.textContent = String(Number(state.xp || 0));
+    const nextStars = Math.min(Number(state.daily.stars || 0), DAILY_GOAL_STARS);
+    const nextXp = Number(state.xp || 0);
+    if (dailyStars) {
+      const previousStars = lastDisplayedDailyStars ?? Number(dailyStars.dataset.value || nextStars);
+      dailyStars.dataset.value = String(nextStars);
+      if (event?.starDelta) animateStarRatio(dailyStars, previousStars, nextStars);
+      else dailyStars.textContent = `${nextStars}/${DAILY_GOAL_STARS}`;
+      lastDisplayedDailyStars = nextStars;
+    }
+    if (xp) {
+      const previousXp = lastDisplayedXp ?? Number(xp.dataset.value || nextXp);
+      xp.dataset.value = String(nextXp);
+      if (event?.xpDelta) animateMeterNumber(xp, previousXp, nextXp);
+      else xp.textContent = String(nextXp);
+      lastDisplayedXp = nextXp;
+    }
     if (streak) streak.textContent = String(Number(state.streak.current || 0));
     if (event && (event.xpDelta || event.starDelta || event.complete)) {
       showInstantReward(event);
@@ -676,7 +692,111 @@
     toast.classList.remove("is-visible");
     void toast.offsetWidth;
     toast.classList.add("is-visible");
+    triggerJuice(event);
     window.setTimeout(() => toast.classList.remove("is-visible"), 1100);
+  }
+
+  function triggerJuice(event) {
+    const screen = document.querySelector(".mission-screen");
+    if (screen) {
+      const className = event.complete ? "juice-complete" : event.correct ? "juice-correct" : "juice-wrong";
+      screen.classList.remove("juice-correct", "juice-wrong", "juice-complete");
+      void screen.offsetWidth;
+      screen.classList.add(className);
+      window.setTimeout(() => screen.classList.remove(className), 680);
+    }
+
+    if (event.complete) {
+      pulseMeter("#gameHudXp");
+      return;
+    }
+
+    const active = findFeedbackElement(event.correct);
+    if (active) {
+      const cardClass = event.correct ? "juice-card-correct" : "juice-card-wrong";
+      active.classList.remove("juice-card-correct", "juice-card-wrong");
+      void active.offsetWidth;
+      active.classList.add(cardClass);
+      window.setTimeout(() => active.classList.remove(cardClass), event.correct ? 760 : 520);
+    }
+
+    if (event.correct) {
+      flyStarToMeter(active);
+      pulseMeter("#gameHudDailyStars");
+      pulseMeter("#gameHudXp");
+    }
+  }
+
+  function findFeedbackElement(correct) {
+    const selector = correct
+      ? ".mission-item.correct, .answer-item.correct, .lab-choice.correct"
+      : ".mission-item.wrong, .answer-item.wrong, .lab-choice.wrong";
+    const nodes = [...document.querySelectorAll(selector)].filter((node) => node.offsetParent !== null);
+    return nodes.at(-1) || null;
+  }
+
+  function flyStarToMeter(source) {
+    const target = document.querySelector("#gameHudDailyStars")?.closest("span");
+    if (!target) return;
+    const targetRect = target.getBoundingClientRect();
+    const sourceRect = source?.getBoundingClientRect() || document.querySelector(".mission-screen")?.getBoundingClientRect();
+    if (!sourceRect) return;
+
+    const startX = sourceRect.left + sourceRect.width / 2;
+    const startY = sourceRect.top + sourceRect.height / 2;
+    const endX = targetRect.left + targetRect.width / 2;
+    const endY = targetRect.top + targetRect.height / 2;
+    const star = document.createElement("span");
+    star.className = "star-flyer";
+    star.textContent = "★";
+    star.style.left = `${startX}px`;
+    star.style.top = `${startY}px`;
+    star.style.setProperty("--dx", `${endX - startX}px`);
+    star.style.setProperty("--dy", `${endY - startY}px`);
+    document.body.append(star);
+    window.setTimeout(() => star.remove(), 900);
+  }
+
+  function pulseMeter(selector) {
+    const meter = document.querySelector(selector)?.closest("span");
+    if (!meter) return;
+    meter.classList.remove("meter-pop");
+    void meter.offsetWidth;
+    meter.classList.add("meter-pop");
+    window.setTimeout(() => meter.classList.remove("meter-pop"), 520);
+  }
+
+  function animateMeterNumber(node, fromValue, toValue) {
+    animateNumber(node, Number(fromValue || 0), Number(toValue || 0), (value) => String(value));
+  }
+
+  function animateStarRatio(node, fromValue, toValue) {
+    animateNumber(node, Number(fromValue || 0), Number(toValue || 0), (value) => `${value}/${DAILY_GOAL_STARS}`);
+  }
+
+  function animateNumber(node, fromValue, toValue, format) {
+    const from = Number.isFinite(fromValue) ? fromValue : toValue;
+    const to = Number.isFinite(toValue) ? toValue : 0;
+    if (from === to) {
+      node.textContent = format(to);
+      return;
+    }
+    if (node.dataset.raf) window.cancelAnimationFrame(Number(node.dataset.raf));
+    const startedAt = performance.now();
+    const duration = Math.min(720, Math.max(280, Math.abs(to - from) * 12));
+    const tick = (now) => {
+      const progress = Math.min(1, (now - startedAt) / duration);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      const value = Math.round(from + (to - from) * eased);
+      node.textContent = format(value);
+      if (progress < 1) {
+        node.dataset.raf = String(window.requestAnimationFrame(tick));
+      } else {
+        delete node.dataset.raf;
+        node.textContent = format(to);
+      }
+    };
+    node.dataset.raf = String(window.requestAnimationFrame(tick));
   }
 
   function setMascot(emotion, text, options = {}) {
@@ -739,6 +859,10 @@
 
   function showCelebration(options = {}) {
     const summary = options.summary || {};
+    const lessonXp = Number(summary.xp || 0);
+    const stickerHtml = summary.stickerUnlocked
+      ? `<span class="sticker-unlocked" aria-label="ปลดล็อกสติกเกอร์">ปลดล็อกสติกเกอร์ ⭐</span>`
+      : "";
     const overlay = document.createElement("div");
     overlay.className = "lesson-celebration";
     overlay.setAttribute("role", "status");
@@ -751,16 +875,25 @@
         <p>${escapeHtml(options.message || "เก็บดาวและ XP เรียบร้อยแล้ว")}</p>
         <div class="mission-result-stats">
           <span>${"★".repeat(Number(summary.stars || 0)) || "0 ดาว"}</span>
-          <span>XP +${Number(summary.xp || 0)}</span>
+          <span>XP +<b class="celebration-count" data-count-to="${lessonXp}">0</b></span>
           <span>Streak ${Number(summary.streak || 0)} วัน</span>
           <span>วันนี้ ${Number(summary.dailyStars || 0)}/${DAILY_GOAL_STARS} ดาว</span>
         </div>
+        ${stickerHtml}
       </div>
     `;
     document.body.append(overlay);
     window.setTimeout(() => overlay.classList.add("is-showing"), 20);
+    animateCelebrationCounts(overlay);
     window.setTimeout(() => overlay.classList.add("is-leaving"), 2800);
     window.setTimeout(() => overlay.remove(), 3400);
+  }
+
+  function animateCelebrationCounts(root) {
+    root.querySelectorAll(".celebration-count").forEach((node) => {
+      const target = Number(node.dataset.countTo || 0);
+      animateNumber(node, 0, target, (value) => String(value));
+    });
   }
 
   function renderLessonReward(summary) {
