@@ -253,7 +253,7 @@ function renderUnitShell() {
   const total = unit.entries.length;
   if (labEyebrow) labEyebrow.textContent = `English Mission · ป.1 · Unit ${unit.order}`;
   if (labTitle) labTitle.textContent = unit.title;
-  if (labSubtitle) labSubtitle.textContent = `ฝึก ${total} คำด้วยรูปและเสียงครูจาก cache`;
+  if (labSubtitle) labSubtitle.textContent = `ฝึก ${total} คำด้วยรูปภาพน่ารักและเสียงครู`;
   if (gameBadge) gameBadge.textContent = `Unit ${unit.order}`;
   if (gameTitle) gameTitle.textContent = unit.title;
   if (gameDescription) gameDescription.textContent = descriptionForUnit(unit);
@@ -261,7 +261,7 @@ function renderUnitShell() {
   if (promptHint) promptHint.textContent = "กดเริ่ม แล้วฟังคำแรก";
   if (promptText) promptText.textContent = "Ready?";
   if (feedback) {
-    feedback.innerHTML = `<strong>${escapeHtml(unit.title)}</strong><span>รูปโหลดจาก ${escapeHtml(imageBase)} และเสียงจาก ${escapeHtml(audioBase)}</span>`;
+    feedback.innerHTML = `<strong>${escapeHtml(unit.title)}</strong><span>กด Start แล้วมาเล่นจับคู่รูปกับเสียงกันเลย!</span>`;
   }
   renderRoundProgress();
   window.FutureGamification?.initMissionShell({
