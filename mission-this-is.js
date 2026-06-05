@@ -1,12 +1,22 @@
-const assetVersion = "20260531-real-objects-v2";
-const asset = (name) => `/assets/school-bag/${name}.svg?v=${assetVersion}`;
-const assetPng = (name) => `/assets/school-bag/${name}.png?v=${assetVersion}`;
+const fallbackAssetVersion = "20260531-real-objects-v2";
+const unitImageVersion = "20260605-unit1-png-v2";
+const schoolBagSvg = (name) => `/assets/school-bag/${name}.svg?v=${fallbackAssetVersion}`;
+const schoolBagPng = (name) => `/assets/school-bag/${name}.png?v=${fallbackAssetVersion}`;
+const unitPng = (name) => `/assets/english-p1/images/${name}.png?v=${unitImageVersion}`;
+const unitItem = (word, thai, answer, audio, imageName, fallbackImage) => ({
+  word,
+  thai,
+  answer,
+  audio,
+  image: unitPng(imageName),
+  fallbackImage,
+});
 
 const questionItems = [
-  { word: "book", thai: "หนังสือ", answer: "It is a book!", audio: "it-is-a-book.mp3", image: asset("book") },
-  { word: "pencil", thai: "ดินสอ", answer: "It is a pencil!", audio: "it-is-a-pencil.mp3", image: assetPng("real-pencil") },
-  { word: "ruler", thai: "ไม้บรรทัด", answer: "It is a ruler!", audio: "it-is-a-ruler.mp3", image: asset("ruler") },
-  { word: "eraser", thai: "ยางลบ", answer: "It is an eraser!", audio: "it-is-an-eraser.mp3", image: asset("eraser") },
+  unitItem("book", "หนังสือ", "It is a book!", "it-is-a-book.mp3", "book", schoolBagSvg("book")),
+  unitItem("pencil", "ดินสอ", "It is a pencil!", "it-is-a-pencil.mp3", "pencil", schoolBagPng("real-pencil")),
+  unitItem("ruler", "ไม้บรรทัด", "It is a ruler!", "it-is-a-ruler.mp3", "ruler", schoolBagSvg("ruler")),
+  unitItem("eraser", "ยางลบ", "It is an eraser!", "it-is-an-eraser.mp3", "eraser", schoolBagSvg("eraser")),
 ];
 
 const promptText = document.querySelector("#missionPromptText");
@@ -224,13 +234,25 @@ function renderSentenceProgress() {
 
 function renderQuestionObject(target) {
   if (questionObjectImage) {
-    questionObjectImage.src = target.image;
+    setImageWithFallback(questionObjectImage, target.image, target.fallbackImage || "");
     questionObjectImage.className = `object-image object-image-${slugifyWord(target.word)}`;
     questionObjectImage.alt = `รูปคำถาม: ${target.thai}`;
   }
   if (questionObjectCaption) {
     questionObjectCaption.textContent = "Look carefully";
   }
+}
+
+function setImageWithFallback(image, src, fallbackSrc) {
+  image.dataset.fallbackSrc = fallbackSrc;
+  image.dataset.fallbackUsed = "0";
+  image.onerror = () => {
+    const fallback = image.dataset.fallbackSrc;
+    if (!fallback || image.dataset.fallbackUsed === "1") return;
+    image.dataset.fallbackUsed = "1";
+    image.src = fallback;
+  };
+  image.src = src;
 }
 
 function renderChoices(target, options = {}) {
