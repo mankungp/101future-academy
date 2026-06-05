@@ -11,6 +11,21 @@
     sleepy: "/assets/mascot/futuree-sleepy.jpg",
   };
 
+  const mascotAudioBase = "/assets/english-p1/audio/";
+  const mascotSounds = {
+    correct: ["great-job.mp3"],
+    encourage: ["try-again.mp3", "almost-try-again.mp3"],
+    celebrate: ["you-did-it.mp3", "lesson-complete.mp3"],
+  };
+  const mascotMessages = {
+    greeting: "มาเก็บดาวกัน!",
+    correct: "เก่งมาก!",
+    encourage: "ลองอีกทีนะ!",
+    celebrate: "เย้ จบแล้ว!",
+    sleepy: "พักนิดนึง แล้วมาเล่นต่อกันนะ",
+  };
+  const MASCOT_IDLE_MS = 26000;
+
   const lessons = [
       {
           "id": "english-p1-unit1-school-bag",
@@ -365,6 +380,10 @@
   ];
 
   let missionSession = null;
+  let mascotIdleTimer = 0;
+  let mascotSoundToken = 0;
+  let mascotAudio = null;
+  let lastMascotSoundAt = 0;
 
   function defaultState() {
     return {
@@ -483,7 +502,7 @@
       xpDelta: correct ? 10 : 2,
       starDelta: correct ? 1 : 0,
     });
-    setMascot(correct ? "correct" : "encourage", correct ? "เยี่ยมเลย ได้ดาวเพิ่ม!" : "ไม่เป็นไร ลองอีกครั้งนะ");
+    setMascot(correct ? "correct" : "encourage", correct ? "เก่งมาก! ได้ดาวเพิ่มแล้ว" : "ลองอีกทีนะ น้องฟิวช่วยอยู่", { sound: true });
     renderLearnWidgets();
     return updated.lessons[lessonId];
   }
@@ -539,7 +558,7 @@
       freezesLeft: updated.streak.freezesLeft,
     };
     updateMissionHud(updated, { complete: true, xpDelta: lessonXp, starDelta: 0 });
-    setMascot("celebrate", "จบบทแล้ว พลังน้องฟิวเพิ่มขึ้น!");
+    setMascot("celebrate", "เย้ จบบทแล้ว! ได้ XP เพิ่ม", { sound: true });
     renderLearnWidgets();
     return summary;
   }
@@ -604,7 +623,7 @@
       startedAt: Date.now(),
     };
     insertMissionHud(options);
-    setMascot(options.mascotEmotion || "greeting", options.mascotText || "วันนี้มาช่วยน้องเก็บดาวกัน!");
+    setMascot(options.mascotEmotion || "greeting", options.mascotText || "มาเก็บดาวกัน!", { sound: false });
     updateMissionHud(readState(), {});
     return missionSession;
   }
@@ -615,7 +634,7 @@
     const hud = document.createElement("div");
     hud.className = "gamification-hud";
     hud.innerHTML = `
-      <div class="future-mascot-card" aria-live="polite">
+      <div class="future-mascot-card" data-emotion="greeting" aria-live="polite">
         <img id="futureMascotImage" src="${mascotImages.greeting}" alt="น้องฟิวเจอร์" />
         <div>
           <span>น้องฟิวเจอร์</span>
@@ -660,14 +679,62 @@
     window.setTimeout(() => toast.classList.remove("is-visible"), 1100);
   }
 
-  function setMascot(emotion, text) {
+  function setMascot(emotion, text, options = {}) {
+    const nextEmotion = mascotImages[emotion] ? emotion : "greeting";
+    const message = text || mascotMessages[nextEmotion] || mascotMessages.greeting;
+    const card = document.querySelector(".future-mascot-card");
     const image = document.querySelector("#futureMascotImage");
     const label = document.querySelector("#futureMascotText");
+    if (card) {
+      card.dataset.emotion = nextEmotion;
+      card.classList.remove("is-mascot-pop", "is-mascot-sleepy");
+      void card.offsetWidth;
+      card.classList.add("is-mascot-pop");
+      card.classList.toggle("is-mascot-sleepy", nextEmotion === "sleepy");
+    }
     if (image) {
-      image.src = mascotImages[emotion] || mascotImages.greeting;
+      image.src = mascotImages[nextEmotion];
+      image.alt = `น้องฟิวเจอร์: ${message}`;
       image.onerror = () => image.classList.add("image-missing");
     }
-    if (label && text) label.textContent = text;
+    if (label) label.textContent = message;
+    if (options.sound) playMascotSound(nextEmotion, options);
+    if (!options.skipIdleReset) resetMascotIdleTimer();
+  }
+
+  function resetMascotIdleTimer() {
+    window.clearTimeout(mascotIdleTimer);
+    if (!missionSession || !document.querySelector(".future-mascot-card")) return;
+    mascotIdleTimer = window.setTimeout(() => {
+      setMascot("sleepy", mascotMessages.sleepy, { sound: false, skipIdleReset: true });
+    }, MASCOT_IDLE_MS);
+  }
+
+  function playMascotSound(emotion, options = {}) {
+    const files = mascotSounds[emotion] || [];
+    if (!files.length) return;
+    const now = Date.now();
+    if (now - lastMascotSoundAt < 420) return;
+    lastMascotSoundAt = now;
+    const token = ++mascotSoundToken;
+    const sequence = files.slice(0, emotion === "encourage" ? 1 : files.length);
+    if (emotion === "encourage") {
+      sequence[0] = files[Math.floor(now / 1000) % files.length];
+    }
+    const playNext = (index = 0) => {
+      if (token !== mascotSoundToken || index >= sequence.length) return;
+      try {
+        mascotAudio?.pause();
+        mascotAudio = new Audio(`${mascotAudioBase}${sequence[index]}`);
+        mascotAudio.volume = Number(options.volume || 0.78);
+        mascotAudio.onended = () => playNext(index + 1);
+        const promise = mascotAudio.play();
+        if (promise && typeof promise.catch === "function") promise.catch(() => {});
+      } catch {
+        /* audio feedback is a bonus; never block the lesson */
+      }
+    };
+    playNext();
   }
 
   function showCelebration(options = {}) {
