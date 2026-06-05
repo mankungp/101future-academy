@@ -1,28 +1,37 @@
-const assetVersion = "20260531-real-objects-v2";
-const asset = (name) => `/assets/school-bag/${name}.svg?v=${assetVersion}`;
-const assetPng = (name) => `/assets/school-bag/${name}.png?v=${assetVersion}`;
+const fallbackAssetVersion = "20260531-real-objects-v2";
+const unitImageVersion = "20260605-unit1-png-v1";
+const schoolBagSvg = (name) => `/assets/school-bag/${name}.svg?v=${fallbackAssetVersion}`;
+const schoolBagPng = (name) => `/assets/school-bag/${name}.png?v=${fallbackAssetVersion}`;
+const unitPng = (name) => `/assets/english-p1/images/${name}.png?v=${unitImageVersion}`;
+const unitItem = (word, thai, imageName, fallbackImage, prompt) => ({
+  word,
+  thai,
+  image: unitPng(imageName),
+  fallbackImage,
+  prompt,
+});
 
 const missionItems = [
-  { word: "book", thai: "หนังสือ", image: asset("book"), prompt: "Tap the book." },
-  { word: "pencil", thai: "ดินสอ", image: assetPng("real-pencil"), prompt: "Find the pencil." },
-  { word: "ruler", thai: "ไม้บรรทัด", image: asset("ruler"), prompt: "Touch the ruler." },
-  { word: "eraser", thai: "ยางลบ", image: asset("eraser"), prompt: "Choose the eraser." },
-  { word: "school bag", thai: "กระเป๋านักเรียน", image: asset("school-bag"), prompt: "Tap the school bag." },
-  { word: "notebook", thai: "สมุด", image: asset("notebook"), prompt: "Find the notebook." },
-  { word: "pen", thai: "ปากกา", image: assetPng("real-pen"), prompt: "Touch the pen." },
-  { word: "crayon", thai: "สีเทียน", image: assetPng("real-crayon"), prompt: "Choose the crayon." },
-  { word: "scissors", thai: "กรรไกร", image: asset("scissors"), prompt: "Tap the scissors." },
-  { word: "glue", thai: "กาว", image: asset("glue"), prompt: "Find the glue." },
-  { word: "sharpener", thai: "กบเหลาดินสอ", image: asset("sharpener"), prompt: "Touch the sharpener." },
-  { word: "desk", thai: "โต๊ะเรียน", image: asset("desk"), prompt: "Choose the desk." },
-  { word: "chair", thai: "เก้าอี้", image: asset("chair"), prompt: "Tap the chair." },
-  { word: "board", thai: "กระดาน", image: asset("board"), prompt: "Find the board." },
-  { word: "clock", thai: "นาฬิกา", image: asset("clock"), prompt: "Touch the clock." },
-  { word: "apple", thai: "แอปเปิล", image: asset("apple"), prompt: "Choose the apple." },
-  { word: "banana", thai: "กล้วย", image: asset("banana"), prompt: "Tap the banana." },
-  { word: "ball", thai: "ลูกบอล", image: asset("ball"), prompt: "Find the ball." },
-  { word: "bottle", thai: "ขวดน้ำ", image: asset("bottle"), prompt: "Touch the bottle." },
-  { word: "lunch box", thai: "กล่องข้าว", image: asset("lunch-box"), prompt: "Choose the lunch box." },
+  unitItem("book", "หนังสือ", "book", schoolBagSvg("book"), "Tap the book."),
+  unitItem("pencil", "ดินสอ", "pencil", schoolBagPng("real-pencil"), "Find the pencil."),
+  unitItem("ruler", "ไม้บรรทัด", "ruler", schoolBagSvg("ruler"), "Touch the ruler."),
+  unitItem("eraser", "ยางลบ", "eraser", schoolBagSvg("eraser"), "Choose the eraser."),
+  unitItem("school bag", "กระเป๋านักเรียน", "school-bag", schoolBagSvg("school-bag"), "Tap the school bag."),
+  unitItem("notebook", "สมุด", "notebook", schoolBagSvg("notebook"), "Find the notebook."),
+  unitItem("pen", "ปากกา", "pen", schoolBagPng("real-pen"), "Touch the pen."),
+  unitItem("crayon", "สีเทียน", "crayon", schoolBagPng("real-crayon"), "Choose the crayon."),
+  unitItem("scissors", "กรรไกร", "scissors", schoolBagSvg("scissors"), "Tap the scissors."),
+  unitItem("glue", "กาว", "glue", schoolBagSvg("glue"), "Find the glue."),
+  unitItem("sharpener", "กบเหลาดินสอ", "sharpener", schoolBagSvg("sharpener"), "Touch the sharpener."),
+  unitItem("desk", "โต๊ะเรียน", "desk", schoolBagSvg("desk"), "Choose the desk."),
+  unitItem("chair", "เก้าอี้", "chair", schoolBagSvg("chair"), "Tap the chair."),
+  unitItem("board", "กระดาน", "board", schoolBagSvg("board"), "Find the board."),
+  unitItem("clock", "นาฬิกา", "clock", schoolBagSvg("clock"), "Touch the clock."),
+  unitItem("apple", "แอปเปิล", "apple", schoolBagSvg("apple"), "Choose the apple."),
+  unitItem("banana", "กล้วย", "banana", schoolBagSvg("banana"), "Tap the banana."),
+  unitItem("ball", "ลูกบอล", "ball", schoolBagSvg("ball"), "Find the ball."),
+  unitItem("bottle", "ขวดน้ำ", "bottle", schoolBagSvg("bottle"), "Touch the bottle."),
+  unitItem("lunch box", "กล่องข้าว", "lunch-box", schoolBagSvg("lunch-box"), "Choose the lunch box."),
 ];
 
 const promptText = document.querySelector("#missionPromptText");
@@ -123,13 +132,20 @@ function renderChoices(target) {
   const choices = choiceSetFor(target);
   itemsBox.innerHTML = choices.map((item) => `
     <button class="mission-item mission-object" type="button" draggable="true" data-word="${escapeHtml(item.word)}" data-thai="${escapeHtml(item.thai)}">
-      <img class="object-image object-image-${escapeHtml(slugifyWord(item.word))}" src="${escapeHtml(item.image)}" alt="" />
+      <img class="object-image object-image-${escapeHtml(slugifyWord(item.word))}" src="${escapeHtml(item.image)}" data-fallback-src="${escapeHtml(item.fallbackImage || "")}" alt="" />
       <strong>${escapeHtml(item.word)}</strong>
       <small>${escapeHtml(item.thai)}</small>
     </button>
   `).join("");
 
   itemsBox.querySelectorAll(".mission-item").forEach((item) => {
+    const image = item.querySelector("img[data-fallback-src]");
+    image?.addEventListener("error", () => {
+      const fallback = image.dataset.fallbackSrc;
+      if (!fallback || image.dataset.fallbackUsed === "1") return;
+      image.dataset.fallbackUsed = "1";
+      image.src = fallback;
+    });
     item.addEventListener("click", () => chooseItem(item.dataset.word || "", item));
     item.addEventListener("dragstart", (event) => {
       draggedWord = item.dataset.word || "";
