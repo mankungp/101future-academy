@@ -722,6 +722,8 @@
       if (!done && !locked) firstOpenSeen = true;
       const status = done ? "ผ่านแล้ว" : current ? "กำลังเรียน" : "ล็อกไว้ก่อน";
       const stars = Number(progress.stars || 0);
+      const canOpen = Boolean(lesson.route) && (done || current || !locked);
+      const actionLabel = done ? "เล่นอีกครั้ง" : "เรียนต่อ";
       return `
         <article class="learning-map-node ${done ? "is-done" : ""} ${current ? "is-current" : ""} ${locked ? "is-locked" : ""}">
           <span class="map-step">${done ? "✓" : lesson.order}</span>
@@ -731,7 +733,7 @@
             <p>${escapeHtml(lesson.skillTags.join(" · "))}</p>
             <small>${stars ? "★".repeat(stars) : "ยังไม่ได้ดาว"}</small>
           </div>
-          ${current && lesson.route ? `<a class="button primary" href="${lesson.route}">เรียนต่อ</a>` : ""}
+          ${canOpen ? `<a class="button ${done ? "secondary" : "primary"}" href="${lesson.route}">${actionLabel}</a>` : ""}
         </article>
       `;
     }).join("");
