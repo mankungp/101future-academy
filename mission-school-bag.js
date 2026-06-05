@@ -38,6 +38,8 @@ const promptHint = document.querySelector("#missionPromptHint");
 const correctBurst = document.querySelector("#correctBurst");
 const correctBurstWord = document.querySelector("#correctBurstWord");
 const resetRequested = new URLSearchParams(window.location.search).get("reset") === "1";
+const teacherAudioBase = "/assets/english-p1/audio/";
+const gamificationLessonId = "english-p1-unit1-school-bag";
 
 let currentIndex = Number(localStorage.getItem("101future.schoolBagMission.index") || 0);
 let score = Number(localStorage.getItem("101future.schoolBagMission.score") || 0);
@@ -45,17 +47,12 @@ let draggedWord = "";
 let isTransitioning = false;
 let correctBurstTimer = 0;
 let nextPromptTimer = 0;
-let activeSpeechFallbackTimer = 0;
-let preferredEnglishVoice = null;
 let missionStarted = false;
 let audioContext = null;
+let activeTeacherAudio = null;
+let teacherAudioToken = 0;
 
 installNoZoomGuard();
-loadVoices();
-if ("speechSynthesis" in window) {
-  window.speechSynthesis.addEventListener?.("voiceschanged", loadVoices);
-  window.speechSynthesis.onvoiceschanged = loadVoices;
-}
 
 if (resetRequested) {
   localStorage.removeItem("101future.schoolBagMission.index");
@@ -73,6 +70,13 @@ if (currentIndex >= missionItems.length) {
 
 restorePackedItems();
 renderStartScreen();
+window.FutureGamification?.initMissionShell({
+  lessonId: gamificationLessonId,
+  title: "Pack My School Bag",
+  totalQuestions: missionItems.length,
+  mascotEmotion: "greeting",
+  mascotText: "น้องฟิวจะช่วยเก็บของใส่กระเป๋าให้ครบ 20 คำ!",
+});
 
 soundButton?.addEventListener("click", () => {
   if (!missionStarted) {
@@ -156,6 +160,10 @@ function slugifyWord(word) {
   return String(word).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 }
 
+function audioFileForWord(word) {
+  return `${slugifyWord(word)}.mp3`;
+}
+
 function chooseItem(word, item) {
   if (!missionStarted || isTransitioning || !word || !item || currentIndex >= missionItems.length) return;
 
@@ -169,13 +177,22 @@ function chooseItem(word, item) {
     playUiSound("wrong");
     showWrongBubble(item, selected);
     recordAttempt({ correct: false, selected, target });
+    window.FutureGamification?.recordQuestion({
+      lessonId: gamificationLessonId,
+      questionId: target.word,
+      correct: false,
+      target: target.word,
+      selected: selected.word,
+      skillTag: target.word,
+      totalQuestions: missionItems.length,
+    });
     const selectedPhrase = `No. ${thingPhrase(selected)}.`;
     feedback.innerHTML = `
       <strong>${escapeHtml(selectedPhrase)}</strong>
       <span>โจทย์ถามหา ${escapeHtml(target.word)} (${escapeHtml(target.thai)}) ลองแตะรูปที่ถูกอีกครั้ง</span>
     `;
     highlightTarget(target.word);
-    speakText(selectedPhrase, { rate: 0.58, fallbackMs: estimateSpeechMs(selectedPhrase, 0.58) + 1200 });
+    playTeacherAudio(["try-again.mp3", audioFileForWord(selected.word)]);
     return;
   }
 
@@ -188,27 +205,26 @@ function chooseItem(word, item) {
   showCorrectBurst(target);
   lockMission();
   recordAttempt({ correct: true, selected: target, target });
+  window.FutureGamification?.recordQuestion({
+    lessonId: gamificationLessonId,
+    questionId: target.word,
+    correct: true,
+    target: target.word,
+    selected: target.word,
+    skillTag: target.word,
+    totalQuestions: missionItems.length,
+  });
   currentIndex += 1;
   score += 1;
   saveProgress();
   stars.textContent = `${score}/${missionItems.length}`;
   feedback.innerHTML = `<strong>Correct!</strong><span>${escapeHtml(target.word)} = ${escapeHtml(target.thai)}</span>`;
 
-  const praise = `Correct. ${target.word}.`;
   const advanceAfterPraise = () => {
     window.clearTimeout(nextPromptTimer);
     nextPromptTimer = window.setTimeout(advanceMission, 700);
   };
-  const speechStarted = speakText(praise, {
-    rate: 0.58,
-    fallbackMs: estimateSpeechMs(praise, 0.58) + 1400,
-    onEnd: advanceAfterPraise,
-  });
-
-  if (!speechStarted) {
-    window.clearTimeout(nextPromptTimer);
-    nextPromptTimer = window.setTimeout(advanceMission, 1800);
-  }
+  playTeacherAudio(["correct.mp3", audioFileForWord(target.word)], { onEnd: advanceAfterPraise });
 }
 
 function advanceMission() {
@@ -247,7 +263,9 @@ function startMission() {
   playUiSound("start");
   missionStarted = true;
   renderMission();
-  window.setTimeout(speakPrompt, 520);
+  window.setTimeout(() => {
+    playTeacherAudio(["lets-start.mp3"], { onEnd: speakPrompt });
+  }, 260);
 }
 
 function setSoundButtonStart(isResume = false) {
@@ -357,30 +375,45 @@ function restorePackedItems() {
 function completeMission() {
   missionStarted = false;
   playUiSound("complete");
+  const rewardSummary = window.FutureGamification?.completeLesson({
+    lessonId: gamificationLessonId,
+    title: "Pack My School Bag",
+    score,
+    totalQuestions: missionItems.length,
+  });
   stars.textContent = `${score}/${missionItems.length}`;
   if (promptHint) promptHint.textContent = "Mission นี้จบแล้ว";
   promptText.textContent = "Great job!";
   feedback.innerHTML = `<strong>Mission complete</strong><span>เล่นครบ 20 ด่านแล้ว</span>`;
-  speakText("Great job. Mission complete.", { rate: 0.58, fallbackMs: 3600 });
+  playTeacherAudio(["great-job.mp3", "lesson-complete.mp3"]);
   completeBox?.classList.remove("hidden");
   if (completeBox) {
     completeBox.innerHTML = `
       <span class="mini-label">สรุปสำหรับผู้ปกครอง</span>
       <h3>Picture Word Star</h3>
       <p>วันนี้เด็กฝึกฟังคำศัพท์และเลือกรูปภาพครบ ${missionItems.length} คำ โดยยังไม่ต้องฝึกประโยคยาว</p>
-      <button id="restartMissionButton" class="button primary" type="button">เล่นอีกครั้ง</button>
-      <a class="button secondary" href="/learn">กลับหน้าเรียน</a>
+      <div class="mission-result-stats" aria-label="ผลการเล่น">
+        <span>Words: ${missionItems.length}</span>
+        <span>Score: ${score}/${missionItems.length}</span>
+      </div>
+      ${window.FutureGamification?.renderLessonReward(rewardSummary) || ""}
+      <button id="restartMissionButton" class="button primary" type="button">Play again</button>
+      <a class="button secondary" href="/learn">Back</a>
     `;
     completeBox.querySelector("#restartMissionButton")?.addEventListener("click", restartMission);
   }
+  window.FutureGamification?.showCelebration({
+    title: "เก็บของครบแล้ว!",
+    message: "Mission 1 จบแล้ว ได้ดาว XP และเช็ก streak วันนี้",
+    summary: rewardSummary,
+  });
   localStorage.setItem("101future.schoolBagMission.completedAt", new Date().toISOString());
 }
 
 function restartMission() {
   window.clearTimeout(correctBurstTimer);
   window.clearTimeout(nextPromptTimer);
-  window.clearTimeout(activeSpeechFallbackTimer);
-  window.speechSynthesis?.cancel?.();
+  stopTeacherAudio();
   unlockMission();
   currentIndex = 0;
   score = 0;
@@ -390,69 +423,75 @@ function restartMission() {
   completeBox?.classList.add("hidden");
   missionStarted = true;
   renderMission();
-  window.setTimeout(speakPrompt, 450);
+  window.setTimeout(() => {
+    playTeacherAudio(["lets-start.mp3"], { onEnd: speakPrompt });
+  }, 260);
 }
 
 function speakPrompt() {
   setSpeaking(true);
   playUiSound("prompt");
   const target = currentTarget();
-  const started = speakText(target.prompt, {
-    rate: 0.58,
-    fallbackMs: estimateSpeechMs(target.prompt, 0.58) + 1200,
-    onEnd: () => setSpeaking(false),
-  });
-  if (!started) {
-    window.setTimeout(() => setSpeaking(false), 1200);
-  }
+  playTeacherAudio(["tap-the-picture.mp3", audioFileForWord(target.word)], { onEnd: () => setSpeaking(false) });
 }
 
-function speakText(text, options = {}) {
-  if (!("speechSynthesis" in window)) return false;
-  window.clearTimeout(activeSpeechFallbackTimer);
-  window.speechSynthesis.cancel();
-  const utterance = new SpeechSynthesisUtterance(text);
-  utterance.lang = "en-US";
-  utterance.rate = options.rate || 0.58;
-  utterance.pitch = 1.04;
-  if (preferredEnglishVoice) utterance.voice = preferredEnglishVoice;
-  if (typeof options.onEnd === "function") {
-    let ended = false;
-    const finish = () => {
-      if (ended) return;
-      ended = true;
-      window.clearTimeout(activeSpeechFallbackTimer);
-      options.onEnd();
-    };
-    activeSpeechFallbackTimer = window.setTimeout(finish, options.fallbackMs || estimateSpeechMs(text, utterance.rate) + 1200);
-    utterance.onend = finish;
-    utterance.onerror = finish;
+function playTeacherAudio(files, options = {}) {
+  const queue = files.filter(Boolean);
+  if (!queue.length) {
+    options.onEnd?.();
+    return false;
   }
-  window.speechSynthesis.speak(utterance);
+  teacherAudioToken += 1;
+  const token = teacherAudioToken;
+  stopActiveTeacherAudio();
+  runTeacherAudioQueue(queue, token, options);
   return true;
 }
 
-function loadVoices() {
-  if (!("speechSynthesis" in window)) return;
-  const voices = window.speechSynthesis.getVoices();
-  const englishVoices = voices.filter((voice) => voice.lang?.toLowerCase().startsWith("en"));
-  const preferredNames = [
-    "ava",
-    "samantha",
-    "google us english",
-    "microsoft jenny",
-    "microsoft aria",
-    "natural",
-    "premium",
-    "enhanced",
-    "neural",
-    "alex",
-  ];
-  preferredEnglishVoice =
-    preferredNames.map((name) => englishVoices.find((voice) => voice.name.toLowerCase().includes(name))).find(Boolean) ||
-    englishVoices.find((voice) => voice.lang === "en-US") ||
-    englishVoices[0] ||
-    null;
+async function runTeacherAudioQueue(queue, token, options) {
+  for (const file of queue) {
+    if (token !== teacherAudioToken) return;
+    await playTeacherAudioFile(file, token);
+  }
+  if (token === teacherAudioToken) options.onEnd?.();
+}
+
+function playTeacherAudioFile(file, token) {
+  return new Promise((resolve) => {
+    const audio = new Audio(`${teacherAudioBase}${file}`);
+    activeTeacherAudio = audio;
+    let finished = false;
+    const finish = () => {
+      if (finished) return;
+      finished = true;
+      audio.removeEventListener("ended", finish);
+      audio.removeEventListener("error", finish);
+      if (activeTeacherAudio === audio) activeTeacherAudio = null;
+      resolve();
+    };
+    audio.addEventListener("ended", finish, { once: true });
+    audio.addEventListener("error", finish, { once: true });
+    audio.play().catch(finish);
+    window.setTimeout(() => {
+      if (token === teacherAudioToken) finish();
+    }, 6000);
+  });
+}
+
+function stopTeacherAudio() {
+  teacherAudioToken += 1;
+  stopActiveTeacherAudio();
+}
+
+function stopActiveTeacherAudio() {
+  if (!activeTeacherAudio) return;
+  try {
+    activeTeacherAudio.pause();
+    activeTeacherAudio.currentTime = 0;
+  } catch {
+    /* ignore audio cleanup */
+  }
+  activeTeacherAudio = null;
 }
 
 function recordAttempt({ correct, selected, target }) {
@@ -529,11 +568,6 @@ function scheduleTone(context, frequency, duration, offset, volume, endFrequency
   gain.connect(context.destination);
   oscillator.start(startTime);
   oscillator.stop(startTime + duration + 0.04);
-}
-
-function estimateSpeechMs(text, rate) {
-  const wordCount = String(text).trim().split(/\s+/).filter(Boolean).length || 1;
-  return Math.max(1700, Math.min(5200, (wordCount * 760) / Math.max(rate, 0.5)));
 }
 
 function thingPhrase(item) {
