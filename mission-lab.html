@@ -2,14 +2,87 @@
 <html lang="th">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta http-equiv="refresh" content="0; url=/mission/school-bag?reset=1" />
-    <title>Mission 1 | 101 Future Academy</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+    <title>English ป.1 Mission Lab | 101 Future Academy</title>
+    <link rel="stylesheet" href="/styles.css?v=20260605-vocab-assets-v1" />
   </head>
-  <body>
-    <p>กำลังพาไป Mission 1...</p>
-    <script>
-      window.location.replace("/mission/school-bag?reset=1");
-    </script>
+  <body class="mission-body no-zoom-body">
+    <header class="mission-topbar">
+      <a class="brand" href="/learn" aria-label="กลับหน้าเรียน 101 Future Academy">
+        <span class="brand-mark">101</span>
+        <span class="brand-name">Future Academy</span>
+      </a>
+      <a class="button secondary mission-exit-link" href="/learn">
+        <span class="exit-full">ออกจาก Mission</span>
+        <span class="exit-short">ออก</span>
+      </a>
+    </header>
+
+    <main class="mission-main">
+      <section class="mission-screen mission-lab-screen" aria-live="polite">
+        <div class="mission-screen-head">
+          <div>
+            <p id="labEyebrow" class="eyebrow">English Mission · ป.1</p>
+            <h1 id="labTitle">กำลังโหลดบทเรียน</h1>
+            <p id="labSubtitle">โหลดรูปและเสียงจากคลังบทเรียน English ป.1</p>
+          </div>
+          <div class="mission-score mission-score-large">
+            <span id="missionStars">0/0</span>
+            <strong>stars</strong>
+          </div>
+        </div>
+
+        <div class="mission-lab-layout">
+          <aside class="mission-game-menu" aria-label="เลือก unit">
+            <div>
+              <p class="eyebrow">Unit</p>
+              <h2>เลือกบท</h2>
+            </div>
+            <label class="game-select-label" for="gameSelect">เลือกบทเรียน</label>
+            <select id="gameSelect" class="unit-select" aria-label="เลือกบทเรียน"></select>
+            <div id="gameList" class="game-list" aria-label="รายการบทเรียน"></div>
+          </aside>
+
+          <div class="mission-play-panel">
+            <div class="mission-prompt mission-prompt-large">
+              <button id="missionSoundButton" class="sound-button start-button" type="button" aria-label="เริ่ม Mission">Start Mission</button>
+              <div>
+                <span id="missionPromptHint">กดเริ่ม แล้วฟังคำแรก</span>
+                <p id="missionPromptText">Ready?</p>
+              </div>
+            </div>
+
+            <div id="missionFeedback" class="mission-feedback mission-feedback-large">
+              เลือกบทเพื่อเริ่มฝึกคำศัพท์
+            </div>
+
+            <div id="correctBurst" class="correct-burst hidden" aria-live="assertive">
+              <div class="correct-burst-card">
+                <span class="burst-confetti" aria-hidden="true">
+                  <i></i><i></i><i></i><i></i><i></i><i></i>
+                </span>
+                <span class="mini-label">Yes, correct</span>
+                <strong>ถูกต้อง</strong>
+                <span id="correctBurstWord">Great job!</span>
+              </div>
+            </div>
+
+            <article class="teacher-card lab-teacher-card">
+              <span id="gameBadge" class="mini-label">Unit</span>
+              <h2 id="gameTitle">Loading</h2>
+              <p id="gameDescription">ฟังเสียงครู แล้วแตะรูปที่ตรงกับคำศัพท์</p>
+              <div id="roundProgress" class="sentence-progress"></div>
+            </article>
+
+            <div id="missionItems" class="mission-items mission-items-large sentence-items lab-items" aria-label="vocabulary choices"></div>
+
+            <div id="missionComplete" class="result-card mission-complete hidden"></div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script src="/assets/gamification.js?v=20260605-vocab-assets-v1" defer></script>
+    <script src="/mission-lab.js?v=20260605-vocab-assets-v1" defer></script>
   </body>
 </html>
