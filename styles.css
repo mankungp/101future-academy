@@ -2919,6 +2919,11 @@ h3 {
   100% { opacity: 1; transform: translateY(0) scale(1); }
 }
 
+@keyframes speed-warning-pulse {
+  0%, 100% { box-shadow: 0 0 0 rgba(255, 95, 87, 0); }
+  50% { box-shadow: 0 0 0 4px rgba(255, 95, 87, 0.14); }
+}
+
 @keyframes mascot-bob {
   0%, 100% { transform: translateY(0) rotate(-1deg); }
   50% { transform: translateY(-4px) rotate(1deg); }
@@ -3928,6 +3933,131 @@ body.no-zoom-body {
   min-height: 120px;
 }
 
+.mode-pill {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  min-height: 24px;
+  padding: 3px 9px;
+  color: #fff;
+  background: var(--primary);
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 950;
+}
+
+.game-target-row {
+  display: grid;
+  grid-template-columns: 82px minmax(0, 1fr);
+  gap: 10px;
+  align-items: center;
+  min-width: 0;
+}
+
+.game-target-thumb {
+  width: 82px;
+  height: 64px;
+  object-fit: contain;
+  padding: 6px;
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(49, 87, 255, 0.14);
+  border-radius: 8px;
+}
+
+.bag-target-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 42px;
+  padding: 8px 12px;
+  color: var(--ink);
+  background: #fff7ed;
+  border: 1px dashed rgba(245, 179, 53, 0.68);
+  border-radius: 8px;
+  font-weight: 950;
+}
+
+.speed-meter {
+  position: relative;
+  display: block;
+  height: 12px;
+  overflow: hidden;
+  background: rgba(49, 87, 255, 0.12);
+  border-radius: 999px;
+}
+
+.speed-meter b {
+  position: absolute;
+  inset: 0;
+  display: block;
+  background: linear-gradient(90deg, #06c755, #f5b335, #ff5f57);
+  border-radius: inherit;
+  transform: scaleX(1);
+  transform-origin: left center;
+  transition: transform 120ms linear;
+}
+
+.word-match-target {
+  border-color: rgba(0, 163, 255, 0.28);
+}
+
+.bag-drop-target {
+  border-color: rgba(245, 179, 53, 0.38);
+}
+
+.bag-drop-target.is-drop-ready {
+  background:
+    radial-gradient(circle at 18% 14%, rgba(245, 179, 53, 0.2), transparent 32%),
+    linear-gradient(145deg, #fffaf0, #eef4ff 68%, #fff);
+  box-shadow:
+    inset 0 0 0 3px rgba(245, 179, 53, 0.18),
+    0 16px 36px rgba(245, 179, 53, 0.12);
+}
+
+.speed-tap-target {
+  border-color: rgba(255, 95, 87, 0.34);
+}
+
+.speed-warning .speed-meter {
+  animation: speed-warning-pulse 520ms ease-in-out infinite;
+}
+
+.word-match-game .lab-choice {
+  min-height: 96px;
+}
+
+.game-word-card {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  min-height: 56px;
+  color: var(--ink);
+  background: linear-gradient(135deg, #fff, #eef4ff);
+  border: 1px solid rgba(49, 87, 255, 0.14);
+  border-radius: 8px;
+  font-size: clamp(19px, 2.4vw, 30px);
+  font-weight: 950;
+  text-align: center;
+}
+
+.bag-drag-game .lab-choice {
+  cursor: grab;
+}
+
+.bag-drag-game .lab-choice:active {
+  cursor: grabbing;
+}
+
+.bag-drag-game .lab-choice.is-dragging {
+  opacity: 0.72;
+  transform: rotate(-1.5deg) scale(0.98);
+}
+
+.speed-tap-game .lab-choice {
+  box-shadow:
+    0 12px 30px rgba(17, 24, 39, 0.06),
+    inset 0 0 0 1px rgba(255, 95, 87, 0.06);
+}
+
 .unit-roadmap {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
@@ -4311,6 +4441,49 @@ body.no-zoom-body {
 
   .lab-teacher-card p {
     display: none;
+  }
+
+  .no-zoom-body .lab-teacher-card p {
+    display: grid;
+    gap: 5px;
+    font-size: 11px;
+    line-height: 1.25;
+  }
+
+  .no-zoom-body .game-target-row {
+    grid-template-columns: 52px minmax(0, 1fr);
+    gap: 6px;
+  }
+
+  .no-zoom-body .game-target-thumb {
+    width: 52px;
+    height: 42px;
+    padding: 3px;
+  }
+
+  .no-zoom-body .mode-pill {
+    min-height: 20px;
+    padding: 2px 7px;
+    font-size: 9.5px;
+  }
+
+  .no-zoom-body .bag-target-badge {
+    min-height: 28px;
+    padding: 4px 8px;
+    font-size: 11px;
+  }
+
+  .no-zoom-body .speed-meter {
+    height: 8px;
+  }
+
+  .no-zoom-body .word-match-game .lab-choice {
+    min-height: 0;
+  }
+
+  .no-zoom-body .game-word-card {
+    min-height: 34px;
+    font-size: clamp(15px, 4.2vw, 19px);
   }
 
   .no-zoom-body .mission-complete:not(.hidden) {
