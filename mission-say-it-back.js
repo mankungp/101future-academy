@@ -3,11 +3,18 @@ const asset = (name) => `/assets/school-bag/${name}.svg?v=${assetVersion}`;
 const assetPng = (name) => `/assets/school-bag/${name}.png?v=${assetVersion}`;
 
 const sentenceItems = [
-  { word: "book", thai: "หนังสือ", phrase: "This is a book.", image: asset("book") },
-  { word: "pencil", thai: "ดินสอ", phrase: "This is a pencil.", image: assetPng("real-pencil") },
-  { word: "ruler", thai: "ไม้บรรทัด", phrase: "This is a ruler.", image: asset("ruler") },
-  { word: "eraser", thai: "ยางลบ", phrase: "This is an eraser.", image: asset("eraser") },
+  { word: "book", thai: "หนังสือ", phrase: "It is a book.", image: asset("book") },
+  { word: "pencil", thai: "ดินสอ", phrase: "It is a pencil.", image: assetPng("real-pencil") },
+  { word: "ruler", thai: "ไม้บรรทัด", phrase: "It is a ruler.", image: asset("ruler") },
+  { word: "eraser", thai: "ยางลบ", phrase: "It is an eraser.", image: asset("eraser") },
 ];
+
+const micMessages = {
+  denied: "ยังไม่ได้อนุญาตไมค์ ให้ผู้ปกครองกดอนุญาตในเบราว์เซอร์ แล้วกดไมค์อีกครั้ง หรือให้เด็กพูดตามแล้วกดไปต่อ",
+  recognitionUnsupported: "เบราว์เซอร์นี้ยังตรวจคำพูดอัตโนมัติไม่ได้ ให้เด็กพูดตามครู แล้วกดพูดแล้วไปต่อได้เลย",
+  recorderUnsupported: "เครื่องนี้ยังบันทึกเสียงไม่ได้ ให้เด็กพูดตามครู แล้วกดพูดแล้วไปต่อได้เลย",
+  mediaUnsupported: "เครื่องนี้ยังใช้ไมค์ไม่ได้ ให้เด็กพูดตามครู แล้วกดพูดแล้วไปต่อได้เลย",
+};
 
 const promptText = document.querySelector("#missionPromptText");
 const promptHint = document.querySelector("#missionPromptHint");
@@ -29,6 +36,8 @@ const playSelfButton = document.querySelector("#playSelfButton");
 const iSaidItButton = document.querySelector("#iSaidItButton");
 
 const resetRequested = new URLSearchParams(window.location.search).get("reset") === "1";
+const teacherAudioBase = "/assets/english-p1/audio/";
+const gamificationLessonId = "english-p1-unit1-say-it-back";
 
 let currentIndex = Number(localStorage.getItem("101future.sayItBackMission.index") || 0);
 let score = Number(localStorage.getItem("101future.sayItBackMission.score") || 0);
@@ -36,9 +45,10 @@ let retryCount = 0;
 let isTransitioning = false;
 let correctBurstTimer = 0;
 let nextPromptTimer = 0;
-let preferredEnglishVoice = null;
 let missionStarted = false;
 let audioContext = null;
+let activeTeacherAudio = null;
+let teacherAudioToken = 0;
 
 // Speech recognition (in-browser word match) and recorder fallback are detected lazily.
 const SpeechRecognitionClass = window.SpeechRecognition || window.webkitSpeechRecognition || null;
@@ -50,11 +60,6 @@ let recordedUrl = "";
 let recordedAudio = null;
 
 installNoZoomGuard();
-loadVoices();
-if ("speechSynthesis" in window) {
-  window.speechSynthesis.addEventListener?.("voiceschanged", loadVoices);
-  window.speechSynthesis.onvoiceschanged = loadVoices;
-}
 
 if (resetRequested) {
   localStorage.removeItem("101future.sayItBackMission.index");
@@ -71,6 +76,13 @@ if (currentIndex >= sentenceItems.length) {
 }
 
 renderStartScreen();
+window.FutureGamification?.initMissionShell({
+  lessonId: gamificationLessonId,
+  title: "Say It Back",
+  totalQuestions: sentenceItems.length,
+  mascotEmotion: "greeting",
+  mascotText: "น้องฟิวจะอยู่ข้าง ๆ ตอนฝึกพูด ไม่ต้องกลัวผิดนะ",
+});
 
 soundButton?.addEventListener("click", () => {
   if (!missionStarted) {
@@ -90,6 +102,11 @@ function currentTarget() {
 
 function slugifyWord(word) {
   return String(word).replace(/\s+/g, "-").replace(/[^a-z0-9-]/gi, "").toLowerCase();
+}
+
+function sentenceAudioFile(item) {
+  const article = /^[aeiou]/i.test(item.word) ? "an" : "a";
+  return `it-is-${article}-${slugifyWord(item.word)}.mp3`;
 }
 
 function renderMission() {
@@ -127,6 +144,7 @@ function onMicTap() {
     return;
   }
   unlockAudio();
+  stopTeacherAudio();
   if (SpeechRecognitionClass) {
     startRecognition();
   } else {
@@ -164,10 +182,7 @@ function startRecognition() {
   recognition.onerror = (event) => {
     setListeningUi(false);
     if (event.error === "not-allowed" || event.error === "service-not-allowed") {
-      offerManualPath(
-        "ไมค์ยังไม่เปิด ให้ผู้ปกครองกดอนุญาตไมค์ในเบราว์เซอร์ แล้วลองกดไมค์อีกครั้ง หรือให้เด็กพูดตามแล้วกดไปต่อ",
-        { allowMicRetry: true },
-      );
+      offerManualPath(micMessages.denied, { allowMicRetry: true });
     } else if (event.error === "no-speech") {
       if (sayHeard) sayHeard.textContent = "ครูยังไม่ได้ยินเสียง ลองกดไมค์แล้วพูดอีกครั้ง";
       offerRetryControls();
@@ -216,20 +231,29 @@ function handleHeard(heardOptions) {
   }
   retryCount += 1;
   recordAttempt({ correct: false, heard: heardText, selfConfirmed: false, target });
+  window.FutureGamification?.recordQuestion({
+    lessonId: gamificationLessonId,
+    questionId: target.word,
+    correct: false,
+    target: target.word,
+    selected: heardText || "no speech",
+    skillTag: target.word,
+    totalQuestions: sentenceItems.length,
+  });
   if (sayHeard) {
     sayHeard.innerHTML = heardText
       ? `ครูได้ยินว่า <strong>${escapeHtml(heardText)}</strong> ลองพูด ${escapeHtml(target.phrase)} อีกครั้งนะ`
       : "ยังไม่ชัดเท่าไหร่ ลองพูดอีกครั้งช้า ๆ นะ";
   }
   playUiSound("wrong");
-  speakText(`Almost! Try again. ${target.phrase}`, { rate: 0.6, fallbackMs: 2800 });
+  playTeacherAudio(["almost-try-again.mp3", sentenceAudioFile(target)]);
   offerRetryControls();
 }
 
 // Fallback: record the child's own voice locally so they can hear themselves, then self-confirm.
 function startRecorderFallback() {
   if (!navigator.mediaDevices?.getUserMedia || typeof MediaRecorder === "undefined") {
-    offerManualPath("เครื่องนี้ยังเทียบเสียงไม่ได้ ให้เด็กพูดตามครู แล้วกดพูดแล้วไปต่อได้เลย");
+    offerManualPath(micMessages.recognitionUnsupported);
     return;
   }
   navigator.mediaDevices
@@ -240,7 +264,7 @@ function startRecorderFallback() {
         mediaRecorder = new MediaRecorder(stream);
       } catch {
         stream.getTracks().forEach((track) => track.stop());
-        offerManualPath("เครื่องนี้ยังบันทึกเสียงไม่ได้ ให้เด็กพูดตามครู แล้วกดพูดแล้วไปต่อได้เลย");
+        offerManualPath(micMessages.recorderUnsupported);
         return;
       }
       mediaRecorder.ondataavailable = (event) => {
@@ -267,13 +291,10 @@ function startRecorderFallback() {
     })
     .catch((error) => {
       if (error?.name === "NotAllowedError" || error?.name === "SecurityError") {
-        offerManualPath(
-          "ไมค์ยังไม่เปิด ให้ผู้ปกครองกดอนุญาตไมค์ในเบราว์เซอร์ แล้วลองกดไมค์อีกครั้ง หรือให้เด็กพูดตามแล้วกดไปต่อ",
-          { allowMicRetry: true },
-        );
+        offerManualPath(micMessages.denied, { allowMicRetry: true });
         return;
       }
-      offerManualPath("เครื่องนี้ยังใช้ไมค์ไม่ได้ ให้เด็กพูดตามครู แล้วกดพูดแล้วไปต่อได้เลย");
+      offerManualPath(micMessages.mediaUnsupported);
     });
 }
 
@@ -303,6 +324,15 @@ function acceptAttempt({ heard, selfConfirmed }) {
   showCorrectBurst(target);
   lockMission();
   recordAttempt({ correct: true, heard, selfConfirmed, target });
+  window.FutureGamification?.recordQuestion({
+    lessonId: gamificationLessonId,
+    questionId: target.word,
+    correct: true,
+    target: target.word,
+    selected: heard || target.word,
+    skillTag: "speaking",
+    totalQuestions: sentenceItems.length,
+  });
   currentIndex += 1;
   score += 1;
   saveProgress();
@@ -316,15 +346,7 @@ function acceptAttempt({ heard, selfConfirmed }) {
     window.clearTimeout(nextPromptTimer);
     nextPromptTimer = window.setTimeout(advanceMission, waitMs);
   };
-  const speechStarted = speakText("Great speaking! Well done.", {
-    rate: 0.62,
-    fallbackMs: 3000,
-    onEnd: advanceAfterPraise,
-  });
-  if (!speechStarted) {
-    window.clearTimeout(nextPromptTimer);
-    nextPromptTimer = window.setTimeout(advanceMission, 2600);
-  }
+  playTeacherAudio(["great-job.mp3", "well-done.mp3"], { onEnd: advanceAfterPraise });
 }
 
 function advanceMission() {
@@ -346,7 +368,7 @@ function renderStartScreen() {
   promptText.textContent = hasProgress ? "Ready to continue?" : "Ready to speak?";
   feedback.innerHTML = hasProgress
     ? "<strong>Mission 3</strong><span>กด Resume Mission แล้วพูดประโยคถัดไป</span>"
-    : "<strong>Mission 3</strong><span>ฟังครูพูด This is... แล้วลองพูดตาม</span>";
+    : "<strong>Mission 3</strong><span>ฟังครูพูด It is... แล้วลองพูดตาม</span>";
   missionScreen?.classList.add("awaiting-start");
   renderSentenceProgress();
   setSoundButtonStart(hasProgress);
@@ -362,7 +384,9 @@ function startMission() {
   playUiSound("start");
   missionStarted = true;
   renderMission();
-  window.setTimeout(speakPrompt, 440);
+  window.setTimeout(() => {
+    playTeacherAudio(["say-it-back.mp3"], { onEnd: speakPrompt });
+  }, 260);
 }
 
 function setSoundButtonStart(isResume = false) {
@@ -429,23 +453,39 @@ function showCorrectBurst(item) {
 function completeMission() {
   missionStarted = false;
   playUiSound("complete");
+  const rewardSummary = window.FutureGamification?.completeLesson({
+    lessonId: gamificationLessonId,
+    title: "Say It Back",
+    score,
+    totalQuestions: sentenceItems.length,
+  });
   stars.textContent = `${score}/${sentenceItems.length}`;
   if (promptHint) promptHint.textContent = "Mission นี้จบแล้ว";
   promptText.textContent = "Great job!";
-  feedback.innerHTML = `<strong>Mission complete</strong><span>เด็กได้ลองพูดประโยค This is... ครบทุกคำแล้ว</span>`;
-  speakText("Great job! You said all four sentences.", { rate: 0.62, fallbackMs: 3600 });
+  feedback.innerHTML = `<strong>Mission complete</strong><span>เด็กได้ลองพูดประโยค It is... ครบทุกคำแล้ว</span>`;
+  playTeacherAudio(["you-did-it.mp3", "lesson-complete.mp3"]);
   completeBox?.classList.remove("hidden");
   if (completeBox) {
     completeBox.innerHTML = `
       <span class="mini-label">สรุปสำหรับผู้ปกครอง</span>
       <h3>Speaking Practice</h3>
-      <p>วันนี้ลูกฝึกพูด This is a book, This is a pencil, This is a ruler และ This is an eraser.</p>
+      <p>วันนี้ลูกฝึกพูด It is a book, It is a pencil, It is a ruler และ It is an eraser.</p>
+      <div class="mission-result-stats" aria-label="ผลการเล่น">
+        <span>Sentences: ${sentenceItems.length}</span>
+        <span>Score: ${score}/${sentenceItems.length}</span>
+      </div>
+      ${window.FutureGamification?.renderLessonReward(rewardSummary) || ""}
       ${renderParentRetrySummary()}
-      <button id="restartMissionButton" class="button primary" type="button">เล่นอีกครั้ง</button>
-      <a class="button secondary" href="/learn">กลับหน้าเรียน</a>
+      <button id="restartMissionButton" class="button primary" type="button">Play again</button>
+      <a class="button secondary" href="/learn">Back</a>
     `;
     completeBox.querySelector("#restartMissionButton")?.addEventListener("click", restartMission);
   }
+  window.FutureGamification?.showCelebration({
+    title: "พูดครบแล้ว!",
+    message: "Mission 3 จบแล้ว ได้ XP และสรุปคำที่ควรทวนให้ผู้ปกครอง",
+    summary: rewardSummary,
+  });
   localStorage.setItem("101future.sayItBackMission.completedAt", new Date().toISOString());
 }
 
@@ -478,20 +518,15 @@ function restartMission() {
   completeBox?.classList.add("hidden");
   missionStarted = true;
   renderMission();
-  window.setTimeout(speakPrompt, 380);
+  window.setTimeout(() => {
+    playTeacherAudio(["say-it-back.mp3"], { onEnd: speakPrompt });
+  }, 260);
 }
 
 function speakPrompt() {
   setSpeaking(true);
   playUiSound("prompt");
-  const started = speakText(currentTarget().phrase, {
-    rate: 0.58,
-    fallbackMs: 2600,
-    onEnd: () => setSpeaking(false),
-  });
-  if (!started) {
-    window.setTimeout(() => setSpeaking(false), 1100);
-  }
+  playTeacherAudio([sentenceAudioFile(currentTarget())], { onEnd: () => setSpeaking(false) });
 }
 
 function playRecording() {
@@ -527,51 +562,63 @@ function transcriptMatchesWord(transcript, word) {
   return (nearMisses[word] || []).some((variant) => tokens.includes(variant));
 }
 
-function speakText(text, options = {}) {
-  if (!("speechSynthesis" in window)) return false;
-  window.speechSynthesis.cancel();
-  const utterance = new SpeechSynthesisUtterance(text);
-  utterance.lang = "en-US";
-  utterance.rate = options.rate || 0.62;
-  utterance.pitch = 1.04;
-  if (preferredEnglishVoice) utterance.voice = preferredEnglishVoice;
-  if (typeof options.onEnd === "function") {
-    let ended = false;
-    const finish = () => {
-      if (ended) return;
-      ended = true;
-      window.clearTimeout(fallbackTimer);
-      options.onEnd();
-    };
-    const fallbackTimer = window.setTimeout(finish, options.fallbackMs || estimateSpeechMs(text, utterance.rate));
-    utterance.onend = finish;
-    utterance.onerror = finish;
+function playTeacherAudio(files, options = {}) {
+  const queue = files.filter(Boolean);
+  if (!queue.length) {
+    options.onEnd?.();
+    return false;
   }
-  window.speechSynthesis.speak(utterance);
+  teacherAudioToken += 1;
+  const token = teacherAudioToken;
+  stopActiveTeacherAudio();
+  runTeacherAudioQueue(queue, token, options);
   return true;
 }
 
-function loadVoices() {
-  if (!("speechSynthesis" in window)) return;
-  const voices = window.speechSynthesis.getVoices();
-  const englishVoices = voices.filter((voice) => voice.lang?.toLowerCase().startsWith("en"));
-  const preferredNames = [
-    "ava",
-    "samantha",
-    "google us english",
-    "microsoft jenny",
-    "microsoft aria",
-    "natural",
-    "premium",
-    "enhanced",
-    "neural",
-    "alex",
-  ];
-  preferredEnglishVoice =
-    preferredNames.map((name) => englishVoices.find((voice) => voice.name.toLowerCase().includes(name))).find(Boolean) ||
-    englishVoices.find((voice) => voice.lang === "en-US") ||
-    englishVoices[0] ||
-    null;
+async function runTeacherAudioQueue(queue, token, options) {
+  for (const file of queue) {
+    if (token !== teacherAudioToken) return;
+    await playTeacherAudioFile(file, token);
+  }
+  if (token === teacherAudioToken) options.onEnd?.();
+}
+
+function playTeacherAudioFile(file, token) {
+  return new Promise((resolve) => {
+    const audio = new Audio(`${teacherAudioBase}${file}`);
+    activeTeacherAudio = audio;
+    let finished = false;
+    const finish = () => {
+      if (finished) return;
+      finished = true;
+      audio.removeEventListener("ended", finish);
+      audio.removeEventListener("error", finish);
+      if (activeTeacherAudio === audio) activeTeacherAudio = null;
+      resolve();
+    };
+    audio.addEventListener("ended", finish, { once: true });
+    audio.addEventListener("error", finish, { once: true });
+    audio.play().catch(finish);
+    window.setTimeout(() => {
+      if (token === teacherAudioToken) finish();
+    }, 6000);
+  });
+}
+
+function stopTeacherAudio() {
+  teacherAudioToken += 1;
+  stopActiveTeacherAudio();
+}
+
+function stopActiveTeacherAudio() {
+  if (!activeTeacherAudio) return;
+  try {
+    activeTeacherAudio.pause();
+    activeTeacherAudio.currentTime = 0;
+  } catch {
+    /* ignore audio cleanup */
+  }
+  activeTeacherAudio = null;
 }
 
 function recordAttempt({ correct, heard, selfConfirmed, target }) {
@@ -665,11 +712,6 @@ function scheduleTone(context, frequency, duration, offset, volume, endFrequency
   gain.connect(context.destination);
   oscillator.start(startTime);
   oscillator.stop(startTime + duration + 0.04);
-}
-
-function estimateSpeechMs(text, rate) {
-  const wordCount = String(text).trim().split(/\s+/).filter(Boolean).length || 1;
-  return Math.max(1800, Math.min(4200, (wordCount * 600) / Math.max(rate, 0.5)));
 }
 
 function saveProgress() {
