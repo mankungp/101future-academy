@@ -3708,6 +3708,178 @@ body.no-zoom-body {
   line-height: 1.1;
 }
 
+@media (min-width: 761px) and (max-width: 1200px) {
+  .no-zoom-body .mission-stage-full {
+    gap: 8px;
+  }
+
+  .no-zoom-body .mission-stage-full .school-bag-large {
+    border-radius: 22px 22px 12px 12px;
+  }
+
+  .no-zoom-body .mission-stage-full .mission-items-large {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: repeat(2, minmax(0, 1fr));
+  }
+
+  .no-zoom-body .mission-stage-full .mission-object {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  .no-zoom-body .mission-stage-full .mission-object .object-image {
+    width: min(128px, 82%);
+    height: clamp(58px, 9vh, 84px);
+  }
+
+  .no-zoom-body .mission-stage-full .mission-object .object-image-pencil,
+  .no-zoom-body .mission-stage-full .mission-object .object-image-pen {
+    width: min(92px, 58%);
+    height: clamp(72px, 11vh, 96px);
+  }
+}
+
+@media (min-width: 761px) and (max-width: 1024px) and (orientation: portrait) {
+  .no-zoom-body .mission-stage-full {
+    justify-self: center;
+    width: min(100%, 760px);
+    grid-template-columns: 1fr;
+    grid-template-rows: clamp(104px, 13vh, 148px) minmax(0, 1fr);
+  }
+
+  .no-zoom-body .mission-stage-full .school-bag-large {
+    height: auto;
+    min-height: 0;
+    padding: 12px 16px;
+  }
+
+  .no-zoom-body .mission-stage-full .school-bag-large::before {
+    top: 14px;
+    width: min(180px, 38%);
+    height: 28px;
+    border-width: 5px;
+  }
+
+  .no-zoom-body .mission-stage-full .school-bag-large > span {
+    font-size: 17px;
+  }
+
+  .no-zoom-body .mission-stage-full .packed-items {
+    gap: 5px;
+    margin-bottom: 8px;
+  }
+
+  .no-zoom-body .mission-stage-full .packed-items span {
+    padding: 4px 7px;
+    font-size: 11px;
+  }
+}
+
+@media (min-width: 761px) and (max-width: 1200px) and (orientation: landscape) {
+  .no-zoom-body .mission-stage-full {
+    grid-template-columns: minmax(190px, 0.32fr) minmax(0, 0.68fr);
+  }
+
+  .no-zoom-body .mission-stage-full .school-bag-large {
+    padding: 16px;
+  }
+
+  .no-zoom-body .mission-stage-full .mission-object {
+    padding: 7px;
+  }
+}
+
+@media (min-width: 761px) and (max-height: 860px) {
+  .no-zoom-body .mission-stage-full .mission-object .object-image-pencil,
+  .no-zoom-body .mission-stage-full .mission-object .object-image-pen {
+    height: clamp(64px, 10vh, 86px);
+  }
+
+  .no-zoom-body .mission-lab-layout {
+    grid-template-columns: minmax(160px, 220px) minmax(0, 1fr);
+  }
+
+  .no-zoom-body .mission-play-panel {
+    grid-template-rows: auto auto minmax(82px, 0.46fr) minmax(180px, 1fr) auto;
+    gap: 6px;
+  }
+
+  .no-zoom-body .lab-teacher-card {
+    gap: 6px;
+    padding: 10px;
+    overflow: hidden;
+  }
+
+  .no-zoom-body .lab-teacher-card h2 {
+    font-size: clamp(22px, 2vw, 28px);
+    line-height: 1.05;
+  }
+
+  .no-zoom-body .lab-teacher-card p {
+    display: grid;
+    gap: 5px;
+    font-size: 11.5px;
+    line-height: 1.22;
+  }
+
+  .no-zoom-body .game-target-row {
+    grid-template-columns: 58px minmax(0, 1fr);
+    gap: 7px;
+  }
+
+  .no-zoom-body .game-target-thumb {
+    width: 58px;
+    height: 44px;
+    padding: 4px;
+  }
+
+  .no-zoom-body .mode-pill {
+    min-height: 21px;
+    padding: 2px 7px;
+    font-size: 10px;
+  }
+
+  .no-zoom-body .bag-target-badge {
+    min-height: 30px;
+    padding: 5px 8px;
+    font-size: 12px;
+  }
+
+  .no-zoom-body .lab-items {
+    min-height: 180px;
+    grid-template-rows: repeat(2, minmax(0, 1fr));
+  }
+
+  .no-zoom-body .lab-choice {
+    min-height: 0;
+    padding: 6px;
+  }
+
+  .no-zoom-body .lab-choice .object-image {
+    height: clamp(38px, 6.2vh, 54px);
+  }
+
+  .no-zoom-body .lab-choice strong {
+    font-size: clamp(12px, 1.15vw, 15px);
+    line-height: 1.05;
+  }
+
+  .no-zoom-body .lab-choice small {
+    font-size: clamp(9.5px, 0.92vw, 12px);
+    line-height: 1.05;
+  }
+
+  .no-zoom-body .word-match-game .lab-choice {
+    min-height: 0;
+  }
+
+  .no-zoom-body .game-word-card {
+    min-height: 38px;
+    font-size: clamp(17px, 2vw, 24px);
+  }
+}
+
 .no-zoom-body .sentence-mission-screen .sentence-stage {
   grid-template-columns: minmax(250px, 0.45fr) minmax(0, 0.55fr);
   grid-template-rows: minmax(0, 1fr);
@@ -4481,6 +4653,24 @@ body.no-zoom-body {
     min-height: 0;
   }
 
+  .no-zoom-body .lab-choice {
+    overflow: hidden;
+  }
+
+  .no-zoom-body .lab-choice .object-image {
+    width: min(92px, 72%);
+    height: clamp(30px, 8vh, 42px);
+  }
+
+  .no-zoom-body .lab-choice strong {
+    font-size: clamp(11px, 3vw, 13px);
+    line-height: 1.05;
+  }
+
+  .no-zoom-body .lab-choice small {
+    display: none;
+  }
+
   .no-zoom-body .game-word-card {
     min-height: 34px;
     font-size: clamp(15px, 4.2vw, 19px);
@@ -4549,6 +4739,16 @@ body.no-zoom-body {
 
   .no-zoom-body .mission-prompt-large p {
     font-size: 17px;
+  }
+}
+
+@media (max-width: 400px) {
+  .no-zoom-body .lab-choice .object-image {
+    height: 34px;
+  }
+
+  .no-zoom-body .lab-choice strong {
+    font-size: 10.5px;
   }
 }
 
