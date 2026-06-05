@@ -4,13 +4,21 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
     <title>Say It Back | 101 Future Academy</title>
-    <link rel="stylesheet" href="/styles.css?v=20260605-mobile-polish-v1" />
+    <link rel="stylesheet" href="/styles.css?v=20260605-sentence-layout-v1" />
     <style>
       /* Mission 3 speaking UI — kept inline so styles.css stays untouched for parallel edits */
       .say-stage {
-        display: flex;
-        flex-direction: column;
+        display: grid;
+        grid-template-columns: minmax(250px, 0.42fr) minmax(0, 0.58fr);
+        grid-template-rows: auto auto;
+        align-content: center;
         gap: 14px;
+        min-height: 0;
+      }
+      .say-stage .teacher-card {
+        grid-row: 1 / 3;
+        min-height: 0;
+        overflow: hidden;
       }
       .say-object-card {
         display: flex;
@@ -22,8 +30,8 @@
         box-shadow: inset 0 0 0 2px rgba(99, 102, 241, 0.18);
       }
       .say-object-card img {
-        width: 84px;
-        height: 84px;
+        width: min(180px, 34%);
+        height: clamp(118px, 20vh, 150px);
         object-fit: contain;
         flex: 0 0 auto;
       }
@@ -41,6 +49,7 @@
         flex-direction: column;
         gap: 10px;
         align-items: stretch;
+        min-width: 0;
       }
       .mic-button {
         display: inline-flex;
@@ -91,15 +100,21 @@
       .say-hidden { display: none !important; }
       @media (max-width: 760px) {
         .say-stage {
-          gap: 8px;
+          grid-template-columns: 1fr;
+          grid-template-rows: auto auto auto;
+          align-content: start;
+          gap: 6px;
+        }
+        .say-stage .teacher-card {
+          grid-row: auto;
         }
         .say-object-card {
-          gap: 12px;
-          padding: 12px;
+          gap: 10px;
+          padding: 9px;
         }
         .say-object-card img {
-          width: 72px;
-          height: 72px;
+          width: min(122px, 38%);
+          height: clamp(82px, 16vh, 108px);
         }
         .say-object-card .say-object-text strong {
           font-size: 1.18rem;
@@ -178,7 +193,7 @@
           </article>
 
           <div class="say-object-card">
-            <img id="sayObjectImage" class="object-image object-image-book" src="/assets/school-bag/book.svg?v=20260531-real-objects-v2" alt="" />
+            <img id="sayObjectImage" class="object-image object-image-book" src="/assets/english-p1/images/book.png?v=20260605-unit1-png-v2" alt="" />
             <span class="say-object-text">
               <strong id="sayObjectPhrase">This is a book.</strong>
               <small id="sayObjectThai">นี่คือหนังสือ</small>
@@ -203,6 +218,6 @@
     </main>
 
     <script src="/assets/gamification.js?v=20260605-mobile-polish-v1" defer></script>
-    <script src="/mission-say-it-back.js?v=20260604-gamification-v1" defer></script>
+    <script src="/mission-say-it-back.js?v=20260605-sentence-layout-v1" defer></script>
   </body>
 </html>
