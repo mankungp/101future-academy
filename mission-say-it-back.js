@@ -1,12 +1,21 @@
-const assetVersion = "20260531-real-objects-v2";
-const asset = (name) => `/assets/school-bag/${name}.svg?v=${assetVersion}`;
-const assetPng = (name) => `/assets/school-bag/${name}.png?v=${assetVersion}`;
+const fallbackAssetVersion = "20260531-real-objects-v2";
+const unitImageVersion = "20260605-unit1-png-v2";
+const schoolBagSvg = (name) => `/assets/school-bag/${name}.svg?v=${fallbackAssetVersion}`;
+const schoolBagPng = (name) => `/assets/school-bag/${name}.png?v=${fallbackAssetVersion}`;
+const unitPng = (name) => `/assets/english-p1/images/${name}.png?v=${unitImageVersion}`;
+const unitItem = (word, thai, phrase, imageName, fallbackImage) => ({
+  word,
+  thai,
+  phrase,
+  image: unitPng(imageName),
+  fallbackImage,
+});
 
 const sentenceItems = [
-  { word: "book", thai: "หนังสือ", phrase: "It is a book.", image: asset("book") },
-  { word: "pencil", thai: "ดินสอ", phrase: "It is a pencil.", image: assetPng("real-pencil") },
-  { word: "ruler", thai: "ไม้บรรทัด", phrase: "It is a ruler.", image: asset("ruler") },
-  { word: "eraser", thai: "ยางลบ", phrase: "It is an eraser.", image: asset("eraser") },
+  unitItem("book", "หนังสือ", "It is a book.", "book", schoolBagSvg("book")),
+  unitItem("pencil", "ดินสอ", "It is a pencil.", "pencil", schoolBagPng("real-pencil")),
+  unitItem("ruler", "ไม้บรรทัด", "It is a ruler.", "ruler", schoolBagSvg("ruler")),
+  unitItem("eraser", "ยางลบ", "It is an eraser.", "eraser", schoolBagSvg("eraser")),
 ];
 
 const micMessages = {
@@ -118,13 +127,26 @@ function renderMission() {
   feedback.innerHTML = `<strong>พูดตามครู</strong><span>${escapeHtml(target.phrase)} = นี่คือ${escapeHtml(target.thai)}</span>`;
   missionScreen?.classList.remove("awaiting-start");
   if (sayObjectImage) {
-    sayObjectImage.src = target.image;
+    setImageWithFallback(sayObjectImage, target.image, target.fallbackImage || "");
     sayObjectImage.className = `object-image object-image-${slugifyWord(target.word)}`;
+    sayObjectImage.alt = `รูปคำถาม: ${target.thai}`;
   }
   if (sayObjectPhrase) sayObjectPhrase.textContent = target.phrase;
   if (sayObjectThai) sayObjectThai.textContent = `นี่คือ${target.thai}`;
   renderSentenceProgress();
   resetTurnControls();
+}
+
+function setImageWithFallback(image, src, fallbackSrc) {
+  image.dataset.fallbackSrc = fallbackSrc;
+  image.dataset.fallbackUsed = "0";
+  image.onerror = () => {
+    const fallback = image.dataset.fallbackSrc;
+    if (!fallback || image.dataset.fallbackUsed === "1") return;
+    image.dataset.fallbackUsed = "1";
+    image.src = fallback;
+  };
+  image.src = src;
 }
 
 function resetTurnControls() {
