@@ -3399,12 +3399,64 @@ body.no-zoom-body {
   overflow: hidden;
 }
 
+.no-zoom-body .mission-stage-full {
+  display: grid;
+  grid-template-columns: minmax(210px, 0.42fr) minmax(0, 0.58fr);
+  gap: 10px;
+  align-items: stretch;
+}
+
+.no-zoom-body .mission-stage-full .school-bag-large,
+.no-zoom-body .mission-stage-full .mission-items-large {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+}
+
 .no-zoom-body .mission-items,
 .no-zoom-body .sentence-items,
 .no-zoom-body .lab-items {
   max-width: 100%;
   min-width: 0;
   min-height: 0;
+}
+
+.no-zoom-body .mission-items-large {
+  display: grid;
+  grid-template-rows: repeat(2, minmax(0, 1fr));
+  align-content: stretch;
+  gap: 8px;
+  overflow: hidden;
+}
+
+.no-zoom-body .mission-object {
+  min-height: 0;
+  padding: 8px;
+  gap: 4px;
+  align-content: center;
+}
+
+.no-zoom-body .mission-object .object-image {
+  height: clamp(58px, 10vh, 82px);
+}
+
+.no-zoom-body .mission-object .object-image-crayon {
+  height: clamp(58px, 10vh, 82px);
+}
+
+.no-zoom-body .mission-object .object-image-pencil,
+.no-zoom-body .mission-object .object-image-pen {
+  height: clamp(72px, 12vh, 96px);
+}
+
+.no-zoom-body .mission-object strong {
+  font-size: clamp(15px, 1.35vw, 18px);
+  line-height: 1.08;
+}
+
+.no-zoom-body .mission-object small {
+  font-size: clamp(11px, 1vw, 13px);
+  line-height: 1.1;
 }
 
 .no-zoom-body .mission-complete:not(.hidden) {
