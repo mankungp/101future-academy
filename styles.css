@@ -25,6 +25,8 @@
 }
 
 html {
+  max-width: 100%;
+  overflow-x: hidden;
   scroll-behavior: smooth;
 }
 
@@ -51,6 +53,13 @@ input,
 select,
 textarea {
   font: inherit;
+}
+
+img,
+svg,
+video,
+canvas {
+  max-width: 100%;
 }
 
 .topbar {
@@ -3318,6 +3327,14 @@ body.no-zoom-body {
   padding-block: 10px;
 }
 
+.no-zoom-body .button,
+.no-zoom-body .sound-button,
+.no-zoom-body button,
+.no-zoom-body select {
+  max-width: 100%;
+  min-width: 0;
+}
+
 .no-zoom-body .mission-main {
   width: 100%;
   max-width: 100%;
@@ -3731,6 +3748,7 @@ body.no-zoom-body {
     max-width: 348px;
     justify-self: start;
     display: grid;
+    grid-template-columns: 1fr;
     grid-template-rows: 76px minmax(0, 1fr);
     gap: 5px;
   }
@@ -3769,6 +3787,8 @@ body.no-zoom-body {
     width: 100%;
     max-width: 100%;
     grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: repeat(2, minmax(0, 1fr));
+    grid-auto-rows: minmax(0, 1fr);
     gap: 5px;
   }
 
