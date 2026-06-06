@@ -68,6 +68,7 @@ const correctBurst = document.querySelector("#correctBurst");
 const correctBurstWord = document.querySelector("#correctBurstWord");
 
 const params = new URLSearchParams(location.search);
+const forceLearnRequested = params.get("learn") === "1";
 let curriculum = null;
 let playableUnits = [];
 let currentUnitIndex = 0;
@@ -84,6 +85,7 @@ let pointerDrag = null;
 let audioContext = null;
 let activeTeacherAudio = null;
 let teacherAudioToken = 0;
+let learnPhase = null;
 
 installNoZoomGuard();
 loadCurriculum().catch((error) => {
@@ -300,6 +302,22 @@ function renderUnitShell() {
     mascotEmotion: "greeting",
     mascotText: "น้องฟิวจะช่วยฟังทีละคำ แตะผิดก็ลองใหม่ได้",
   });
+  learnPhase = window.FutureGamification?.createLearnPhase({
+    lessonId: unit.lessonId,
+    title: unit.title,
+    items: unit.entries.map((entry) => ({
+      id: entry.key,
+      english: entry.label || entry.english,
+      thai: entry.thai || entry.sentence,
+      imageSrc: entry.imageSrc,
+      fallbackImageSrc: entry.fallbackImageSrc,
+      audioSrc: entry.audio,
+      mascotText: "ฟังเสียงครู แล้วพูดตามน้องฟิว!",
+    })),
+    unlockAudio,
+    onComplete: beginPractice,
+    onSkip: beginPractice,
+  });
 }
 
 function descriptionForUnit(unit) {
@@ -376,6 +394,16 @@ function installImageFallbacks(root) {
 function startMission() {
   unlockAudio();
   playUiSound("start");
+  stopAudioSequence();
+  completeBox?.classList.add("hidden");
+  if (currentRound === 0 && learnPhase && (forceLearnRequested || !learnPhase.isDone())) {
+    learnPhase.start({ force: forceLearnRequested });
+    return;
+  }
+  beginPractice();
+}
+
+function beginPractice() {
   missionStarted = true;
   completeBox?.classList.add("hidden");
   renderQuestion();
@@ -862,6 +890,11 @@ function playAudioFile(file, token) {
       if (token === teacherAudioToken && activeTeacherAudio === audio) finish();
     }, 5200);
   });
+}
+
+function stopAudioSequence() {
+  teacherAudioToken += 1;
+  stopActiveAudio();
 }
 
 function stopActiveAudio() {
