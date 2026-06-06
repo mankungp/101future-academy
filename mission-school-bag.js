@@ -47,6 +47,7 @@ const promptHint = document.querySelector("#missionPromptHint");
 const correctBurst = document.querySelector("#correctBurst");
 const correctBurstWord = document.querySelector("#correctBurstWord");
 const resetRequested = new URLSearchParams(window.location.search).get("reset") === "1";
+const forceLearnRequested = new URLSearchParams(window.location.search).get("learn") === "1";
 const teacherAudioBase = "/assets/english-p1/audio/";
 const gamificationLessonId = "english-p1-unit1-school-bag";
 
@@ -85,6 +86,22 @@ window.FutureGamification?.initMissionShell({
   totalQuestions: missionItems.length,
   mascotEmotion: "greeting",
   mascotText: "น้องฟิวจะช่วยเก็บของใส่กระเป๋าให้ครบ 20 คำ!",
+});
+const learnPhase = window.FutureGamification?.createLearnPhase({
+  lessonId: gamificationLessonId,
+  title: "Pack My School Bag",
+  items: missionItems.map((item) => ({
+    id: item.word,
+    english: item.word,
+    thai: item.thai,
+    imageSrc: item.image,
+    fallbackImageSrc: item.fallbackImage,
+    audioSrc: `${teacherAudioBase}${audioFileForWord(item.word)}`,
+    mascotText: "ดูรูป ฟังคำ แล้วพูดตามน้องฟิว!",
+  })),
+  unlockAudio,
+  onComplete: beginPractice,
+  onSkip: beginPractice,
 });
 
 soundButton?.addEventListener("click", () => {
@@ -277,6 +294,16 @@ function renderStartScreen() {
 function startMission() {
   unlockAudio();
   playUiSound("start");
+  stopTeacherAudio();
+  completeBox?.classList.add("hidden");
+  if (currentIndex === 0 && learnPhase && (forceLearnRequested || !learnPhase.isDone())) {
+    learnPhase.start({ force: forceLearnRequested });
+    return;
+  }
+  beginPractice();
+}
+
+function beginPractice() {
   missionStarted = true;
   renderMission();
   window.setTimeout(() => {
@@ -437,11 +464,7 @@ function restartMission() {
   if (packedItems) packedItems.innerHTML = "";
   correctBurst?.classList.add("hidden");
   completeBox?.classList.add("hidden");
-  missionStarted = true;
-  renderMission();
-  window.setTimeout(() => {
-    playTeacherAudio(["lets-start.mp3"], { onEnd: speakPrompt });
-  }, 260);
+  beginPractice();
 }
 
 function speakPrompt() {
