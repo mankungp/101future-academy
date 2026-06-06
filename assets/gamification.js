@@ -1,5 +1,6 @@
 (() => {
   const STORAGE_KEY = "101future.gamification.progress.v1";
+  const LEARN_PHASE_STORAGE_PREFIX = "101future.learnPhase.";
   const DAILY_GOAL_STARS = 5;
   const DAILY_FREEZE_LIMIT = 2;
 
@@ -966,6 +967,296 @@
     renderParentView();
   }
 
+  function createLearnPhase(options = {}) {
+    const screen = options.screen || document.querySelector(".mission-screen");
+    const lessonId = options.lessonId || missionSession?.lessonId || "";
+    const items = normalizeLearnItems(options.items || []);
+    if (!screen || !lessonId) return null;
+
+    screen.querySelectorAll(".learn-phase").forEach((node) => node.remove());
+
+    const phase = document.createElement("section");
+    phase.className = "learn-phase hidden";
+    phase.dataset.lessonId = lessonId;
+    phase.setAttribute("aria-live", "polite");
+    phase.innerHTML = `
+      <div class="learn-phase-card">
+        <div class="learn-visual-card">
+          <span class="mini-label">Learn first</span>
+          <div class="learn-image-shell">
+            <img class="learn-main-image" src="" alt="" />
+            <span class="learn-image-placeholder" aria-hidden="true">?</span>
+          </div>
+        </div>
+        <div class="learn-copy">
+          <span class="mini-label learn-counter">คำที่ 1/1</span>
+          <h2 class="learn-word">Ready?</h2>
+          <p class="learn-thai">มาเรียนคำใหม่กัน!</p>
+          <p class="learn-helper">พูดตามน้องฟิว!</p>
+          <div class="learn-progress-dots" aria-label="ความคืบหน้าการเรียนคำศัพท์"></div>
+          <div class="learn-actions">
+            <button class="sound-button learn-replay-button" type="button">ฟังอีก</button>
+            <button class="button secondary learn-skip-button" type="button">ข้ามไปเล่น</button>
+            <button class="button primary learn-next-button" type="button">ถัดไป ▶</button>
+          </div>
+        </div>
+        <aside class="learn-mascot-panel">
+          <img class="learn-mascot-image" src="${mascotImages.greeting}" alt="น้องฟิวเจอร์" />
+          <strong>มาเรียนคำใหม่กัน!</strong>
+          <span>ดูรูป ฟังเสียง แล้วพูดตามเบา ๆ</span>
+        </aside>
+      </div>
+    `;
+
+    const insertAfter = screen.querySelector(".gamification-hud") || screen.querySelector(".mission-screen-head");
+    if (insertAfter) insertAfter.insertAdjacentElement("afterend", phase);
+    else screen.prepend(phase);
+
+    const image = phase.querySelector(".learn-main-image");
+    const placeholder = phase.querySelector(".learn-image-placeholder");
+    const mascotImage = phase.querySelector(".learn-mascot-image");
+    const mascotText = phase.querySelector(".learn-mascot-panel strong");
+    const mascotHint = phase.querySelector(".learn-mascot-panel span");
+    const counter = phase.querySelector(".learn-counter");
+    const word = phase.querySelector(".learn-word");
+    const thai = phase.querySelector(".learn-thai");
+    const helper = phase.querySelector(".learn-helper");
+    const dots = phase.querySelector(".learn-progress-dots");
+    const replayButton = phase.querySelector(".learn-replay-button");
+    const skipButton = phase.querySelector(".learn-skip-button");
+    const nextButton = phase.querySelector(".learn-next-button");
+    const hiddenSelectors = options.hideSelectors || ".mission-prompt, .mission-feedback, .mission-stage, .sentence-stage, .mission-lab-layout, .mission-complete";
+
+    let index = 0;
+    let ready = false;
+    let active = false;
+    let learnAudio = null;
+    let learnAudioToken = 0;
+
+    replayButton?.addEventListener("click", () => playCurrentAudio());
+    skipButton?.addEventListener("click", () => {
+      markLearnPhaseDone(lessonId);
+      finish("skip");
+    });
+    nextButton?.addEventListener("click", () => {
+      if (ready) {
+        markLearnPhaseDone(lessonId);
+        finish("complete");
+        return;
+      }
+      if (index >= items.length - 1) {
+        showReadyCard();
+        return;
+      }
+      index += 1;
+      renderSlide({ playAudio: true });
+    });
+
+    function start(startOptions = {}) {
+      options.unlockAudio?.();
+      if (!items.length) {
+        options.onComplete?.({ skippedLearn: true, empty: true });
+        return false;
+      }
+      if (!startOptions.force && isLearnPhaseDone(lessonId)) {
+        options.onComplete?.({ skippedLearn: true, remembered: true });
+        return false;
+      }
+      active = true;
+      ready = false;
+      index = 0;
+      stopLearnAudio();
+      phase.classList.remove("hidden", "is-ready");
+      screen.classList.add("is-learn-phase");
+      setMissionContentHidden(true);
+      setMascot("greeting", options.introText || "มาเรียนคำใหม่กัน!", { sound: false });
+      renderSlide({ playAudio: true });
+      return true;
+    }
+
+    function finish(reason) {
+      active = false;
+      ready = false;
+      stopLearnAudio();
+      phase.classList.add("hidden");
+      phase.classList.remove("is-ready");
+      screen.classList.remove("is-learn-phase");
+      setMissionContentHidden(false);
+      const callback = reason === "skip" ? (options.onSkip || options.onComplete) : options.onComplete;
+      callback?.({ reason });
+    }
+
+    function renderSlide(renderOptions = {}) {
+      if (!active || !items.length) return;
+      ready = false;
+      phase.classList.remove("is-ready");
+      const item = items[index];
+      if (counter) counter.textContent = `คำที่ ${index + 1}/${items.length}`;
+      if (word) word.textContent = item.english || item.word || "Listen";
+      if (thai) thai.textContent = item.thai || item.translation || "พูดตามเสียงครู";
+      if (helper) helper.textContent = item.helper || "พูดตามน้องฟิว!";
+      if (mascotImage) mascotImage.src = mascotImages.greeting;
+      if (mascotText) mascotText.textContent = "มาเรียนคำใหม่กัน!";
+      if (mascotHint) mascotHint.textContent = "ดูรูป ฟังเสียง แล้วพูดตามเบา ๆ";
+      if (nextButton) nextButton.textContent = index >= items.length - 1 ? "พร้อมเล่น ▶" : "ถัดไป ▶";
+      setLearnImage(item);
+      renderDots();
+      setMascot("greeting", item.mascotText || "พูดตามน้องฟิว!", { sound: false });
+      if (renderOptions.playAudio) playCurrentAudio();
+    }
+
+    function showReadyCard() {
+      ready = true;
+      markLearnPhaseDone(lessonId);
+      stopLearnAudio();
+      phase.classList.add("is-ready");
+      if (counter) counter.textContent = "ครบแล้ว";
+      if (word) word.textContent = "พร้อมเล่นแล้ว!";
+      if (thai) thai.textContent = "คราวนี้ลองแตะรูปให้ตรงกับเสียงนะ";
+      if (helper) helper.textContent = "น้องฟิวพร้อมเชียร์แล้ว!";
+      if (image) {
+        image.src = mascotImages.celebrate;
+        image.alt = "น้องฟิวเจอร์พร้อมเล่น";
+        image.classList.remove("is-missing");
+      }
+      if (placeholder) placeholder.textContent = "★";
+      if (mascotImage) mascotImage.src = mascotImages.celebrate;
+      if (mascotText) mascotText.textContent = "เย้ พร้อมเล่นแล้ว!";
+      if (mascotHint) mascotHint.textContent = "กดเริ่มเล่น แล้วไปเก็บดาวกัน";
+      if (nextButton) nextButton.textContent = "เริ่มเล่น";
+      renderDots();
+      setMascot("celebrate", "พร้อมเล่นแล้ว ไปเก็บดาวกัน!", { sound: true });
+    }
+
+    function playCurrentAudio() {
+      if (!active || ready) return;
+      const item = items[index];
+      const audioSrc = normalizeLearnAudio(item.audioSrc || item.audio || item.audioFile || "");
+      if (!audioSrc) return;
+      const token = ++learnAudioToken;
+      stopLearnAudio({ keepToken: true });
+      try {
+        learnAudio = new Audio(audioSrc);
+        learnAudio.onended = () => {
+          if (token === learnAudioToken) learnAudio = null;
+        };
+        learnAudio.onerror = () => {
+          if (token === learnAudioToken) learnAudio = null;
+        };
+        const promise = learnAudio.play();
+        if (promise && typeof promise.catch === "function") promise.catch(() => {});
+      } catch {
+        learnAudio = null;
+      }
+    }
+
+    function stopLearnAudio(stopOptions = {}) {
+      if (!stopOptions.keepToken) learnAudioToken += 1;
+      if (!learnAudio) return;
+      try {
+        learnAudio.pause();
+        learnAudio.currentTime = 0;
+      } catch {
+        /* ignore audio cleanup */
+      }
+      learnAudio = null;
+    }
+
+    function setLearnImage(item) {
+      const src = item.imageSrc || item.image || "";
+      const fallback = item.fallbackImageSrc || item.fallbackImage || "";
+      if (!image) return;
+      image.classList.remove("is-missing");
+      image.dataset.fallbackSrc = fallback;
+      image.dataset.fallbackUsed = "0";
+      image.alt = item.thai ? `รูป ${item.thai}` : `รูป ${item.english || item.word || "คำศัพท์"}`;
+      image.onerror = () => {
+        if (image.dataset.fallbackSrc && image.dataset.fallbackUsed !== "1") {
+          image.dataset.fallbackUsed = "1";
+          image.src = image.dataset.fallbackSrc;
+          return;
+        }
+        image.classList.add("is-missing");
+      };
+      image.src = src || mascotImages.greeting;
+      if (placeholder) placeholder.textContent = String(item.english || item.word || "?").slice(0, 2).toUpperCase();
+    }
+
+    function renderDots() {
+      if (!dots) return;
+      dots.innerHTML = items.map((item, dotIndex) => {
+        const status = ready || dotIndex < index ? "done" : dotIndex === index ? "active" : "";
+        return `<span class="${status}" aria-label="${escapeHtml(item.english || item.word || `คำที่ ${dotIndex + 1}`)}"></span>`;
+      }).join("");
+    }
+
+    function setMissionContentHidden(hidden) {
+      screen.querySelectorAll(hiddenSelectors).forEach((node) => {
+        if (node === phase || phase.contains(node)) return;
+        node.classList.toggle("learn-phase-hidden", hidden);
+      });
+    }
+
+    return {
+      start,
+      isDone: () => isLearnPhaseDone(lessonId),
+      markDone: () => markLearnPhaseDone(lessonId),
+      stop: () => finish("stop"),
+    };
+  }
+
+  function normalizeLearnItems(items) {
+    return items
+      .filter(Boolean)
+      .map((item, index) => ({
+        id: item.id || item.key || item.word || `learn-${index + 1}`,
+        english: item.english || item.label || item.word || item.phrase || "",
+        thai: item.thai || item.translation || item.sentence || "",
+        imageSrc: item.imageSrc || item.image || "",
+        fallbackImageSrc: item.fallbackImageSrc || item.fallbackImage || "",
+        audioSrc: item.audioSrc || item.audio || item.audioFile || "",
+        helper: item.helper || "",
+        mascotText: item.mascotText || "",
+      }))
+      .filter((item) => item.english || item.audioSrc || item.imageSrc);
+  }
+
+  function learnPhaseKey(lessonId) {
+    return `${LEARN_PHASE_STORAGE_PREFIX}${lessonId}`;
+  }
+
+  function isLearnPhaseDone(lessonId) {
+    if (!lessonId) return false;
+    try {
+      return Boolean(localStorage.getItem(learnPhaseKey(lessonId)));
+    } catch {
+      return false;
+    }
+  }
+
+  function markLearnPhaseDone(lessonId) {
+    if (!lessonId) return null;
+    const learnedAt = new Date().toISOString();
+    try {
+      localStorage.setItem(learnPhaseKey(lessonId), learnedAt);
+    } catch {
+      /* ignore local storage quota */
+    }
+    const state = readState();
+    const progress = getLessonProgress(state, lessonId);
+    progress.learnedAt = learnedAt;
+    const updated = writeState(state);
+    renderLearnWidgets();
+    return updated.lessons[lessonId];
+  }
+
+  function normalizeLearnAudio(src) {
+    const value = String(src || "").trim();
+    if (!value) return "";
+    if (/^(https?:|data:|blob:|\/)/.test(value)) return value;
+    return `${mascotAudioBase}${value}`;
+  }
+
   function weeklyLearningMs(state) {
     const now = Date.now();
     const weekAgo = now - 7 * 24 * 60 * 60 * 1000;
@@ -1039,6 +1330,9 @@
     renderLearningMap,
     renderParentView,
     renderLearnWidgets,
+    createLearnPhase,
+    isLearnPhaseDone,
+    markLearnPhaseDone,
   };
 
   if (document.readyState === "loading") {
