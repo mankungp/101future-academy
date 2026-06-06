@@ -1478,6 +1478,7 @@ h3 {
   flex: 1;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px;
+  isolation: isolate;
 }
 
 .mission-item {
@@ -1489,9 +1490,13 @@ h3 {
   padding: 14px;
   color: var(--ink);
   background: #fff;
+  background-color: #fff;
   border: 1px solid var(--line);
   border-radius: 8px;
   cursor: pointer;
+  opacity: 1;
+  filter: none;
+  mix-blend-mode: normal;
   box-shadow: 0 12px 30px rgba(17, 24, 39, 0.06);
   transform-origin: center;
   transition:
@@ -1501,8 +1506,20 @@ h3 {
 }
 
 .mission-item:disabled {
-  opacity: 0.5;
+  opacity: 1;
   cursor: default;
+}
+
+.mission-item > *,
+.mission-object,
+.mission-object .object-image,
+.answer-item,
+.answer-item .object-image,
+.lab-choice,
+.lab-choice > * {
+  opacity: 1;
+  filter: none;
+  mix-blend-mode: normal;
 }
 
 .mission-item:not(:disabled):active,
@@ -1703,9 +1720,10 @@ h3 {
   justify-content: space-between;
   gap: 16px;
   padding: 14px 5vw;
-  background: rgba(255, 255, 255, 0.9);
+  background: #fff;
   border-bottom: 1px solid var(--line);
-  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
 }
 
 .exit-short {
@@ -1724,9 +1742,10 @@ h3 {
   min-height: calc(100vh - 128px);
   padding: 24px;
   overflow: hidden;
-  background: rgba(255, 255, 255, 0.88);
+  background: #fff;
   border: 1px solid var(--line);
   border-radius: 8px;
+  isolation: isolate;
   box-shadow: var(--shadow);
 }
 
@@ -2197,7 +2216,8 @@ h3 {
 .answer-item {
   min-height: 150px;
   padding: 18px;
-  background:
+  background-color: #fff;
+  background-image:
     radial-gradient(circle at 18% 18%, rgba(6, 199, 85, 0.1), transparent 34%),
     linear-gradient(145deg, #ffffff, #f4f8ff);
 }
