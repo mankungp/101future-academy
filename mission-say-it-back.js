@@ -45,6 +45,7 @@ const playSelfButton = document.querySelector("#playSelfButton");
 const iSaidItButton = document.querySelector("#iSaidItButton");
 
 const resetRequested = new URLSearchParams(window.location.search).get("reset") === "1";
+const forceLearnRequested = new URLSearchParams(window.location.search).get("learn") === "1";
 const teacherAudioBase = "/assets/english-p1/audio/";
 const gamificationLessonId = "english-p1-unit1-say-it-back";
 
@@ -91,6 +92,23 @@ window.FutureGamification?.initMissionShell({
   totalQuestions: sentenceItems.length,
   mascotEmotion: "greeting",
   mascotText: "น้องฟิวจะอยู่ข้าง ๆ ตอนฝึกพูด ไม่ต้องกลัวผิดนะ",
+});
+const learnPhase = window.FutureGamification?.createLearnPhase({
+  lessonId: gamificationLessonId,
+  title: "Say It Back",
+  items: sentenceItems.map((item) => ({
+    id: item.word,
+    english: item.phrase,
+    thai: `นี่คือ${item.thai}`,
+    imageSrc: item.image,
+    fallbackImageSrc: item.fallbackImage,
+    audioSrc: `${teacherAudioBase}${sentenceAudioFile(item)}`,
+    helper: "ฟังครู แล้วพูดประโยคนี้ตามน้องฟิว!",
+    mascotText: "ลองพูดช้า ๆ ตามเสียงครูนะ",
+  })),
+  unlockAudio,
+  onComplete: beginPractice,
+  onSkip: beginPractice,
 });
 
 soundButton?.addEventListener("click", () => {
@@ -404,6 +422,16 @@ function renderStartScreen() {
 function startMission() {
   unlockAudio();
   playUiSound("start");
+  stopTeacherAudio();
+  completeBox?.classList.add("hidden");
+  if (currentIndex === 0 && learnPhase && (forceLearnRequested || !learnPhase.isDone())) {
+    learnPhase.start({ force: forceLearnRequested });
+    return;
+  }
+  beginPractice();
+}
+
+function beginPractice() {
   missionStarted = true;
   renderMission();
   window.setTimeout(() => {
@@ -538,11 +566,7 @@ function restartMission() {
   saveProgress();
   correctBurst?.classList.add("hidden");
   completeBox?.classList.add("hidden");
-  missionStarted = true;
-  renderMission();
-  window.setTimeout(() => {
-    playTeacherAudio(["say-it-back.mp3"], { onEnd: speakPrompt });
-  }, 260);
+  beginPractice();
 }
 
 function speakPrompt() {
