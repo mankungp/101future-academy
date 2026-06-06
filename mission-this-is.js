@@ -33,6 +33,7 @@ const sentenceProgress = document.querySelector("#sentenceProgress");
 const questionObjectImage = document.querySelector("#questionObjectImage");
 const questionObjectCaption = document.querySelector("#questionObjectCaption");
 const resetRequested = new URLSearchParams(window.location.search).get("reset") === "1";
+const forceLearnRequested = new URLSearchParams(window.location.search).get("learn") === "1";
 const teacherAudioBase = "/assets/english-p1/audio/";
 const gamificationLessonId = "english-p1-unit1-what-is-it";
 
@@ -69,6 +70,22 @@ window.FutureGamification?.initMissionShell({
   totalQuestions: questionItems.length,
   mascotEmotion: "greeting",
   mascotText: "ดูรูปให้ดี แล้วช่วยน้องฟิวตอบว่า What is it?",
+});
+const learnPhase = window.FutureGamification?.createLearnPhase({
+  lessonId: gamificationLessonId,
+  title: "What Is It?",
+  items: questionItems.map((item) => ({
+    id: item.word,
+    english: item.word,
+    thai: item.thai,
+    imageSrc: item.image,
+    fallbackImageSrc: item.fallbackImage,
+    audioSrc: `${teacherAudioBase}${slugifyWord(item.word)}.mp3`,
+    mascotText: "ดูรูป ฟังคำ แล้วลองตอบในใจว่า What is it?",
+  })),
+  unlockAudio,
+  onComplete: beginPractice,
+  onSkip: beginPractice,
 });
 
 soundButton?.addEventListener("click", () => {
@@ -203,6 +220,16 @@ function renderStartScreen() {
 function startMission() {
   unlockAudio();
   playUiSound("start");
+  stopTeacherAudio();
+  completeBox?.classList.add("hidden");
+  if (currentIndex === 0 && learnPhase && (forceLearnRequested || !learnPhase.isDone())) {
+    learnPhase.start({ force: forceLearnRequested });
+    return;
+  }
+  beginPractice();
+}
+
+function beginPractice() {
   missionStarted = true;
   renderMission();
   window.setTimeout(() => {
@@ -367,11 +394,7 @@ function restartMission() {
   saveProgress();
   correctBurst?.classList.add("hidden");
   completeBox?.classList.add("hidden");
-  missionStarted = true;
-  renderMission();
-  window.setTimeout(() => {
-    playTeacherAudio(["lets-start.mp3"], { onEnd: speakPrompt });
-  }, 260);
+  beginPractice();
 }
 
 function speakPrompt() {
