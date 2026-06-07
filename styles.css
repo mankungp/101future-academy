@@ -5270,17 +5270,130 @@ body.no-zoom-body {
 }
 
 @media (min-width: 761px) and (max-width: 1400px) and (any-pointer: coarse) and (max-height: 960px) {
+  .no-zoom-body .mission-topbar {
+    min-height: 48px;
+    height: 48px;
+    padding-block: 6px;
+  }
+
+  .no-zoom-body .mission-main {
+    height: calc(100vh - 48px);
+    height: calc(100dvh - 48px);
+    padding: 6px 4vw;
+  }
+
   .no-zoom-body .mission-screen {
     grid-template-rows: auto auto auto auto minmax(0, 1fr) auto;
+    gap: 5px;
+    padding: 9px 12px;
+  }
+
+  .no-zoom-body .mission-screen-head {
+    align-items: center;
+  }
+
+  .no-zoom-body .mission-screen-head p:not(.eyebrow) {
+    display: none;
+  }
+
+  .no-zoom-body .mission-screen h1 {
+    font-size: clamp(24px, 3vw, 32px);
+    line-height: 1;
+  }
+
+  .no-zoom-body .eyebrow {
+    margin-bottom: 3px;
+    font-size: 10px;
+  }
+
+  .no-zoom-body .mission-score-large {
+    min-width: 72px;
+    padding: 7px;
+  }
+
+  .no-zoom-body .mission-score-large span {
+    font-size: 23px;
+    line-height: 1;
+  }
+
+  .no-zoom-body .mission-score-large strong {
+    font-size: 9px;
+  }
+
+  .no-zoom-body .gamification-hud {
+    gap: 5px;
+  }
+
+  .no-zoom-body .future-mascot-card {
+    grid-template-columns: 34px minmax(0, 1fr);
     gap: 7px;
-    padding: 12px;
+    padding: 4px 7px;
+  }
+
+  .no-zoom-body .future-mascot-card img {
+    width: 34px;
+    height: 34px;
+  }
+
+  .no-zoom-body .future-mascot-card span {
+    font-size: 9px;
+  }
+
+  .no-zoom-body .future-mascot-card strong {
+    -webkit-line-clamp: 1;
+    font-size: 11px;
+    line-height: 1.1;
+  }
+
+  .no-zoom-body .gamification-meters span {
+    min-width: 56px;
+    padding: 4px 6px;
+    font-size: 9px;
+  }
+
+  .no-zoom-body .gamification-meters b {
+    font-size: 13px;
+  }
+
+  .no-zoom-body .mission-prompt-large {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    min-height: 0;
+    padding: 7px 10px;
+    gap: 10px;
+  }
+
+  .no-zoom-body .sound-button {
+    min-height: 38px;
+    padding: 6px 12px;
+    font-size: 13px;
+  }
+
+  .no-zoom-body .sound-button.start-button {
+    min-height: 42px;
+  }
+
+  .no-zoom-body .mission-prompt-large span {
+    font-size: 10px;
+  }
+
+  .no-zoom-body .mission-prompt-large p {
+    font-size: clamp(18px, 2.2vw, 22px);
+    line-height: 1.08;
+  }
+
+  .no-zoom-body .mission-feedback-large {
+    min-height: 0;
+    padding: 7px 10px;
+    font-size: 12px;
+    line-height: 1.15;
   }
 
   .no-zoom-body .mission-stage-full {
-    height: min(278px, calc(100svh - 468px));
-    min-height: 228px;
-    max-height: 278px;
-    grid-template-rows: clamp(56px, 8svh, 68px) minmax(0, 1fr);
+    height: min(430px, calc(100svh - 300px));
+    min-height: 330px;
+    max-height: 430px;
+    grid-template-rows: clamp(58px, 8svh, 72px) minmax(0, 1fr);
     overflow: hidden;
   }
 
@@ -5306,34 +5419,34 @@ body.no-zoom-body {
 
   .no-zoom-body .mission-stage-full .mission-object {
     min-height: 0;
-    padding: 7px;
-    gap: 2px;
+    padding: 10px;
+    gap: 4px;
   }
 
   .no-zoom-body .mission-stage-full .mission-object strong {
-    font-size: 14px;
+    font-size: 17px;
     line-height: 1.05;
   }
 
   .no-zoom-body .mission-stage-full .mission-object small {
-    font-size: 10px;
+    font-size: 12px;
     line-height: 1.05;
   }
 
   .no-zoom-body .mission-stage-full .mission-object .object-image {
-    height: clamp(44px, 7svh, 58px);
+    height: clamp(72px, 12svh, 112px);
   }
 
   .no-zoom-body .mission-stage-full .mission-object .object-image-pencil,
   .no-zoom-body .mission-stage-full .mission-object .object-image-pen {
-    height: clamp(54px, 8svh, 72px);
+    height: clamp(88px, 14svh, 126px);
   }
 
   .no-zoom-body .sentence-mission-screen .sentence-stage {
-    height: min(278px, calc(100svh - 468px));
-    min-height: 228px;
-    max-height: 278px;
-    grid-template-rows: clamp(92px, 14svh, 112px) minmax(0, 1fr);
+    height: min(430px, calc(100svh - 300px));
+    min-height: 330px;
+    max-height: 430px;
+    grid-template-rows: clamp(114px, 18svh, 150px) minmax(0, 1fr);
     overflow: hidden;
   }
 
@@ -5359,17 +5472,17 @@ body.no-zoom-body {
 
   .no-zoom-body .sentence-mission-screen .answer-item {
     min-height: 0;
-    padding: 7px;
-    gap: 3px;
+    padding: 10px;
+    gap: 5px;
   }
 
   .no-zoom-body .sentence-mission-screen .answer-item strong {
-    font-size: 14px;
+    font-size: 17px;
     line-height: 1.05;
   }
 
   .no-zoom-body .sentence-mission-screen .answer-item small {
-    font-size: 10px;
+    font-size: 12px;
     line-height: 1.05;
   }
 
@@ -5380,7 +5493,7 @@ body.no-zoom-body {
   }
 
   .no-zoom-body .sentence-mission-screen .question-object-card img.object-image {
-    height: clamp(66px, 10svh, 86px);
+    height: clamp(82px, 14svh, 128px);
   }
 }
 
