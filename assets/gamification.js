@@ -984,12 +984,18 @@
     phase.dataset.lessonId = lessonId;
     phase.setAttribute("aria-live", "polite");
     phase.innerHTML = `
-      <div class="learn-phase-card">
+      <div class="learn-phase-card learn-scene-card">
+        <div class="learn-scene-header">
+          <span class="mini-label">ครู AI พาสอนก่อนเล่น</span>
+          <strong>ดูรูป ฟังเสียง แล้วพูดตาม</strong>
+          <small>เรียนคำใหม่แบบสั้น ๆ ก่อนเข้าเกมจริง</small>
+        </div>
         <div class="learn-visual-card">
-          <span class="mini-label">Learn first</span>
+          <span class="mini-label learn-stage-label">ภาพคำศัพท์</span>
           <div class="learn-image-shell">
             <img class="learn-main-image" src="" alt="" />
             <span class="learn-image-placeholder" aria-hidden="true">?</span>
+            <span class="learn-sound-wave" aria-hidden="true"><i></i><i></i><i></i></span>
           </div>
         </div>
         <div class="learn-copy">
@@ -997,6 +1003,11 @@
           <h2 class="learn-word">Ready?</h2>
           <p class="learn-thai">มาเรียนคำใหม่กัน!</p>
           <p class="learn-helper">พูดตามน้องฟิว!</p>
+          <div class="learn-teacher-steps" aria-label="ขั้นตอนการเรียน">
+            <span class="active">ดูรูป</span>
+            <span>ฟังเสียง</span>
+            <span>พูดตาม</span>
+          </div>
           <div class="learn-progress-dots" aria-label="ความคืบหน้าการเรียนคำศัพท์"></div>
           <div class="learn-actions">
             <button class="sound-button learn-replay-button" type="button">ฟังอีก</button>
@@ -1025,11 +1036,12 @@
     const word = phase.querySelector(".learn-word");
     const thai = phase.querySelector(".learn-thai");
     const helper = phase.querySelector(".learn-helper");
+    const stageLabel = phase.querySelector(".learn-stage-label");
     const dots = phase.querySelector(".learn-progress-dots");
     const replayButton = phase.querySelector(".learn-replay-button");
     const skipButton = phase.querySelector(".learn-skip-button");
     const nextButton = phase.querySelector(".learn-next-button");
-    const hiddenSelectors = options.hideSelectors || ".mission-prompt, .mission-feedback, .mission-stage, .sentence-stage, .mission-lab-layout, .mission-complete";
+    const hiddenSelectors = options.hideSelectors || ".mission-screen-head, .gamification-hud, .mission-prompt, .mission-feedback, .mission-stage, .sentence-stage, .mission-lab-layout, .mission-complete";
 
     let index = 0;
     let ready = false;
@@ -1070,7 +1082,7 @@
       ready = false;
       index = 0;
       stopLearnAudio();
-      phase.classList.remove("hidden", "is-ready");
+      phase.classList.remove("hidden", "is-ready", "is-audio-playing", "is-slide-entering");
       screen.classList.add("is-learn-phase");
       setMissionContentHidden(true);
       setMascot("greeting", options.introText || "มาเรียนคำใหม่กัน!", { sound: false });
@@ -1093,18 +1105,20 @@
     function renderSlide(renderOptions = {}) {
       if (!active || !items.length) return;
       ready = false;
-      phase.classList.remove("is-ready");
+      phase.classList.remove("is-ready", "is-audio-playing", "is-slide-entering");
       const item = items[index];
       if (counter) counter.textContent = `คำที่ ${index + 1}/${items.length}`;
       if (word) word.textContent = item.english || item.word || "Listen";
       if (thai) thai.textContent = item.thai || item.translation || "พูดตามเสียงครู";
       if (helper) helper.textContent = item.helper || "พูดตามน้องฟิว!";
+      if (stageLabel) stageLabel.textContent = `คำศัพท์ที่ ${index + 1}`;
       if (mascotImage) mascotImage.src = mascotImages.greeting;
-      if (mascotText) mascotText.textContent = "มาเรียนคำใหม่กัน!";
-      if (mascotHint) mascotHint.textContent = "ดูรูป ฟังเสียง แล้วพูดตามเบา ๆ";
+      if (mascotText) mascotText.textContent = "ฟังก่อน แล้วค่อยพูดตาม";
+      if (mascotHint) mascotHint.textContent = "ไม่ต้องรีบ น้องฟิวรอฟังอยู่";
       if (nextButton) nextButton.textContent = index >= items.length - 1 ? "พร้อมเล่น ▶" : "ถัดไป ▶";
       setLearnImage(item);
       renderDots();
+      restartSlideAnimation();
       setMascot("greeting", item.mascotText || "พูดตามน้องฟิว!", { sound: false });
       if (renderOptions.playAudio) playCurrentAudio();
     }
@@ -1118,6 +1132,7 @@
       if (word) word.textContent = "พร้อมเล่นแล้ว!";
       if (thai) thai.textContent = "คราวนี้ลองแตะรูปให้ตรงกับเสียงนะ";
       if (helper) helper.textContent = "น้องฟิวพร้อมเชียร์แล้ว!";
+      if (stageLabel) stageLabel.textContent = "พร้อมเข้าเกม";
       if (image) {
         image.src = mascotImages.celebrate;
         image.alt = "น้องฟิวเจอร์พร้อมเล่น";
@@ -1129,6 +1144,7 @@
       if (mascotHint) mascotHint.textContent = "กดเริ่มเล่น แล้วไปเก็บดาวกัน";
       if (nextButton) nextButton.textContent = "เริ่มเล่น";
       renderDots();
+      restartSlideAnimation();
       setMascot("celebrate", "พร้อมเล่นแล้ว ไปเก็บดาวกัน!", { sound: true });
     }
 
@@ -1140,17 +1156,29 @@
       const token = ++learnAudioToken;
       stopLearnAudio({ keepToken: true });
       try {
+        phase.classList.add("is-audio-playing");
         learnAudio = new Audio(audioSrc);
         learnAudio.onended = () => {
-          if (token === learnAudioToken) learnAudio = null;
+          if (token === learnAudioToken) {
+            learnAudio = null;
+            phase.classList.remove("is-audio-playing");
+          }
         };
         learnAudio.onerror = () => {
-          if (token === learnAudioToken) learnAudio = null;
+          if (token === learnAudioToken) {
+            learnAudio = null;
+            phase.classList.remove("is-audio-playing");
+          }
         };
         const promise = learnAudio.play();
-        if (promise && typeof promise.catch === "function") promise.catch(() => {});
+        if (promise && typeof promise.catch === "function") {
+          promise.catch(() => {
+            if (token === learnAudioToken) phase.classList.remove("is-audio-playing");
+          });
+        }
       } catch {
         learnAudio = null;
+        phase.classList.remove("is-audio-playing");
       }
     }
 
@@ -1164,6 +1192,13 @@
         /* ignore audio cleanup */
       }
       learnAudio = null;
+      phase.classList.remove("is-audio-playing");
+    }
+
+    function restartSlideAnimation() {
+      phase.classList.remove("is-slide-entering");
+      void phase.offsetWidth;
+      phase.classList.add("is-slide-entering");
     }
 
     function setLearnImage(item) {
