@@ -505,7 +505,9 @@
       xpDelta: correct ? 10 : 2,
       starDelta: correct ? 1 : 0,
     });
-    setMascot(correct ? "correct" : "encourage", correct ? "เก่งมาก! ได้ดาวเพิ่มแล้ว" : "ลองอีกทีนะ น้องฟิวช่วยอยู่", { sound: true });
+    setMascot(correct ? "correct" : "encourage", correct ? "เก่งมาก! ได้ดาวเพิ่มแล้ว" : "ลองอีกทีนะ น้องฟิวช่วยอยู่", {
+      sound: payload.mascotSound === true,
+    });
     renderLearnWidgets();
     return updated.lessons[lessonId];
   }
@@ -561,7 +563,9 @@
       freezesLeft: updated.streak.freezesLeft,
     };
     updateMissionHud(updated, { complete: true, xpDelta: lessonXp, starDelta: 0 });
-    setMascot("celebrate", "เย้ จบบทแล้ว! ได้ XP เพิ่ม", { sound: true });
+    setMascot("celebrate", "เย้ จบบทแล้ว! ได้ XP เพิ่ม", {
+      sound: payload.mascotSound === true,
+    });
     renderLearnWidgets();
     return summary;
   }
