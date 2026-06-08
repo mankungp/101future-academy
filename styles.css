@@ -5212,14 +5212,19 @@ body.no-zoom-body {
   }
 
   .no-zoom-body .mission-stage-full .mission-object .object-image {
-    width: min(148px, 82%);
-    height: clamp(70px, 9svh, 100px);
+    width: min(210px, 90%);
+    height: clamp(92px, 15svh, 136px);
+  }
+
+  .no-zoom-body .mission-stage-full .mission-object .object-image-crayon {
+    width: min(230px, 96%);
+    height: clamp(92px, 15svh, 136px);
   }
 
   .no-zoom-body .mission-stage-full .mission-object .object-image-pencil,
   .no-zoom-body .mission-stage-full .mission-object .object-image-pen {
-    width: min(96px, 56%);
-    height: clamp(86px, 11svh, 116px);
+    width: min(122px, 62%);
+    height: clamp(110px, 17svh, 154px);
   }
 
   .no-zoom-body .sentence-mission-screen .sentence-stage {
@@ -5434,12 +5439,19 @@ body.no-zoom-body {
   }
 
   .no-zoom-body .mission-stage-full .mission-object .object-image {
-    height: clamp(72px, 12svh, 112px);
+    width: min(210px, 90%);
+    height: clamp(92px, 15svh, 128px);
+  }
+
+  .no-zoom-body .mission-stage-full .mission-object .object-image-crayon {
+    width: min(230px, 96%);
+    height: clamp(92px, 15svh, 128px);
   }
 
   .no-zoom-body .mission-stage-full .mission-object .object-image-pencil,
   .no-zoom-body .mission-stage-full .mission-object .object-image-pen {
-    height: clamp(88px, 14svh, 126px);
+    width: min(122px, 62%);
+    height: clamp(110px, 17svh, 144px);
   }
 
   .no-zoom-body .sentence-mission-screen .sentence-stage {
