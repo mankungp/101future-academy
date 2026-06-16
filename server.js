@@ -573,6 +573,19 @@ async function handleRequest(request, response) {
     return;
   }
 
+  // เว็บใหม่ (แพลตฟอร์ม อนุบาล→ม.6): หน้าแรกชี้ไป web/ · เสิร์ฟ /web/ + /k1/ เป็น static
+  if ((request.method === "GET" || request.method === "HEAD") &&
+      (url.pathname === "/" || url.pathname === "/index.html")) {
+    redirect(response, "/web/index.html");
+    return;
+  }
+
+  if ((request.method === "GET" || request.method === "HEAD") &&
+      (url.pathname.startsWith("/web/") || url.pathname.startsWith("/k1/"))) {
+    await serveSite(response, url.pathname, request.method === "HEAD");
+    return;
+  }
+
   if ((request.method === "GET" || request.method === "HEAD") && STATIC_ROUTES.has(url.pathname)) {
     await serveStatic(response, STATIC_ROUTES.get(url.pathname), request.method === "HEAD");
     return;
@@ -2745,6 +2758,30 @@ async function serveAsset(response, pathname, isHead = false) {
     return;
   }
   const content = await fs.readFile(filePath);
+  sendBuffer(response, 200, content, MIME_TYPES[ext] || "application/octet-stream");
+}
+
+// เสิร์ฟไฟล์เว็บใหม่ใต้ /web/ และ /k1/ เท่านั้น (กัน path traversal เหมือน serveAsset)
+async function serveSite(response, pathname, isHead = false) {
+  const safeName = path.normalize(decodeURIComponent(pathname)).replace(/^(\.\.[/\\])+/, "");
+  const filePath = path.join(ROOT, safeName);
+  const inWeb = filePath.startsWith(path.join(ROOT, "web") + path.sep);
+  const inK1 = filePath.startsWith(path.join(ROOT, "k1") + path.sep);
+  if (!inWeb && !inK1) {
+    throw new HttpError(404, "Not found");
+  }
+  const ext = path.extname(filePath).toLowerCase();
+  if (isHead) {
+    await ensureReadableFile(filePath);
+    sendHead(response, 200, MIME_TYPES[ext] || "application/octet-stream");
+    return;
+  }
+  let content;
+  try {
+    content = await fs.readFile(filePath);
+  } catch {
+    throw new HttpError(404, "Not found");
+  }
   sendBuffer(response, 200, content, MIME_TYPES[ext] || "application/octet-stream");
 }
 
