@@ -1,0 +1,39 @@
+{
+  "id": "rhyme",
+  "order": 15,
+  "title": "Rhyme Time",
+  "theme": "phonics-rhyme",
+  "standard": {
+    "earlyYears2560": ["มฐ.9", "มฐ.12"],
+    "core2551": "ต1.1",
+    "commonCore": "RF.K.2a (recognize rhyming words)",
+    "cefr": "Pre-A1"
+  },
+  "intro": { "audio": "audio/phrases/intro-rhyme.mp3", "text": "Let's find rhymes!" },
+
+  "words": [
+    { "id": "cat",  "text": "cat",  "image": "img/animals/cat.png",  "audio": "audio/words/cat.mp3",  "rime": "at" },
+    { "id": "hat",  "text": "hat",  "image": "img/rhyme/hat.png",    "audio": "audio/words/hat.mp3",  "rime": "at" },
+    { "id": "bat",  "text": "bat",  "image": "img/rhyme/bat.png",    "audio": "audio/words/bat.mp3",  "rime": "at" },
+    { "id": "dog",  "text": "dog",  "image": "img/animals/dog.png",  "audio": "audio/words/dog.mp3",  "rime": "og" },
+    { "id": "frog", "text": "frog", "image": "img/animals/frog.png", "audio": "audio/words/frog.mp3", "rime": "og" },
+    { "id": "log",  "text": "log",  "image": "img/rhyme/log.png",    "audio": "audio/words/log.mp3",  "rime": "og" }
+  ],
+
+  "missions": [
+    {
+      "id": "rhyme-explore", "type": "free-explore",
+      "items": ["cat","hat","bat","dog","frog","log"],
+      "prompt": { "text": "Tap and listen!", "audioPattern": "audio/words/{id}.mp3" },
+      "config": { "render": "balloon" }
+    },
+    {
+      "id": "rhyme-match", "type": "rhyme",
+      "items": ["cat","hat","bat","dog","frog","log"],
+      "rounds": 6,
+      "config": { "choices": 3 }
+    }
+  ],
+
+  "reward": { "sticker": "🎩" }
+}

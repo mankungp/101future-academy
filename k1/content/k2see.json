@@ -1,0 +1,41 @@
+{
+  "id": "k2see",
+  "order": 21,
+  "level": "k2",
+  "title": "I Can See",
+  "theme": "k2-sentences",
+  "standard": {
+    "earlyYears2560": ["มฐ.9", "มฐ.10"],
+    "core2551": "ต1.1 (ฟังเข้าใจประโยคสั้น)",
+    "commonCore": "SL.K.2 / L.K (oral sentence comprehension)",
+    "cefr": "Pre-A1 → A1"
+  },
+  "intro": { "audio": "audio/phrases/intro-k2see.mp3", "text": "Let's make sentences!" },
+
+  "words": [
+    { "id": "cat",  "text": "cat",  "image": "img/animals/cat.png",  "audio": "audio/words/cat.mp3" },
+    { "id": "dog",  "text": "dog",  "image": "img/animals/dog.png",  "audio": "audio/words/dog.mp3" },
+    { "id": "bird", "text": "bird", "image": "img/animals/bird.png", "audio": "audio/words/bird.mp3" },
+    { "id": "fish", "text": "fish", "image": "img/animals/fish.png", "audio": "audio/words/fish.mp3" },
+    { "id": "lion", "text": "lion", "image": "img/animals/lion.png", "audio": "audio/words/lion.mp3" },
+    { "id": "frog", "text": "frog", "image": "img/animals/frog.png", "audio": "audio/words/frog.mp3" }
+  ],
+
+  "missions": [
+    {
+      "id": "k2see-explore", "type": "free-explore",
+      "items": ["cat","dog","bird","fish","lion","frog"],
+      "prompt": { "text": "Tap and listen!", "audioPattern": "audio/words/{id}.mp3" },
+      "config": { "render": "balloon" }
+    },
+    {
+      "id": "k2see-choose", "type": "listen-and-choose",
+      "items": ["cat","dog","bird","fish","lion","frog"],
+      "rounds": 6,
+      "prompt": { "text": "I see a {word}!", "audioPattern": "audio/phrases/k2-see-{id}.mp3" },
+      "config": { "choices": 3 }
+    }
+  ],
+
+  "reward": { "sticker": "👀" }
+}

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>101future Kids — Kindergarten 1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Itim&family=Baloo+2:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{--sky1:#aee7ff;--sky2:#d9f2ff;--ink:#3a2b53;--pop:#ff5fa2;--sun:#ffd23f;
+    --shadow:0 12px 0 rgba(0,0,0,.06),0 18px 34px rgba(60,40,90,.16)}
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0}
+  body{font-family:'Itim','Baloo 2',system-ui,sans-serif;color:var(--ink);min-height:100vh;
+    background:linear-gradient(180deg,var(--sky1),var(--sky2) 50%,#eafff0);user-select:none;overflow-x:hidden}
+  .cloud{position:fixed;font-size:54px;opacity:.8;animation:drift 30s linear infinite;pointer-events:none;top:10%;left:-20%}
+  .cloud.c2{top:24%;font-size:38px;animation-duration:42s}
+  @keyframes drift{from{transform:translateX(0)}to{transform:translateX(130vw)}}
+  .wrap{max-width:440px;margin:0 auto;padding:16px 16px 60px;position:relative;z-index:1}
+
+  /* header */
+  .hdr{display:flex;align-items:center;gap:12px;background:#fff;border-radius:26px;box-shadow:var(--shadow);padding:12px 16px;margin-bottom:8px}
+  .hdr img{width:64px;height:auto;animation:bob 2.4s ease-in-out infinite;transform-origin:bottom center}
+  @keyframes bob{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-6px) rotate(2deg)}}
+  .hdr .t1{font-family:'Baloo 2';font-weight:800;font-size:22px;color:var(--pop);line-height:1}
+  .hdr .stats{display:flex;gap:12px;font-size:18px;font-weight:700;margin-top:4px}
+  .hdr .stats .star{color:#e0a000}.hdr .stats .fire{color:#ff7a00}
+  .goal{font-size:14px;color:#6b5e86;margin-top:2px}
+  .goal b{color:var(--pop)}
+  .goal .dot{display:inline-block;width:12px;height:12px;border-radius:50%;background:#dde5f1;margin-left:3px;vertical-align:middle}
+  .goal .dot.on{background:var(--sun)}
+
+  /* path */
+  .path{position:relative;padding:24px 0 10px}
+  .path::before{content:'';position:absolute;left:50%;top:40px;bottom:40px;width:0;border-left:6px dashed #ffffffcc;transform:translateX(-50%);z-index:0}
+  .node{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;margin:14px 0}
+  .node.l{transform:translateX(-68px)}
+  .node.r{transform:translateX(68px)}
+  .section-hd{text-align:center;font-family:'Baloo 2';font-weight:800;font-size:16px;color:#0a8fc4;background:#ffffffd9;border-radius:14px;padding:5px 18px;margin:20px auto 2px;width:-moz-fit-content;width:fit-content;position:relative;z-index:2;box-shadow:0 3px 10px rgba(0,0,0,.06)}
+  .node-btn{width:92px;height:92px;border-radius:50%;background:#fff;box-shadow:var(--shadow);display:flex;align-items:center;justify-content:center;
+    text-decoration:none;cursor:pointer;position:relative;border:5px solid #fff;transition:transform .12s;overflow:hidden}
+  .node-btn:active{transform:translateY(4px)}
+  .node-btn .ic-img{width:74%;height:74%;object-fit:contain}
+  .node-btn .ic-emo{font-size:44px}
+  .node .lbl{font-size:18px;font-weight:700;margin-top:6px;background:#fff;border-radius:14px;padding:1px 12px;box-shadow:0 4px 0 rgba(0,0,0,.05)}
+  .node.done .node-btn{border-color:#5fd06a}
+  .node.done .check{position:absolute;right:-2px;bottom:-2px;width:30px;height:30px;border-radius:50%;background:#5fd06a;color:#fff;
+    display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:0 2px 5px rgba(0,0,0,.2)}
+  .node.next .node-btn{animation:pulse 1.3s ease-in-out infinite;border-color:var(--sun)}
+  @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+  .node.next .go{position:absolute;top:-34px;background:var(--pop);color:#fff;font-size:14px;padding:3px 12px;border-radius:14px;white-space:nowrap;box-shadow:0 4px 0 #d83b80;animation:bobup 1.1s ease-in-out infinite}
+  @keyframes bobup{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+  .footnote{text-align:center;margin-top:24px;font-size:13px;color:#8a7ba5;font-family:'Baloo 2'}
+</style>
+</head>
+<body>
+  <div class="cloud c1">☁️</div>
+  <div class="cloud c2">☁️</div>
+  <a href="parent.html" style="position:fixed;top:12px;right:12px;z-index:20;background:#fff;border-radius:14px;padding:8px 13px;font-family:'Baloo 2',sans-serif;font-weight:700;font-size:14px;color:#0a8fc4;text-decoration:none;box-shadow:0 4px 12px rgba(16,36,63,.14)">👪 ผู้ปกครอง</a>
+  <div class="wrap">
+    <div class="hdr">
+      <img src="img/m-idle.png?v=11" alt="Future">
+      <div>
+        <div class="t1">Let's Play!</div>
+        <div class="stats"><span class="star">⭐ <span id="hStars">0</span></span></div>
+      </div>
+    </div>
+    <div class="path" id="path"></div>
+    <div class="footnote">101future Kids · อนุบาล 1 · English immersion (3–4)</div>
+  </div>
+
+  <script src="progress-store.js?v=29"></script>
+  <script src="../web/assets/js/supabase-config.js?v=1"></script>
+  <script src="../web/assets/js/supabase-store.js?v=1"></script>
+  <script>
+  (function(){
+    var V='?v=11';
+    var UNITS=[
+      {id:'colors', label:'Colors',  emo:'🌈'},
+      {id:'emotions',label:'Feelings',img:'img/emotions/happy.png'},
+      {id:'selfcare',label:'Take Care',img:'img/selfcare/wash-hands.png'},
+      {id:'school',  label:'My School',img:'img/school/bag.png'},
+      {id:'animals',label:'Animals', img:'img/animals/lion.png'},
+      {id:'fruits', label:'Fruits',  img:'img/fruits/apple.png'},
+      {id:'weather',label:'Weather', img:'img/weather/sun.png'},
+      {id:'shapes', label:'Shapes',  img:'img/shapes/star.png'},
+      {id:'numbers',label:'Numbers', emo:'🔢'},
+      {id:'family', label:'Family',  img:'img/family/mom.png'},
+      {id:'body',   label:'My Body', img:'img/body/kid.png'},
+      {id:'music',  label:'Move & Music', img:'img/music/drum.png'},
+      {id:'abc',    label:'ABC',     emo:'🔤'},
+      {id:'firstsounds',label:'First Sounds',img:'img/animals/bear.png'},
+      {id:'rhyme',  label:'Rhyme Time',img:'img/rhyme/hat.png'},
+      {id:'k2see',  label:'I Can See',img:'img/animals/cat.png',lv:'k2'},
+      {id:'k2it',   label:'It Is...',img:'img/shapes/star.png',lv:'k2'},
+      {id:'k2like', label:'I Like...',img:'img/fruits/banana.png',lv:'k2'},
+      {id:'k2can',  label:'I Can...',img:'img/music/jump.png',lv:'k2'},
+      {id:'k2where',label:'Where Is...?',img:'img/animals/monkey.png',lv:'k2'},
+      {id:'k2count',label:'How Many?',emo:'🧮',lv:'k2'},
+      {id:'k2write',label:'Write Letters',emo:'✏️',lv:'k2'},
+      {id:'k2size', label:'Big or Small?',img:'img/animals/dog.png',lv:'k2'},
+      {id:'k2have', label:'I Have...',img:'img/school/book.png',lv:'k2'},
+      {id:'k2family',label:'This Is My...',img:'img/family/mom.png',lv:'k2'},
+      {id:'k2color',label:'It Is (Color)',emo:'🎨',lv:'k2'},
+      {id:'k3sight',label:'Reading: Words',emo:'📖',lv:'k3'},
+      {id:'k3read', label:'Read the Word',img:'img/animals/cat.png',lv:'k3'},
+      {id:'k3long', label:'Big Sentences',emo:'📚',lv:'k3'},
+      {id:'k3write',label:'Write small letters',emo:'🖍️',lv:'k3'}
+    ];
+    var p={}; try{ p = window.FutureProgress ? window.FutureProgress.load() : JSON.parse(localStorage.getItem('k1_progress')||'{}'); }catch(e){}
+    var done=p.units||{};
+    document.getElementById('hStars').textContent=p.stars||0;
+
+    var nextId=null;for(var k=0;k<UNITS.length;k++){if(!done[UNITS[k].id]){nextId=UNITS[k].id;break;}}
+    var path=document.getElementById('path');
+    var curLv=null, ni=0;
+    UNITS.forEach(function(u){
+      var lv=u.lv||'k1';
+      if(lv!==curLv){ curLv=lv; ni=0;
+        var hd=document.createElement('div'); hd.className='section-hd';
+        hd.textContent=({k1:'อนุบาล 1',k2:'อนุบาล 2 · ประโยค',k3:'อนุบาล 3 · อ่าน-เขียน'})[lv]||'อนุบาล 1';
+        path.appendChild(hd);
+      }
+      var isDone=!!done[u.id], isNext=(u.id===nextId);
+      var node=document.createElement('div');
+      node.className='node '+(ni%2?'r':'l')+(isDone?' done':'')+(isNext?' next':''); ni++;
+      var ic=u.img?('<img class="ic-img" src="'+u.img+V+'" alt="">'):('<span class="ic-emo">'+u.emo+'</span>');
+      node.innerHTML=(isNext?'<span class="go">Start! ▶</span>':'')+
+        '<a class="node-btn" href="play.html?unit='+u.id+'">'+ic+(isDone?'<span class="check">✓</span>':'')+'</a>'+
+        '<div class="lbl">'+u.label+'</div>';
+      path.appendChild(node);
+    });
+  })();
+  </script>
+</body>
+</html>

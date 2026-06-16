@@ -1,0 +1,46 @@
+{
+  "id": "weather",
+  "order": 8,
+  "title": "Weather",
+  "theme": "sky-weather",
+  "standard": {
+    "earlyYears2560": ["มฐ.9", "มฐ.10"],
+    "core2551": "ต1.1",
+    "commonCore": "L.K.5",
+    "cefr": "Pre-A1"
+  },
+  "intro": { "audio": "audio/phrases/intro-weather.mp3", "text": "Let's look at the sky!" },
+
+  "words": [
+    { "id": "sun",     "text": "sun",     "image": "img/weather/sun.png",     "audio": "audio/words/sun.mp3" },
+    { "id": "moon",    "text": "moon",    "image": "img/weather/moon.png",    "audio": "audio/words/moon.mp3" },
+    { "id": "star",    "text": "star",    "image": "img/weather/star.png",    "audio": "audio/words/star.mp3" },
+    { "id": "cloud",   "text": "cloud",   "image": "img/weather/cloud.png",   "audio": "audio/words/cloud.mp3" },
+    { "id": "rain",    "text": "rain",    "image": "img/weather/rain.png",    "audio": "audio/words/rain.mp3" },
+    { "id": "rainbow", "text": "rainbow", "image": "img/weather/rainbow.png", "audio": "audio/words/rainbow.mp3" }
+  ],
+
+  "missions": [
+    {
+      "id": "weather-explore", "type": "free-explore",
+      "items": ["sun","moon","star","cloud","rain","rainbow"],
+      "prompt": { "text": "Tap the sky!", "audioPattern": "audio/words/{id}.mp3" },
+      "config": { "render": "balloon" }
+    },
+    {
+      "id": "weather-tap", "type": "listen-and-tap",
+      "items": ["sun","moon","star","cloud","rain","rainbow"],
+      "rounds": 6,
+      "prompt": { "text": "Tap the {word}!", "audioPattern": "audio/phrases/tap-weather-{id}.mp3" },
+      "config": { "choices": 4 }
+    },
+    {
+      "id": "weather-match", "type": "match",
+      "items": ["sun","moon","star","cloud","rain","rainbow"],
+      "prompt": { "text": "Tap the {word}!" },
+      "config": { "mode": "image-sound", "pairs": 4 }
+    }
+  ],
+
+  "reward": { "sticker": "🌈" }
+}

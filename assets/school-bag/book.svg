@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" role="img" aria-label="book">
+  <defs>
+    <linearGradient id="bookCover" x1="44" x2="196" y1="30" y2="145" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#6d8cff"/>
+      <stop offset=".55" stop-color="#3157ff"/>
+      <stop offset="1" stop-color="#17308f"/>
+    </linearGradient>
+    <linearGradient id="bookPage" x1="56" x2="184" y1="44" y2="138" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#dfe7ff"/>
+    </linearGradient>
+  </defs>
+  <rect width="240" height="180" rx="30" fill="#eef4ff"/>
+  <ellipse cx="120" cy="154" rx="80" ry="13" fill="#b9c9ff" opacity=".55"/>
+  <path d="M55 36h56c14 0 25 10 28 24v86H75c-16 0-28-12-28-28V45c0-5 3-9 8-9Z" fill="url(#bookCover)" stroke="#17308f" stroke-width="5"/>
+  <path d="M129 60c3-14 14-24 28-24h30c5 0 8 4 8 9v73c0 16-12 28-28 28h-38V60Z" fill="url(#bookCover)" stroke="#17308f" stroke-width="5"/>
+  <path d="M65 52h45c10 0 18 8 18 18v64H83c-10 0-18-8-18-18V52Z" fill="url(#bookPage)" opacity=".22"/>
+  <path d="M135 70c0-10 8-18 18-18h24v64c0 10-8 18-18 18h-24V70Z" fill="url(#bookPage)" opacity=".22"/>
+  <path d="M120 41v108" stroke="#13215f" stroke-width="7" stroke-linecap="round"/>
+  <path d="M73 68h33M73 88h33M73 108h26M148 68h27M148 88h27M148 108h20" stroke="#eef4ff" stroke-width="6" stroke-linecap="round" opacity=".95"/>
+  <path d="M161 36v43l12-9 12 9V36h-24Z" fill="#ff5f57" stroke="#b91c1c" stroke-width="4" stroke-linejoin="round"/>
+</svg>

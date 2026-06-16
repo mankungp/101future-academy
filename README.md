@@ -1,6 +1,19 @@
 # 101 Future Academy
 
-Standalone enrollment and lead CRM for 101future.com.
+Standalone Phase 0.5/1 EdTech interest capture, checkout, payment confirmation, and gated learning portal for 101future.com.
+
+Current product focus:
+
+- Phase 0.5: LINE interest capture, lesson engine, monthly payment gate, entitlement unlock, progress-ready data.
+- Phase 1: primary ป.1-ป.6 courses for Math, Science, English, and Thai.
+- Pricing starts at 299 THB / 30 days per subject.
+- Later bundles add multi-subject, M.ต้น, exam prep, school plans, high school, and kindergarten in phase order.
+
+Project memory:
+
+- Start here: [OPEN_THIS_FIRST.md](./OPEN_THIS_FIRST.md)
+- Current status: [PROJECT_STATUS.md](./PROJECT_STATUS.md)
+- Roadmap: [EDTECH_10_PHASES.md](./EDTECH_10_PHASES.md)
 
 ## Local
 
@@ -26,3 +39,45 @@ Optional:
 - `PORT`: server port
 - `HOST`: bind host, defaults to `127.0.0.1`
 - `DATA_DIR`: lead storage directory, defaults to `./data`
+- `LEAD_WEBHOOK_URL`: optional event webhook for enrollment, order, and payment events
+- `LEAD_WEBHOOK_SECRET`: optional secret sent as `X-Webhook-Secret`
+- `DEFAULT_LEAD_OWNER`: optional owner label shown on automated lead plans
+- `DUPLICATE_WINDOW_DAYS`: duplicate detection window, defaults to `90`
+- `PAYMENT_PROVIDER`: payment provider key, use `kbank` for KBank QR API
+- `PAYMENT_PROVIDER_API_KEY`: provider API key used by the payment adapter
+- `PAYMENT_WEBHOOK_SECRET`: webhook verification secret/token used to verify bank callbacks
+- `KBANK_QR_CREATE_URL`: KBank QR API endpoint from https://apiportal.kasikornbank.com/
+- `KBANK_MERCHANT_ID`: merchant id from KBank API Portal
+- `KBANK_TERMINAL_ID`: optional terminal id from KBank API Portal
+- `KBANK_BRANCH_ID`: optional branch id from KBank API Portal
+- `KBANK_API_KEY_HEADER`: API key header name, defaults to `x-api-key`
+- `KBANK_WEBHOOK_TOKEN_HEADER`: callback token header name, defaults to `x-callback-token`
+- `XENDIT_API_VERSION`: Xendit Payment Request API version, defaults to `2024-11-11`
+- `SITE_ORIGIN`: public site URL, defaults to `https://www.101future.com`
+- `ACCESS_DAYS`: learning entitlement length, defaults to `30`
+- `LINE_CHANNEL_ID`: LINE Login channel id
+- `LINE_CHANNEL_SECRET`: LINE Login channel secret
+- `LINE_CALLBACK_URL`: LINE Login callback URL, defaults to `https://www.101future.com/auth/line/callback`
+- `EASYSLIP_API_KEY`: EasySlip API key used to verify Thai bank slips server-side
+- `EASYSLIP_MATCH_ACCOUNT`: set to `true` to require EasySlip receiver account matching
+- `COURSE_PRICES_JSON`: JSON object for server-side amount matching, for example `{"คณิตประถม":299,"วิทย์ประถม":299,"อังกฤษประถม":299,"ไทยประถม":299}`
+- `DEFAULT_COURSE_PRICE`: fallback amount if a course is not in `COURSE_PRICES_JSON`
+
+## Enrollment Automation
+
+The enrollment system automatically:
+
+- prevents duplicate active leads by matching phone or LINE ID
+- exposes primary ป.1-ป.6 packages through `/api/packages`
+- saves LINE package interest through `/api/me/interests`
+- lets admin view LINE interests through `/api/interests`
+- lets admin prepare a payment order from a LINE interest
+- creates orders through `/api/orders`
+- supports LINE Login for student/parent accounts when LINE credentials are configured
+- supports student self-signup and parent payment links through `/pay?order=...`
+- creates KBank Dynamic Thai QR requests when `PAYMENT_PROVIDER=kbank`
+- verifies payment callbacks with `PAYMENT_WEBHOOK_SECRET`
+- checks paid amount against the locked order amount
+- unlocks `/learn` content for 30 days after payment confirmation
+- keeps EasySlip as a manual-transfer fallback when configured
+- keeps admin for exceptions, rejected slips, and exports

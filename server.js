@@ -2,21 +2,283 @@ const crypto = require("node:crypto");
 const fs = require("node:fs/promises");
 const http = require("node:http");
 const path = require("node:path");
+const QRCode = require("qrcode");
 
 const ROOT = __dirname;
 const DATA_DIR = process.env.DATA_DIR || path.join(ROOT, "data");
 const LEADS_FILE = path.join(DATA_DIR, "leads.json");
+const ORDERS_FILE = path.join(DATA_DIR, "orders.json");
+const ACCOUNTS_FILE = path.join(DATA_DIR, "accounts.json");
+const SESSIONS_FILE = path.join(DATA_DIR, "sessions.json");
 const TOKEN_FILE = path.join(DATA_DIR, "admin-token.txt");
+const AGENT_ROOM_FILE = process.env.AGENT_ROOM_FILE || path.join(ROOT, ".agent-room", "state.json");
 const PORT = Number(process.env.PORT || 4173);
 const HOST = process.env.HOST || "127.0.0.1";
+const LEAD_WEBHOOK_URL = process.env.LEAD_WEBHOOK_URL || process.env.NOTIFY_WEBHOOK_URL || "";
+const LEAD_WEBHOOK_SECRET = process.env.LEAD_WEBHOOK_SECRET || process.env.NOTIFY_WEBHOOK_SECRET || "";
+const DEFAULT_OWNER = process.env.DEFAULT_LEAD_OWNER || "";
+const DUPLICATE_WINDOW_DAYS = Number(process.env.DUPLICATE_WINDOW_DAYS || 90);
+const EASYSLIP_API_KEY = process.env.EASYSLIP_API_KEY || "";
+const EASYSLIP_VERIFY_URL = process.env.EASYSLIP_VERIFY_URL || "https://api.easyslip.com/v2/verify/bank";
+const EASYSLIP_MATCH_ACCOUNT = process.env.EASYSLIP_MATCH_ACCOUNT === "true";
+const COURSE_PRICES = parseJsonEnv("COURSE_PRICES_JSON", {});
+const DEFAULT_COURSE_PRICE = Number(process.env.DEFAULT_COURSE_PRICE || 0);
+const PAYMENT_PROVIDER = process.env.PAYMENT_PROVIDER || "";
+const PAYMENT_PROVIDER_API_KEY = process.env.PAYMENT_PROVIDER_API_KEY || "";
+const PAYMENT_WEBHOOK_SECRET = process.env.PAYMENT_WEBHOOK_SECRET || "";
+const XENDIT_API_VERSION = process.env.XENDIT_API_VERSION || "2024-11-11";
+const KBANK_QR_CREATE_URL = process.env.KBANK_QR_CREATE_URL || "";
+const KBANK_MERCHANT_ID = process.env.KBANK_MERCHANT_ID || "";
+const KBANK_TERMINAL_ID = process.env.KBANK_TERMINAL_ID || "";
+const KBANK_BRANCH_ID = process.env.KBANK_BRANCH_ID || "";
+const KBANK_API_KEY_HEADER = process.env.KBANK_API_KEY_HEADER || "x-api-key";
+const KBANK_WEBHOOK_TOKEN_HEADER = process.env.KBANK_WEBHOOK_TOKEN_HEADER || "x-callback-token";
+const SITE_ORIGIN = process.env.SITE_ORIGIN || "https://www.101future.com";
+const ACCESS_DAYS = Number(process.env.ACCESS_DAYS || 30);
+const LINE_CHANNEL_ID = process.env.LINE_CHANNEL_ID || "";
+const LINE_CHANNEL_SECRET = process.env.LINE_CHANNEL_SECRET || "";
+const LINE_CALLBACK_URL = process.env.LINE_CALLBACK_URL || `${SITE_ORIGIN}/auth/line/callback`;
+const SESSION_COOKIE_NAME = "future_session";
+const jsonFileLocks = new Map();
+
+const PACKAGES = [
+  {
+    id: "math-p1-p6-30d",
+    name: "คณิต ป.1-ป.6",
+    subject: "Math",
+    level: "ป.1-ป.6",
+    durationDays: 30,
+    price: Number(COURSE_PRICES["คณิตประถม"] || COURSE_PRICES.mathPrimary || COURSE_PRICES.math || 299),
+    status: "interest_open",
+    description: "ปูพื้นฐานจำนวน การคำนวณ โจทย์ปัญหา และวิธีคิดทีละขั้นสำหรับเด็กประถม",
+  },
+  {
+    id: "science-p1-p6-30d",
+    name: "วิทย์ ป.1-ป.6",
+    subject: "Science",
+    level: "ป.1-ป.6",
+    durationDays: 30,
+    price: Number(COURSE_PRICES["วิทย์ประถม"] || COURSE_PRICES.sciencePrimary || COURSE_PRICES.science || 299),
+    status: "interest_open",
+    description: "เรียนวิทยาศาสตร์จากสิ่งรอบตัว ทดลองคิด สังเกต และตอบคำถามตามหลักสูตรประถม",
+  },
+  {
+    id: "english-p1-p6-30d",
+    name: "อังกฤษ ป.1-ป.6",
+    subject: "English",
+    level: "ป.1-ป.6",
+    durationDays: 30,
+    price: Number(COURSE_PRICES["อังกฤษประถม"] || COURSE_PRICES.englishPrimary || COURSE_PRICES.english || 299),
+    status: "interest_open",
+    description: "ฝึกคำศัพท์ ประโยคพื้นฐาน การฟังอ่าน และความมั่นใจในการใช้ภาษาอังกฤษ",
+  },
+  {
+    id: "thai-p1-p6-30d",
+    name: "ภาษาไทย ป.1-ป.6",
+    subject: "Thai",
+    level: "ป.1-ป.6",
+    durationDays: 30,
+    price: Number(COURSE_PRICES["ไทยประถม"] || COURSE_PRICES.thaiPrimary || COURSE_PRICES.thai || 299),
+    status: "interest_open",
+    description: "อ่านจับใจความ เขียนประโยค คำศัพท์ และหลักภาษาที่เด็กประถมต้องใช้ในห้องเรียน",
+  },
+  {
+    id: "all-primary-p1-p6-30d",
+    name: "แพ็กครบ 4 วิชาประถม",
+    subject: "Math, Science, English, Thai",
+    level: "ป.1-ป.6",
+    durationDays: 30,
+    price: Number(COURSE_PRICES["ครบวิชาประถม"] || COURSE_PRICES.allPrimary || 599),
+    status: "coming_soon",
+    description: "แพ็กหลายวิชาสำหรับครอบครัวที่อยากให้เด็กเรียนครบ คณิต วิทย์ อังกฤษ และไทย",
+  },
+];
+
+const COURSE_CONTENT = {
+  "คณิต ป.1-ป.6": [
+    {
+      title: "คิดเลขให้มั่นใจ",
+      duration: "20 นาที",
+      summary: "ปูพื้นฐานจำนวน การบวก ลบ คูณ หาร และวิธีตรวจคำตอบด้วยตัวเอง",
+    },
+    {
+      title: "โจทย์ปัญหาทีละขั้น",
+      duration: "25 นาที",
+      summary: "ฝึกอ่านโจทย์ แยกข้อมูลสำคัญ และเลือกวิธีทำให้ตรงกับคำถาม",
+    },
+    {
+      title: "สรุปผลหลังเรียน",
+      duration: "10 นาที",
+      summary: "ระบบช่วยสรุปว่าควรทบทวนเรื่องคำนวณ ความเข้าใจโจทย์ หรือการเขียนวิธีทำเพิ่ม",
+    },
+  ],
+  "วิทย์ ป.1-ป.6": [
+    {
+      title: "สังเกตและตั้งคำถาม",
+      duration: "18 นาที",
+      summary: "เริ่มจากสิ่งรอบตัว ให้เด็กเข้าใจหลักวิทย์ผ่านภาพ สถานการณ์ และคำถามสั้น",
+    },
+    {
+      title: "เข้าใจคำสำคัญในบทเรียน",
+      duration: "24 นาที",
+      summary: "ทวนคำศัพท์และแนวคิดที่ใช้บ่อย เช่น พลังงาน สิ่งมีชีวิต วัสดุ และสิ่งแวดล้อม",
+    },
+    {
+      title: "ตอบแบบมีเหตุผล",
+      duration: "12 นาที",
+      summary: "ฝึกอธิบายคำตอบด้วยเหตุผล ไม่ใช่ท่องจำอย่างเดียว",
+    },
+  ],
+  "อังกฤษ ป.1-ป.6": [
+    {
+      title: "Daily Words: คำศัพท์ใกล้ตัว",
+      duration: "20 นาที",
+      summary: "เรียนคำศัพท์เรื่องบ้าน โรงเรียน และของใช้ใกล้ตัว พร้อมตัวอย่างประโยคสั้นที่เด็กประถมใช้ได้จริง",
+    },
+    {
+      title: "Read & Understand: อ่านเรื่องสั้น",
+      duration: "24 นาที",
+      summary: "อ่านเรื่องสั้นภาษาอังกฤษ จับใจความว่าใคร ทำอะไร ที่ไหน แล้วตอบคำถามเพื่อเช็กความเข้าใจ",
+    },
+    {
+      title: "Speak in Sentences: พูดเป็นประโยค",
+      duration: "12 นาที",
+      summary: "ฝึกตอบคำถามสั้นเกี่ยวกับตัวเอง โรงเรียน ครอบครัว และสิ่งที่ชอบ โดยเริ่มจากประโยคง่าย",
+    },
+  ],
+  "ภาษาไทย ป.1-ป.6": [
+    {
+      title: "อ่านจับใจความ",
+      duration: "22 นาที",
+      summary: "ฝึกอ่านเรื่องสั้นแล้วจับใจความสำคัญ ตัวละคร เหตุการณ์ และข้อคิด",
+    },
+    {
+      title: "คำศัพท์และหลักภาษา",
+      duration: "24 นาที",
+      summary: "ทวนคำที่ใช้บ่อย ชนิดของคำ ประโยค และจุดที่เด็กประถมมักสับสน",
+    },
+    {
+      title: "เขียนตอบให้ชัด",
+      duration: "12 นาที",
+      summary: "ฝึกเรียบเรียงคำตอบสั้น ๆ ให้ครบและอ่านเข้าใจง่าย",
+    },
+  ],
+  "English Monthly": [
+    {
+      title: "Lesson Cache: Past Tense 01",
+      duration: "20 นาที",
+      summary: "เรียนจากคำอธิบาย ตัวอย่าง และ quiz ที่เตรียมไว้ล่วงหน้า",
+    },
+    {
+      title: "Speaking Prompt Cache",
+      duration: "15 นาที",
+      summary: "ฝึกตอบคำถามสั้นจาก prompt เช่น What did you do yesterday?",
+    },
+    {
+      title: "AI Correction",
+      duration: "10 นาที",
+      summary: "AI ตรวจเฉพาะคำตอบเด็ก แก้ grammar และเก็บ weakness tag",
+    },
+  ],
+  "อังกฤษ ม.ต้น: พูดได้ + แกรมมาร์แน่น": [
+    {
+      title: "เริ่มพูดให้เป็นประโยค",
+      duration: "20 นาที",
+      summary: "ฝึกแนะนำตัว ตอบคำถามพื้นฐาน และเรียงประโยคให้พูดได้ชัดขึ้น",
+    },
+    {
+      title: "แกรมมาร์พื้นฐานที่ต้องแม่น",
+      duration: "34 นาที",
+      summary: "ทบทวน tense โครงสร้างประโยค และจุดที่เด็ก ม.ต้น มักพลาด",
+    },
+    {
+      title: "ฝึกบทสนทนาใช้งานจริง",
+      duration: "40 นาที",
+      summary: "ฝึกถามตอบสถานการณ์ใกล้ตัว พร้อมประโยคตั้งต้นสำหรับพูดต่อยอด",
+    },
+  ],
+  "English Speaking + Grammar ม.1-ม.3": [
+    {
+      title: "เริ่มพูดให้เป็นประโยค",
+      duration: "20 นาที",
+      summary: "ฝึกแนะนำตัว ตอบคำถามพื้นฐาน และเรียงประโยคให้พูดได้ชัดขึ้น",
+    },
+    {
+      title: "แกรมมาร์พื้นฐานที่ต้องแม่น",
+      duration: "34 นาที",
+      summary: "ทบทวน tense โครงสร้างประโยค และจุดที่เด็ก ม.ต้น มักพลาด",
+    },
+    {
+      title: "ฝึกบทสนทนาใช้งานจริง",
+      duration: "40 นาที",
+      summary: "ฝึกถามตอบสถานการณ์ใกล้ตัว พร้อมประโยคตั้งต้นสำหรับพูดต่อยอด",
+    },
+  ],
+  "AI 101": [
+    {
+      title: "AI Starter Kit",
+      duration: "18 นาที",
+      summary: "เข้าใจว่า AI ช่วยเรียนและทำงานตรงไหนได้บ้าง พร้อมกติกาการใช้แบบปลอดภัย",
+    },
+    {
+      title: "Prompt Lab",
+      duration: "32 นาที",
+      summary: "ฝึกเขียน prompt สำหรับสรุป อ่าน คิด และสร้างชิ้นงาน",
+    },
+    {
+      title: "Mini Project",
+      duration: "45 นาที",
+      summary: "ทำโปรเจกต์เล็กจากปัญหาจริง แล้วเตรียมส่งงานให้ครูตรวจ",
+    },
+  ],
+  "English for Future": [
+    {
+      title: "Future Conversation",
+      duration: "24 นาที",
+      summary: "ประโยคใช้งานจริงสำหรับแนะนำตัว ถามตอบ และคุยเรื่องเป้าหมาย",
+    },
+    {
+      title: "Presentation Basics",
+      duration: "30 นาที",
+      summary: "จัดโครงเรื่องและพูดนำเสนอแบบสั้นให้เข้าใจง่าย",
+    },
+  ],
+  "Code & Create": [
+    {
+      title: "Web Basics",
+      duration: "28 นาที",
+      summary: "รู้จัก HTML, CSS, JavaScript ผ่านหน้าเว็บชิ้นแรก",
+    },
+    {
+      title: "Automation Basics",
+      duration: "36 นาที",
+      summary: "สร้าง workflow ง่าย ๆ เพื่อลดงานซ้ำ",
+    },
+  ],
+  "Future Skills": [
+    {
+      title: "Thinking System",
+      duration: "22 นาที",
+      summary: "แยกปัญหา ตั้งคำถาม และออกแบบทางเลือกก่อนลงมือ",
+    },
+    {
+      title: "Portfolio Sprint",
+      duration: "34 นาที",
+      summary: "เปลี่ยนสิ่งที่เรียนเป็นผลงานสั้น ๆ สำหรับใช้ต่อ",
+    },
+  ],
+};
 
 const MIME_TYPES = {
   ".css": "text/css; charset=utf-8",
   ".html": "text/html; charset=utf-8",
+  ".json": "application/json; charset=utf-8",
   ".js": "text/javascript; charset=utf-8",
   ".jpg": "image/jpeg",
   ".jpeg": "image/jpeg",
+  ".mp3": "audio/mpeg",
   ".png": "image/png",
+  ".svg": "image/svg+xml",
   ".webp": "image/webp",
 };
 
@@ -25,20 +287,82 @@ const STATIC_ROUTES = new Map([
   ["/index.html", "index.html"],
   ["/styles.css", "styles.css"],
   ["/app.js", "app.js"],
+  ["/learn", "learn.html"],
+  ["/learn.html", "learn.html"],
+  ["/learn.js", "learn.js"],
+  ["/mission/school-bag", "mission-school-bag.html"],
+  ["/mission-school-bag.html", "mission-school-bag.html"],
+  ["/mission-school-bag.js", "mission-school-bag.js"],
+  ["/mission/this-is", "mission-this-is.html"],
+  ["/mission-this-is.html", "mission-this-is.html"],
+  ["/mission-this-is.js", "mission-this-is.js"],
+  ["/mission/say-it-back", "mission-say-it-back.html"],
+  ["/mission-say-it-back.html", "mission-say-it-back.html"],
+  ["/mission-say-it-back.js", "mission-say-it-back.js"],
+  ["/mission/lab", "mission-lab.html"],
+  ["/mission-lab.html", "mission-lab.html"],
+  ["/mission-lab.js", "mission-lab.js"],
+  ["/curriculum/english-p1.json", "curriculum/english-p1.json"],
+  ["/pay", "pay.html"],
+  ["/pay.html", "pay.html"],
+  ["/pay.js", "pay.js"],
+  ["/refund-policy", "refund-policy.html"],
+  ["/refund-policy.html", "refund-policy.html"],
+  ["/privacy-policy", "privacy-policy.html"],
+  ["/privacy-policy.html", "privacy-policy.html"],
+  ["/terms", "terms.html"],
+  ["/terms.html", "terms.html"],
   ["/admin", "admin.html"],
   ["/admin.html", "admin.html"],
   ["/admin.js", "admin.js"],
+  ["/agent-hq", "agent-hq.html"],
+  ["/agent-hq.html", "agent-hq.html"],
+  ["/agent-hq.js", "agent-hq.js"],
 ]);
 
 const VALID_STATUSES = new Set([
+  "pending-payment",
+  "payment-review",
+  "paid",
+  "payment-rejected",
+  "archived",
   "new",
   "contacted",
   "trial",
   "enrolled",
-  "paid",
   "not-fit",
-  "archived",
 ]);
+
+const WORKFLOWS = {
+  new: {
+    action: "โทรกลับหรือทัก LINE เพื่อคัดกรองความสนใจ",
+    days: 1,
+  },
+  contacted: {
+    action: "ส่งรายละเอียดคอร์สและนัดรอบทดลองเรียน",
+    days: 2,
+  },
+  trial: {
+    action: "ยืนยันวันทดลองเรียนและเตรียมอุปกรณ์",
+    days: 1,
+  },
+  enrolled: {
+    action: "ส่งขั้นตอนชำระเงินและเพิ่มเข้ากลุ่มเรียน",
+    days: 2,
+  },
+  paid: {
+    action: "",
+    days: null,
+  },
+  "not-fit": {
+    action: "",
+    days: null,
+  },
+  archived: {
+    action: "",
+    days: null,
+  },
+};
 
 let adminToken = "";
 
@@ -60,7 +384,7 @@ async function main() {
   server.listen(PORT, HOST, () => {
     console.log(`101 Future server running at http://${HOST}:${PORT}`);
     if (!process.env.ADMIN_TOKEN) {
-      console.log(`Admin token: ${adminToken}`);
+      console.log(`Admin token generated and saved to ${TOKEN_FILE} (value hidden from logs)`);
     }
   });
 }
@@ -71,6 +395,21 @@ async function ensureDataFiles() {
     await fs.access(LEADS_FILE);
   } catch {
     await fs.writeFile(LEADS_FILE, "[]\n", "utf8");
+  }
+  try {
+    await fs.access(ORDERS_FILE);
+  } catch {
+    await fs.writeFile(ORDERS_FILE, "[]\n", "utf8");
+  }
+  try {
+    await fs.access(ACCOUNTS_FILE);
+  } catch {
+    await fs.writeFile(ACCOUNTS_FILE, "[]\n", "utf8");
+  }
+  try {
+    await fs.access(SESSIONS_FILE);
+  } catch {
+    await fs.writeFile(SESSIONS_FILE, "[]\n", "utf8");
   }
 }
 
@@ -100,8 +439,80 @@ async function handleRequest(request, response) {
     return;
   }
 
+  if (request.method === "HEAD" && url.pathname === "/api/health") {
+    sendHead(response, 200, "application/json; charset=utf-8");
+    return;
+  }
+
+  if (request.method === "GET" && url.pathname === "/api/packages") {
+    sendJson(response, 200, { packages: PACKAGES });
+    return;
+  }
+
+  if (request.method === "GET" && url.pathname === "/api/auth/me") {
+    await getCurrentAccount(request, response);
+    return;
+  }
+
+  if (request.method === "POST" && url.pathname === "/api/auth/profile") {
+    await updateAccountProfile(request, response);
+    return;
+  }
+
+  if (request.method === "POST" && url.pathname === "/api/me/interests") {
+    await saveMyInterest(request, response);
+    return;
+  }
+
+  if (request.method === "POST" && url.pathname === "/api/auth/logout") {
+    await logoutAccount(request, response);
+    return;
+  }
+
+  if (request.method === "GET" && url.pathname === "/auth/line") {
+    await startLineLogin(response, url);
+    return;
+  }
+
+  if (request.method === "GET" && url.pathname === "/auth/line/callback") {
+    await handleLineCallback(url, response);
+    return;
+  }
+
+  if (request.method === "GET" && url.pathname === "/api/me/enrollments") {
+    await getMyEnrollments(request, response);
+    return;
+  }
+
+  if (request.method === "POST" && url.pathname === "/api/orders") {
+    await createOrder(request, response);
+    return;
+  }
+
+  const orderMatch = url.pathname.match(/^\/api\/orders\/([^/]+)$/);
+  if (request.method === "GET" && orderMatch) {
+    await getOrder(orderMatch[1], request, response);
+    return;
+  }
+
+  if (request.method === "POST" && url.pathname === "/api/payment/webhook") {
+    await handlePaymentWebhook(request, response);
+    return;
+  }
+
   if (request.method === "POST" && url.pathname === "/api/leads") {
     await createLead(request, response);
+    return;
+  }
+
+  const paymentMatch = url.pathname.match(/^\/api\/enrollments\/([^/]+)\/payment$/);
+  if (request.method === "POST" && paymentMatch) {
+    await submitPayment(paymentMatch[1], request, response);
+    return;
+  }
+
+  if (request.method === "POST" && url.pathname === "/api/access") {
+    await unlockContent(request, response);
     return;
   }
 
@@ -109,6 +520,42 @@ async function handleRequest(request, response) {
     requireAdmin(request, url);
     const leads = await readLeads();
     sendJson(response, 200, { leads: sortLeads(leads) });
+    return;
+  }
+
+  if (request.method === "GET" && url.pathname === "/api/interests") {
+    requireAdmin(request, url);
+    const accounts = await readAccounts();
+    const leads = await readLeads();
+    const orders = await readOrders();
+    sendJson(response, 200, { interests: buildAdminInterests(accounts, leads, orders) });
+    return;
+  }
+
+  const interestOrderMatch = url.pathname.match(/^\/api\/interests\/([^/]+)\/([^/]+)\/order$/);
+  if (request.method === "POST" && interestOrderMatch) {
+    requireAdmin(request, url);
+    await createOrderFromInterest(interestOrderMatch[1], interestOrderMatch[2], request, response);
+    return;
+  }
+
+  if (request.method === "GET" && url.pathname === "/api/automation") {
+    requireAdmin(request, url);
+    const leads = await readLeads();
+    sendJson(response, 200, buildAutomationSummary(leads));
+    return;
+  }
+
+  if (request.method === "GET" && url.pathname === "/api/agent-hq") {
+    requireAdmin(request, url);
+    const agentRoom = await readAgentRoomState();
+    sendJson(response, 200, buildAgentHqSummary(agentRoom));
+    return;
+  }
+
+  if (request.method === "POST" && url.pathname === "/api/automation/run") {
+    requireAdmin(request, url);
+    await runAutomation(request, response);
     return;
   }
 
@@ -126,13 +573,13 @@ async function handleRequest(request, response) {
     return;
   }
 
-  if (request.method === "GET" && STATIC_ROUTES.has(url.pathname)) {
-    await serveStatic(response, STATIC_ROUTES.get(url.pathname));
+  if ((request.method === "GET" || request.method === "HEAD") && STATIC_ROUTES.has(url.pathname)) {
+    await serveStatic(response, STATIC_ROUTES.get(url.pathname), request.method === "HEAD");
     return;
   }
 
-  if (request.method === "GET" && url.pathname.startsWith("/assets/")) {
-    await serveAsset(response, url.pathname);
+  if ((request.method === "GET" || request.method === "HEAD") && url.pathname.startsWith("/assets/")) {
+    await serveAsset(response, url.pathname, request.method === "HEAD");
     return;
   }
 
@@ -149,20 +596,589 @@ async function createLead(request, response) {
     return;
   }
 
+  const now = new Date();
+  const nowIso = now.toISOString();
+  const leads = await readLeads();
+  const duplicate = findDuplicateLead(leads, lead, now);
+
+  if (duplicate) {
+    ensureEnrollmentArtifacts(duplicate);
+    const changes = mergeLeadData(duplicate, lead);
+    duplicate.updatedAt = nowIso;
+    duplicate.lastSubmittedAt = nowIso;
+    duplicate.duplicateCount = Number(duplicate.duplicateCount || 0) + 1;
+    duplicate.timeline = ensureTimeline(duplicate);
+    duplicate.timeline.push({
+      at: nowIso,
+      action: "duplicate-submission",
+      note: changes.length ? `อัปเดตข้อมูล: ${changes.join(", ")}` : "ผู้สมัครส่งฟอร์มซ้ำ",
+    });
+    await writeLeads(leads);
+    await notifyLeadEvent("enrollment.duplicate", duplicate, request, { changes });
+    sendJson(response, 200, { lead: publicLead(duplicate), duplicate: true });
+    return;
+  }
+
   lead.id = createId();
-  lead.status = "new";
-  lead.createdAt = new Date().toISOString();
+  lead.status = "pending-payment";
+  lead.createdAt = nowIso;
   lead.updatedAt = lead.createdAt;
+  lead.lastSubmittedAt = lead.createdAt;
+  lead.duplicateCount = 0;
+  lead.payment = {
+    status: "unpaid",
+    amount: "",
+    reference: "",
+    payerName: "",
+    note: "",
+    submittedAt: "",
+    reviewedAt: "",
+  };
+  lead.access = {
+    code: createAccessCode(),
+    unlockedAt: "",
+  };
   lead.source = {
     ip: request.headers["x-forwarded-for"] || request.socket.remoteAddress || "",
     userAgent: request.headers["user-agent"] || "",
   };
-  lead.timeline = [{ at: lead.createdAt, action: "created", note: lead.note || "" }];
+  lead.timeline = [{ at: lead.createdAt, action: "enrolled", note: lead.note || "" }];
 
-  const leads = await readLeads();
   leads.push(lead);
   await writeLeads(leads);
+  await notifyLeadEvent("enrollment.created", lead, request);
   sendJson(response, 201, { lead: publicLead(lead) });
+}
+
+async function getCurrentAccount(request, response) {
+  const account = await accountFromRequest(request);
+  sendJson(response, 200, {
+    lineConfigured: Boolean(LINE_CHANNEL_ID && LINE_CHANNEL_SECRET),
+    account: account ? publicAccount(account) : null,
+  });
+}
+
+async function updateAccountProfile(request, response) {
+  const account = await accountFromRequest(request);
+  if (!account) {
+    sendJson(response, 401, { error: "กรุณาเข้าสู่ระบบด้วย LINE ก่อน" });
+    return;
+  }
+  const body = await readJsonBody(request);
+  const accounts = await readAccounts();
+  const stored = accounts.find((item) => item.id === account.id);
+  if (!stored) {
+    sendJson(response, 404, { error: "ไม่พบบัญชี" });
+    return;
+  }
+  const role = clean(body.role);
+  if (role && !["student", "parent", "both"].includes(role)) {
+    sendJson(response, 400, { error: "role ไม่ถูกต้อง" });
+    return;
+  }
+  if (role) stored.role = role;
+  stored.phone = clean(body.phone) || stored.phone || "";
+  stored.email = clean(body.email) || stored.email || "";
+  stored.updatedAt = new Date().toISOString();
+  await writeAccounts(accounts);
+  sendJson(response, 200, { account: publicAccount(stored) });
+}
+
+async function saveMyInterest(request, response) {
+  const account = await accountFromRequest(request);
+  if (!account) {
+    sendJson(response, 401, { error: "กรุณาเข้าสู่ระบบด้วย LINE ก่อน" });
+    return;
+  }
+
+  const body = await readJsonBody(request);
+  const packageItem = PACKAGES.find((item) => item.id === clean(body.packageId));
+  if (!packageItem) {
+    sendJson(response, 400, { error: "ไม่พบแพ็กที่เลือก" });
+    return;
+  }
+  if (packageItem.status === "coming_soon") {
+    sendJson(response, 409, { error: "แพ็กนี้ยังไม่เปิดให้ลงชื่อสนใจ" });
+    return;
+  }
+
+  const accounts = await readAccounts();
+  const stored = accounts.find((item) => item.id === account.id);
+  if (!stored) {
+    sendJson(response, 404, { error: "ไม่พบบัญชี" });
+    return;
+  }
+
+  const interest = upsertAccountInterest(stored, packageItem, {
+    source: "learn-page",
+    note: clean(body.note),
+  });
+  await writeAccounts(accounts);
+  sendJson(response, 200, { account: publicAccount(stored), interest: publicInterest(stored, interest) });
+}
+
+async function logoutAccount(request, response) {
+  const session = sessionFromRequest(request);
+  if (session?.id) {
+    const sessions = await readSessions();
+    await writeSessions(sessions.filter((item) => item.id !== session.id));
+  }
+  response.setHeader("Set-Cookie", sessionCookie("", new Date(0)));
+  sendJson(response, 200, { ok: true });
+}
+
+async function startLineLogin(response, url) {
+  if (!LINE_CHANNEL_ID || !LINE_CHANNEL_SECRET) {
+    redirect(response, `/learn?auth=${encodeURIComponent("line-not-configured")}`);
+    return;
+  }
+  const state = crypto.randomBytes(16).toString("hex");
+  const next = safeNextPath(url.searchParams.get("next") || "/learn");
+  const sessions = await readSessions();
+  sessions.push({
+    id: `LINESTATE-${state}`,
+    type: "line-oauth-state",
+    next,
+    createdAt: new Date().toISOString(),
+    expiresAt: addMinutes(new Date(), 10).toISOString(),
+  });
+  await writeSessions(sessions);
+
+  const authUrl = new URL("https://access.line.me/oauth2/v2.1/authorize");
+  authUrl.searchParams.set("response_type", "code");
+  authUrl.searchParams.set("client_id", LINE_CHANNEL_ID);
+  authUrl.searchParams.set("redirect_uri", LINE_CALLBACK_URL);
+  authUrl.searchParams.set("state", state);
+  authUrl.searchParams.set("scope", "profile openid");
+  redirect(response, authUrl.toString());
+}
+
+async function handleLineCallback(url, response) {
+  const code = url.searchParams.get("code") || "";
+  const state = url.searchParams.get("state") || "";
+  if (!code || !state) {
+    redirect(response, "/learn?auth=line-error");
+    return;
+  }
+
+  const sessions = await readSessions();
+  const stateSession = sessions.find((item) => item.id === `LINESTATE-${state}` && item.type === "line-oauth-state");
+  if (!stateSession || Date.parse(stateSession.expiresAt || "") < Date.now()) {
+    redirect(response, "/learn?auth=line-expired");
+    return;
+  }
+
+  const tokenResponse = await fetch("https://api.line.me/oauth2/v2.1/token", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: new URLSearchParams({
+      grant_type: "authorization_code",
+      code,
+      redirect_uri: LINE_CALLBACK_URL,
+      client_id: LINE_CHANNEL_ID,
+      client_secret: LINE_CHANNEL_SECRET,
+    }).toString(),
+  });
+  const tokenData = await tokenResponse.json().catch(() => ({}));
+  if (!tokenResponse.ok || !tokenData.access_token) {
+    redirect(response, "/learn?auth=line-token-error");
+    return;
+  }
+
+  const profileResponse = await fetch("https://api.line.me/v2/profile", {
+    headers: { Authorization: `Bearer ${tokenData.access_token}` },
+  });
+  const profile = await profileResponse.json().catch(() => ({}));
+  if (!profileResponse.ok || !profile.userId) {
+    redirect(response, "/learn?auth=line-profile-error");
+    return;
+  }
+
+  const account = await upsertLineAccount(profile, tokenData);
+  const authSession = {
+    id: `SESSION-${crypto.randomBytes(18).toString("hex")}`,
+    type: "auth",
+    accountId: account.id,
+    createdAt: new Date().toISOString(),
+    expiresAt: addDays(new Date(), 30).toISOString(),
+  };
+  const nextSessions = sessions.filter((item) => item.id !== stateSession.id && Date.parse(item.expiresAt || "") > Date.now());
+  nextSessions.push(authSession);
+  await writeSessions(nextSessions);
+
+  response.setHeader("Set-Cookie", sessionCookie(authSession.id, new Date(authSession.expiresAt)));
+  redirect(response, stateSession.next || "/learn");
+}
+
+async function getMyEnrollments(request, response) {
+  const account = await accountFromRequest(request);
+  if (!account) {
+    sendJson(response, 401, { error: "กรุณาเข้าสู่ระบบด้วย LINE ก่อน" });
+    return;
+  }
+  const leads = await readLeads();
+  const mine = sortLeads(leads).filter((lead) => lead.accountId === account.id || lead.payerAccountId === account.id);
+  sendJson(response, 200, {
+    account: publicAccount(account),
+    enrollments: mine.map((lead) => ({
+      ...publicLead(lead),
+      lessons: isAccessActive(lead) ? lessonsForCourse(lead.course) : [],
+    })),
+  });
+}
+
+async function createOrder(request, response) {
+  const body = await readJsonBody(request);
+  const account = await accountFromRequest(request);
+  const packageItem = PACKAGES.find((item) => item.id === clean(body.packageId));
+  if (!packageItem) {
+    sendJson(response, 400, { error: "ไม่พบแพ็กที่เลือก" });
+    return;
+  }
+
+  const lead = normalizeLead({ ...body, course: packageItem.name, ageGroup: body.ageGroup || packageItem.level });
+  const errors = validateLead(lead);
+  if (errors.length) {
+    sendJson(response, 400, { error: errors.join(", ") });
+    return;
+  }
+
+  let enrollment;
+  let order;
+  let paymentSession;
+
+  await withJsonFileLock([LEADS_FILE, ORDERS_FILE], async () => {
+    const now = new Date();
+    const nowIso = now.toISOString();
+    const leads = await readLeads();
+    const orders = await readOrders();
+    const duplicate = findDuplicateLead(leads, lead, now);
+    enrollment = duplicate || {
+      ...lead,
+      id: createId(),
+      createdAt: nowIso,
+      duplicateCount: 0,
+      source: {
+        ip: request.headers["x-forwarded-for"] || request.socket.remoteAddress || "",
+        userAgent: request.headers["user-agent"] || "",
+      },
+      timeline: [{ at: nowIso, action: "enrolled", note: packageItem.name }],
+    };
+
+    ensureEnrollmentArtifacts(enrollment);
+    enrollment.accountId = account?.id || enrollment.accountId || "";
+    enrollment.applicantRole = clean(body.applicantRole) || account?.role || enrollment.applicantRole || "student";
+    enrollment.payerType = clean(body.payerType) || enrollment.payerType || "self";
+    enrollment.payerAccountId = enrollment.payerType === "self" ? account?.id || enrollment.payerAccountId || "" : enrollment.payerAccountId || "";
+    enrollment.status = enrollment.status === "paid" ? "paid" : "pending-payment";
+    enrollment.course = packageItem.name;
+    enrollment.email = lead.email;
+    enrollment.phone = lead.phone;
+    enrollment.lineId = lead.lineId;
+    enrollment.ageGroup = lead.ageGroup;
+    enrollment.preferredSchedule = lead.preferredSchedule;
+    enrollment.note = lead.note;
+    enrollment.updatedAt = nowIso;
+    enrollment.lastSubmittedAt = nowIso;
+
+    if (duplicate) {
+      duplicate.duplicateCount = Number(duplicate.duplicateCount || 0) + 1;
+      duplicate.timeline = ensureTimeline(duplicate);
+      duplicate.timeline.push({ at: nowIso, action: "order-created-repeat", note: packageItem.name });
+    } else {
+      leads.push(enrollment);
+    }
+
+    order = {
+      id: createOrderId(),
+      enrollmentId: enrollment.id,
+      packageId: packageItem.id,
+      packageName: packageItem.name,
+      durationDays: packageItem.durationDays,
+      amount: packageItem.price,
+      currency: "THB",
+      status: "pending",
+      provider: PAYMENT_PROVIDER || "unconfigured",
+      providerReference: "",
+      providerPaymentId: "",
+      providerStatus: "",
+      paymentUrl: "",
+      qrImageUrl: "",
+      qrPayload: "",
+      applicantRole: enrollment.applicantRole,
+      payerType: enrollment.payerType,
+      paymentLink: "",
+      createdAt: nowIso,
+      updatedAt: nowIso,
+      paidAt: "",
+      expiresAt: addMinutes(now, 30).toISOString(),
+    };
+
+    paymentSession = await createPaymentSession(order, enrollment);
+    order.paymentLink = `${SITE_ORIGIN}/pay?order=${encodeURIComponent(order.id)}`;
+    order.provider = paymentSession.provider || order.provider;
+    order.providerReference = paymentSession.providerReference || "";
+    order.providerPaymentId = paymentSession.providerPaymentId || "";
+    order.providerStatus = paymentSession.providerStatus || paymentSession.status || "";
+    order.paymentUrl = paymentSession.paymentUrl || "";
+    order.qrImageUrl = paymentSession.qrImageUrl || "";
+    order.qrPayload = paymentSession.qrPayload || "";
+    order.paymentStatusMessage = paymentSession.message || "";
+    orders.push(order);
+
+    await writeLeadsUnlocked(leads);
+    await writeOrdersUnlocked(orders);
+  });
+  await notifyLeadEvent("order.created", enrollment, request, { order: publicOrder(order), paymentSession });
+  sendJson(response, 201, { enrollment: publicLead(enrollment), order: publicOrder(order), payment: paymentSession });
+}
+
+async function createOrderFromInterest(accountId, packageId, request, response) {
+  const decodedAccountId = decodeURIComponent(accountId);
+  const decodedPackageId = decodeURIComponent(packageId);
+  const packageItem = PACKAGES.find((item) => item.id === decodedPackageId);
+  if (!packageItem) {
+    sendJson(response, 400, { error: "ไม่พบแพ็กที่เลือก" });
+    return;
+  }
+
+  let account;
+  let enrollment;
+  let order;
+  let paymentSession = null;
+  let storedInterest;
+
+  await withJsonFileLock([ACCOUNTS_FILE, LEADS_FILE, ORDERS_FILE], async () => {
+    const accounts = await readAccounts();
+    account = accounts.find((item) => item.id === decodedAccountId);
+    if (!account) {
+      throw new HttpError(404, "ไม่พบบัญชี LINE");
+    }
+
+    const interest = accountInterestList(account).find((item) => item.packageId === packageItem.id);
+    if (!interest) {
+      throw new HttpError(404, "บัญชีนี้ยังไม่ได้ลงชื่อสนใจแพ็กนี้");
+    }
+
+    const now = new Date();
+    const nowIso = now.toISOString();
+    const leads = await readLeads();
+    const orders = await readOrders();
+    enrollment = leads.find((lead) => {
+      return (
+        lead.accountId === account.id &&
+        lead.course === packageItem.name &&
+        !["archived", "not-fit"].includes(lead.status)
+      );
+    });
+
+    if (!enrollment) {
+      enrollment = {
+        id: createId(),
+        name: account.displayName || "บัญชี LINE",
+        phone: account.phone || "",
+        email: account.email || "",
+        lineId: account.displayName || "",
+        ageGroup: packageItem.level,
+        course: packageItem.name,
+        preferredSchedule: "",
+        note: "ลงชื่อสนใจผ่าน LINE",
+        status: "pending-payment",
+        accountId: account.id,
+        payerAccountId: account.id,
+        applicantRole: account.role || "student",
+        payerType: "self",
+        createdAt: nowIso,
+        updatedAt: nowIso,
+        lastSubmittedAt: nowIso,
+        duplicateCount: 0,
+        source: {
+          ip: request.headers["x-forwarded-for"] || request.socket.remoteAddress || "",
+          userAgent: request.headers["user-agent"] || "",
+        },
+        timeline: [{ at: nowIso, action: "interest-order-ready", note: packageItem.name }],
+      };
+      ensureEnrollmentArtifacts(enrollment);
+      leads.push(enrollment);
+    } else {
+      ensureEnrollmentArtifacts(enrollment);
+      enrollment.updatedAt = nowIso;
+      enrollment.accountId = enrollment.accountId || account.id;
+      enrollment.payerAccountId = enrollment.payerAccountId || account.id;
+      enrollment.applicantRole = enrollment.applicantRole || account.role || "student";
+      enrollment.payerType = enrollment.payerType || "self";
+      enrollment.timeline = ensureTimeline(enrollment);
+      enrollment.timeline.push({ at: nowIso, action: "interest-order-ready", note: packageItem.name });
+    }
+
+    order = [...orders]
+      .reverse()
+      .find((item) => item.enrollmentId === enrollment.id && item.packageId === packageItem.id && item.status !== "paid");
+
+    if (!order) {
+      order = buildPendingOrder(enrollment, packageItem, now);
+      paymentSession = await createPaymentSession(order, enrollment);
+      applyPaymentSession(order, paymentSession);
+      orders.push(order);
+    }
+
+    storedInterest = upsertAccountInterest(account, packageItem, {
+      source: "admin-order",
+      note: interest.note || "",
+    });
+    storedInterest.lastOrderId = order.id;
+    storedInterest.status = order.status === "paid" ? "paid" : "payment_ready";
+    storedInterest.updatedAt = nowIso;
+    account.updatedAt = nowIso;
+
+    await writeAccountsUnlocked(accounts);
+    await writeLeadsUnlocked(leads);
+    await writeOrdersUnlocked(orders);
+  });
+  await notifyLeadEvent("interest.payment_ready", enrollment, request, { order: publicOrder(order), paymentSession });
+  sendJson(response, 201, {
+    interest: publicInterest(account, storedInterest),
+    enrollment: publicLead(enrollment),
+    order: publicOrder(order),
+    payment: paymentSession,
+  });
+}
+
+function buildPendingOrder(enrollment, packageItem, now = new Date()) {
+  const nowIso = now.toISOString();
+  return {
+    id: createOrderId(),
+    enrollmentId: enrollment.id,
+    packageId: packageItem.id,
+    packageName: packageItem.name,
+    durationDays: packageItem.durationDays,
+    amount: packageItem.price,
+    currency: "THB",
+    status: "pending",
+    provider: PAYMENT_PROVIDER || "unconfigured",
+    providerReference: "",
+    providerPaymentId: "",
+    providerStatus: "",
+    paymentUrl: "",
+    qrImageUrl: "",
+    qrPayload: "",
+    applicantRole: enrollment.applicantRole || "student",
+    payerType: enrollment.payerType || "self",
+    paymentLink: "",
+    createdAt: nowIso,
+    updatedAt: nowIso,
+    paidAt: "",
+    expiresAt: addMinutes(now, 30).toISOString(),
+  };
+}
+
+function applyPaymentSession(order, paymentSession = {}) {
+  order.paymentLink = `${SITE_ORIGIN}/pay?order=${encodeURIComponent(order.id)}`;
+  order.provider = paymentSession.provider || order.provider;
+  order.providerReference = paymentSession.providerReference || "";
+  order.providerPaymentId = paymentSession.providerPaymentId || "";
+  order.providerStatus = paymentSession.providerStatus || paymentSession.status || "";
+  order.paymentUrl = paymentSession.paymentUrl || "";
+  order.qrImageUrl = paymentSession.qrImageUrl || "";
+  order.qrPayload = paymentSession.qrPayload || "";
+  order.paymentStatusMessage = paymentSession.message || "";
+  order.updatedAt = new Date().toISOString();
+  return order;
+}
+
+async function getOrder(id, request, response) {
+  const url = new URL(request.url, `http://${request.headers.host || "localhost"}`);
+  const orders = await readOrders();
+  const order = orders.find((item) => item.id === decodeURIComponent(id));
+  if (!order) {
+    sendJson(response, 404, { error: "ไม่พบรายการสมัคร" });
+    return;
+  }
+  const leads = await readLeads();
+  const enrollment = leads.find((lead) => lead.id === order.enrollmentId);
+  const phone = normalizePhone(url.searchParams.get("phone"));
+  if (enrollment && phone && phone !== normalizePhone(enrollment.phone)) {
+    sendJson(response, 403, { error: "เบอร์โทรไม่ตรงกับรายการสมัคร" });
+    return;
+  }
+  sendJson(response, 200, { order: publicOrder(order), enrollment: enrollment ? publicLead(enrollment) : null });
+}
+
+async function handlePaymentWebhook(request, response) {
+  const rawBody = await readRawBody(request);
+  if (!verifyPaymentSignature(request, rawBody)) {
+    sendJson(response, 401, { error: "Invalid webhook signature" });
+    return;
+  }
+
+  let payload;
+  try {
+    payload = JSON.parse(rawBody || "{}");
+  } catch {
+    throw new HttpError(400, "Invalid JSON");
+  }
+
+  const paymentEvent = paymentEventFromPayload(payload);
+  const paid = isPaidPaymentEvent(paymentEvent);
+  let webhookResult = null;
+  let paidLead = null;
+  let paidOrder = null;
+
+  await withJsonFileLock([LEADS_FILE, ORDERS_FILE], async () => {
+    const now = new Date();
+    const leads = await readLeads();
+    const orders = await readOrders();
+    const order = orders.find((item) => {
+      return (
+        item.id === paymentEvent.reference ||
+        (paymentEvent.providerReference && item.providerReference === paymentEvent.providerReference) ||
+        (paymentEvent.paymentRequestId && item.providerReference === paymentEvent.paymentRequestId) ||
+        (paymentEvent.providerReference && item.providerPaymentId === paymentEvent.providerReference) ||
+        (paymentEvent.providerPaymentId && item.providerPaymentId === paymentEvent.providerPaymentId)
+      );
+    });
+    if (!order) {
+      throw new HttpError(404, "Order not found");
+    }
+    order.lastWebhook = { ...paymentEvent, receivedAt: now.toISOString() };
+    order.providerStatus = paymentEvent.status || order.providerStatus || "";
+
+    if (!paid) {
+      order.updatedAt = now.toISOString();
+      await writeOrdersUnlocked(orders);
+      webhookResult = { status: 202, payload: { ok: true, ignored: true, status: paymentEvent.status } };
+      return;
+    }
+    if (order.status === "paid") {
+      await writeOrdersUnlocked(orders);
+      webhookResult = { status: 200, payload: { ok: true, duplicate: true, order: publicOrder(order) } };
+      return;
+    }
+    if (Number(order.amount) !== Number(paymentEvent.paidAmount)) {
+      order.status = "amount-mismatch";
+      order.updatedAt = now.toISOString();
+      await writeOrdersUnlocked(orders);
+      webhookResult = { status: 422, payload: { error: "Amount mismatch" } };
+      return;
+    }
+
+    const lead = leads.find((item) => item.id === order.enrollmentId);
+    if (!lead) {
+      throw new HttpError(404, "Enrollment not found");
+    }
+
+    markOrderPaid(order, lead, now, paymentEvent);
+    await writeOrdersUnlocked(orders);
+    await writeLeadsUnlocked(leads);
+    paidLead = lead;
+    paidOrder = publicOrder(order);
+    webhookResult = { status: 200, payload: { ok: true, order: paidOrder, enrollment: publicLead(lead) } };
+  });
+
+  if (paidLead) {
+    await notifyLeadEvent("order.paid", paidLead, request, { order: paidOrder });
+  }
+  sendJson(response, webhookResult.status, webhookResult.payload);
 }
 
 async function updateLead(id, request, response) {
@@ -175,6 +1191,8 @@ async function updateLead(id, request, response) {
     return;
   }
 
+  lead.timeline = ensureTimeline(lead);
+  ensureEnrollmentArtifacts(lead);
   const now = new Date().toISOString();
   const nextStatus = String(body.status || lead.status).trim();
   if (!VALID_STATUSES.has(nextStatus)) {
@@ -185,6 +1203,7 @@ async function updateLead(id, request, response) {
   if (lead.status !== nextStatus) {
     lead.timeline.push({ at: now, action: "status", from: lead.status, to: nextStatus });
     lead.status = nextStatus;
+    syncEnrollmentStatus(lead, nextStatus, now);
   }
 
   const note = String(body.note || "").trim();
@@ -195,13 +1214,203 @@ async function updateLead(id, request, response) {
 
   lead.updatedAt = now;
   await writeLeads(leads);
+  await notifyLeadEvent("enrollment.updated", lead, request);
   sendJson(response, 200, { lead });
+}
+
+async function submitPayment(id, request, response) {
+  const body = await readJsonBody(request);
+  let paymentResult;
+  let notifyEvent = "";
+  let notifyLead = null;
+  let notifyExtra = null;
+
+  await withJsonFileLock([LEADS_FILE], async () => {
+    const leads = await readLeads();
+    const lead = leads.find((item) => item.id === decodeURIComponent(id));
+
+    if (!lead) {
+      throw new HttpError(404, "ไม่พบเลขสมัครนี้");
+    }
+
+    const phone = normalizePhone(body.phone);
+    if (!phone || phone !== normalizePhone(lead.phone)) {
+      throw new HttpError(403, "เบอร์โทรไม่ตรงกับรายการเรียน");
+    }
+
+    const slipImageBase64 = String(body.slipImageBase64 || "");
+    const slipPayload = String(body.slipPayload || "").trim();
+    const paymentNote = clean(body.paymentNote);
+    if (!slipImageBase64 && !slipPayload) {
+      throw new HttpError(400, "กรุณาแนบรูปสลิปหรือส่ง QR payload จากสลิป");
+    }
+
+    const now = new Date().toISOString();
+    ensureEnrollmentArtifacts(lead);
+    const expectedAmount = expectedAmountForCourse(lead.course);
+    const verification = await verifyThaiBankSlip({
+      base64: slipImageBase64,
+      payload: slipPayload,
+      enrollmentId: lead.id,
+      expectedAmount,
+    });
+
+    if (!verification.ok) {
+      lead.status = "payment-rejected";
+      lead.payment = {
+        ...lead.payment,
+        status: "rejected",
+        amount: clean(body.amount),
+        reference: "",
+        payerName: clean(body.payerName),
+        paidAt: "",
+        note: verification.message || paymentNote,
+        submittedAt: now,
+        reviewedAt: now,
+        verification,
+      };
+      lead.updatedAt = now;
+      lead.timeline = ensureTimeline(lead);
+      lead.timeline.push({ at: now, action: "payment-rejected", note: verification.message });
+      await writeLeadsUnlocked(leads);
+      notifyEvent = "payment.rejected";
+      notifyLead = lead;
+      notifyExtra = { verification };
+      paymentResult = { status: 422, payload: { error: verification.message || "ตรวจสลิปไม่ผ่าน", lead: publicLead(lead) } };
+      return;
+    }
+
+    lead.status = "paid";
+    const expiresAt = addDays(new Date(now), ACCESS_DAYS).toISOString();
+    lead.payment = {
+      ...lead.payment,
+      status: "approved",
+      amount: String(verification.amount || expectedAmount || clean(body.amount) || ""),
+      reference: verification.transRef || "",
+      payerName: clean(body.payerName),
+      paidAt: verification.paidAt || "",
+      note: paymentNote,
+      submittedAt: now,
+      reviewedAt: now,
+      verification,
+    };
+    lead.access.unlockedAt = now;
+    lead.access.expiresAt = expiresAt;
+    lead.entitlement = {
+      orderId: "",
+      packageId: "",
+      packageName: lead.course,
+      startsAt: now,
+      expiresAt,
+      status: "active",
+    };
+    lead.updatedAt = now;
+    lead.timeline = ensureTimeline(lead);
+    lead.timeline.push({
+      at: now,
+      action: "payment-verified",
+      note: `ตรวจสลิปผ่าน${verification.transRef ? `: ${verification.transRef}` : ""}`,
+    });
+    lead.timeline.push({ at: now, action: "content-unlocked", note: "เปิดบทเรียนอัตโนมัติ" });
+
+    await writeLeadsUnlocked(leads);
+    notifyEvent = "payment.verified";
+    notifyLead = lead;
+    notifyExtra = { verification };
+    paymentResult = { status: 200, payload: { lead: publicLead(lead), unlocked: true, lessons: lessonsForCourse(lead.course) } };
+  });
+
+  if (notifyEvent && notifyLead) {
+    await notifyLeadEvent(notifyEvent, notifyLead, request, notifyExtra);
+  }
+  sendJson(response, paymentResult.status, paymentResult.payload);
+}
+
+async function unlockContent(request, response) {
+  const body = await readJsonBody(request);
+  const enrollmentId = clean(body.enrollmentId).toUpperCase();
+  const phone = normalizePhone(body.phone);
+  const accessCode = clean(body.accessCode).toUpperCase();
+  const leads = await readLeads();
+  const lead = leads.find((item) => String(item.id || "").toUpperCase() === enrollmentId);
+
+  if (!lead) {
+    sendJson(response, 404, { error: "ไม่พบเลขสมัครนี้" });
+    return;
+  }
+
+  ensureEnrollmentArtifacts(lead);
+  if (!phone || phone !== normalizePhone(lead.phone) || accessCode !== String(lead.access.code || "").toUpperCase()) {
+    sendJson(response, 403, { error: "ข้อมูลเข้าเรียนไม่ถูกต้อง" });
+    return;
+  }
+
+  if (!isAccessActive(lead)) {
+    sendJson(response, 403, {
+      unlocked: false,
+      status: lead.status,
+      paymentStatus: lead.payment?.status || "unpaid",
+      expiresAt: lead.access?.expiresAt || "",
+      message: accessPendingMessage(lead.status),
+    });
+    return;
+  }
+
+  sendJson(response, 200, {
+    unlocked: true,
+    enrollment: {
+      id: lead.id,
+      name: lead.name,
+      course: lead.course,
+      unlockedAt: lead.access.unlockedAt,
+      expiresAt: lead.access.expiresAt,
+    },
+    lessons: lessonsForCourse(lead.course),
+  });
+}
+
+async function runAutomation(request, response) {
+  const leads = await readLeads();
+  const now = new Date();
+  const nowIso = now.toISOString();
+  const dueLeads = [];
+
+  for (const lead of leads) {
+    lead.timeline = ensureTimeline(lead);
+    if (!lead.automation) {
+      lead.automation = nextAutomationPlan(lead, now, "backfill");
+    }
+    if (!isAutomationDue(lead, now)) continue;
+
+    const lastReminderDate = String(lead.automation.lastReminderAt || "").slice(0, 10);
+    const today = nowIso.slice(0, 10);
+    if (lastReminderDate === today) continue;
+
+    lead.automation.lastReminderAt = nowIso;
+    lead.updatedAt = nowIso;
+    lead.timeline.push({
+      at: nowIso,
+      action: "automation-reminder",
+      note: lead.automation.nextAction,
+    });
+    dueLeads.push(lead);
+  }
+
+  if (dueLeads.length) {
+    await writeLeads(leads);
+    for (const lead of dueLeads) {
+      await notifyLeadEvent("lead.followup_due", lead, request);
+    }
+  }
+
+  sendJson(response, 200, { ok: true, notified: dueLeads.length, due: dueLeads.map(adminLead) });
 }
 
 function normalizeLead(body) {
   return {
     name: clean(body.name),
     phone: clean(body.phone),
+    email: clean(body.email),
     lineId: clean(body.lineId),
     ageGroup: clean(body.ageGroup),
     course: clean(body.course),
@@ -210,13 +1419,28 @@ function normalizeLead(body) {
   };
 }
 
+function mergeLeadData(existing, incoming) {
+  const fields = ["name", "phone", "email", "lineId", "ageGroup", "course", "preferredSchedule", "note"];
+  const changes = [];
+  for (const field of fields) {
+    if (!incoming[field] || incoming[field] === existing[field]) continue;
+    if (existing[field]) {
+      changes.push(field);
+    }
+    existing[field] = incoming[field];
+  }
+  return changes;
+}
+
 function validateLead(lead) {
   const errors = [];
   if (!lead.name) errors.push("กรุณากรอกชื่อ");
   if (!lead.phone) errors.push("กรุณากรอกเบอร์โทร");
+  if (!lead.email) errors.push("กรุณากรอกอีเมล");
   if (!lead.course) errors.push("กรุณาเลือกหลักสูตร");
   if (lead.name.length > 120) errors.push("ชื่อยาวเกินไป");
   if (lead.phone.length > 40) errors.push("เบอร์โทรยาวเกินไป");
+  if (lead.email.length > 160) errors.push("อีเมลยาวเกินไป");
   return errors;
 }
 
@@ -224,34 +1448,1094 @@ function clean(value) {
   return String(value || "").trim().slice(0, 1000);
 }
 
+function parseJsonEnv(name, fallback) {
+  if (!process.env[name]) return fallback;
+  try {
+    return JSON.parse(process.env[name]);
+  } catch {
+    console.warn(`${name} is not valid JSON`);
+    return fallback;
+  }
+}
+
+function findDuplicateLead(leads, lead, now) {
+  const phone = normalizePhone(lead.phone);
+  const lineId = normalizeKey(lead.lineId);
+  const minCreatedAt = now.getTime() - DUPLICATE_WINDOW_DAYS * 24 * 60 * 60 * 1000;
+
+  return sortLeads(leads).find((item) => {
+    if (["archived", "not-fit"].includes(item.status)) return false;
+    const createdAt = Date.parse(item.createdAt || "");
+    if (Number.isFinite(createdAt) && createdAt < minCreatedAt) return false;
+    return (phone && normalizePhone(item.phone) === phone) || (lineId && normalizeKey(item.lineId) === lineId);
+  });
+}
+
+function normalizePhone(value) {
+  return String(value || "").replace(/[^\d+]/g, "");
+}
+
+function normalizeKey(value) {
+  return String(value || "").trim().toLowerCase();
+}
+
+function ensureTimeline(lead) {
+  if (Array.isArray(lead.timeline)) return lead.timeline;
+  lead.timeline = [];
+  return lead.timeline;
+}
+
+function ensureEnrollmentArtifacts(lead) {
+  if (!lead.payment) {
+    lead.payment = {
+      status: lead.status === "paid" ? "approved" : "unpaid",
+      amount: "",
+      reference: "",
+      payerName: "",
+      note: "",
+      submittedAt: "",
+      reviewedAt: "",
+    };
+  }
+  if (!lead.access) {
+    lead.access = {
+      code: createAccessCode(),
+      unlockedAt: lead.status === "paid" ? lead.updatedAt || lead.createdAt || "" : "",
+      expiresAt: lead.status === "paid" ? addDays(new Date(lead.updatedAt || lead.createdAt || Date.now()), ACCESS_DAYS).toISOString() : "",
+    };
+  }
+  if (!lead.access.code) lead.access.code = createAccessCode();
+  if (!("expiresAt" in lead.access)) lead.access.expiresAt = "";
+  return lead;
+}
+
+function syncEnrollmentStatus(lead, status, now) {
+  ensureEnrollmentArtifacts(lead);
+  if (status === "paid") {
+    lead.payment.status = "approved";
+    lead.payment.reviewedAt = now;
+    lead.access.unlockedAt = lead.access.unlockedAt || now;
+    lead.access.expiresAt = lead.access.expiresAt || addDays(new Date(now), ACCESS_DAYS).toISOString();
+    lead.timeline.push({ at: now, action: "content-unlocked", note: "อนุมัติชำระเงินและเปิดบทเรียน" });
+    return;
+  }
+  if (status === "payment-review") {
+    lead.payment.status = lead.payment.status === "approved" ? "approved" : "review";
+    return;
+  }
+  if (status === "payment-rejected") {
+    lead.payment.status = "rejected";
+    lead.payment.reviewedAt = now;
+    lead.access.unlockedAt = "";
+    lead.access.expiresAt = "";
+    return;
+  }
+  if (status === "pending-payment") {
+    lead.payment.status = "unpaid";
+    lead.access.unlockedAt = "";
+    lead.access.expiresAt = "";
+  }
+}
+
+function accessPendingMessage(status) {
+  if (status === "payment-review") return "ได้รับแจ้งชำระแล้ว รอตรวจสอบ";
+  if (status === "payment-rejected") return "การชำระยังไม่ผ่าน กรุณาส่งข้อมูลใหม่";
+  return "ยังรอชำระเงิน";
+}
+
+function expectedAmountForCourse(course) {
+  const value = COURSE_PRICES[course] ?? COURSE_PRICES.default ?? DEFAULT_COURSE_PRICE;
+  const amount = Number(value || 0);
+  return Number.isFinite(amount) && amount > 0 ? amount : 0;
+}
+
+async function verifyThaiBankSlip({ base64, payload, enrollmentId, expectedAmount }) {
+  if (!EASYSLIP_API_KEY) {
+    return {
+      ok: false,
+      provider: "easyslip",
+      code: "SLIP_API_NOT_CONFIGURED",
+      message: "ยังไม่ได้ตั้งค่า EASYSLIP_API_KEY สำหรับตรวจสลิปอัตโนมัติ",
+    };
+  }
+
+  const requestBody = {
+    checkDuplicate: true,
+    remark: enrollmentId,
+  };
+  if (base64) requestBody.base64 = base64;
+  if (payload) requestBody.payload = payload;
+  if (expectedAmount) requestBody.matchAmount = expectedAmount;
+  if (EASYSLIP_MATCH_ACCOUNT) requestBody.matchAccount = true;
+
+  try {
+    const verificationResponse = await fetch(EASYSLIP_VERIFY_URL, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${EASYSLIP_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(requestBody),
+    });
+    const result = await verificationResponse.json().catch(() => ({}));
+
+    if (!verificationResponse.ok || !result.success) {
+      return {
+        ok: false,
+        provider: "easyslip",
+        status: verificationResponse.status,
+        code: result.error?.code || "SLIP_VERIFY_FAILED",
+        message: result.error?.message || "ตรวจสลิปไม่ผ่าน",
+      };
+    }
+
+    const data = result.data || {};
+    const amount = slipAmount(data);
+    if (data.isDuplicate) {
+      return {
+        ok: false,
+        provider: "easyslip",
+        code: "DUPLICATE_SLIP",
+        message: "สลิปนี้เคยถูกใช้แล้ว",
+        transRef: slipTransRef(data),
+        amount,
+      };
+    }
+    if (expectedAmount && Math.abs(Number(amount || 0) - expectedAmount) > 0.01) {
+      return {
+        ok: false,
+        provider: "easyslip",
+        code: "AMOUNT_NOT_MATCHED",
+        message: `ยอดโอนในสลิปไม่ตรงกับยอดหลักสูตร (${expectedAmount} บาท)`,
+        transRef: slipTransRef(data),
+        amount,
+      };
+    }
+
+    return {
+      ok: true,
+      provider: "easyslip",
+      transRef: slipTransRef(data),
+      amount,
+      paidAt: data.rawSlip?.date || "",
+      isDuplicate: Boolean(data.isDuplicate),
+      isAmountMatched: expectedAmount ? amount === expectedAmount || data.isAmountMatched === true : undefined,
+      receiver: data.rawSlip?.receiver?.account?.name?.th || data.rawSlip?.receiver?.account?.name?.en || "",
+      sender: data.rawSlip?.sender?.account?.name?.th || data.rawSlip?.sender?.account?.name?.en || "",
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      provider: "easyslip",
+      code: "SLIP_VERIFY_ERROR",
+      message: error.message || "ระบบตรวจสลิปขัดข้อง",
+    };
+  }
+}
+
+function slipAmount(data) {
+  return Number(data.amountInSlip ?? data.rawSlip?.amount?.amount ?? data.amount?.amount ?? 0);
+}
+
+function slipTransRef(data) {
+  return data.rawSlip?.transRef || data.transRef || "";
+}
+
+function lessonsForCourse(course) {
+  const legacyCourseNames = {
+    คณิตรายเดือน: "คณิต ป.1-ป.6",
+    วิทย์รายเดือน: "วิทย์ ป.1-ป.6",
+    อังกฤษรายเดือน: "อังกฤษ ป.1-ป.6",
+    ภาษาไทยรายเดือน: "ภาษาไทย ป.1-ป.6",
+  };
+  return COURSE_CONTENT[course] || COURSE_CONTENT[legacyCourseNames[course]] || COURSE_CONTENT["คณิต ป.1-ป.6"];
+}
+
+function nextAutomationPlan(lead, now = new Date(), reason = "workflow") {
+  const workflow = WORKFLOWS[lead.status] || WORKFLOWS.new;
+  const existing = lead.automation || {};
+  const nextFollowUpAt = workflow.days === null ? "" : addDays(now, workflow.days).toISOString();
+
+  return {
+    owner: existing.owner || DEFAULT_OWNER,
+    priority: leadPriority(lead),
+    nextAction: workflow.action,
+    nextFollowUpAt,
+    lastReminderAt: existing.lastReminderAt || "",
+    reason,
+    updatedAt: now.toISOString(),
+  };
+}
+
+function addDays(date, days) {
+  const next = new Date(date);
+  next.setDate(next.getDate() + days);
+  return next;
+}
+
+function addMinutes(date, minutes) {
+  const next = new Date(date);
+  next.setMinutes(next.getMinutes() + minutes);
+  return next;
+}
+
+function createOrderId() {
+  const date = new Date().toISOString().slice(0, 10).replaceAll("-", "");
+  return `ORDER-${date}-${crypto.randomBytes(4).toString("hex").toUpperCase()}`;
+}
+
+async function createPaymentSession(order, enrollment) {
+  if (!PAYMENT_PROVIDER || !PAYMENT_PROVIDER_API_KEY) {
+    return {
+      provider: PAYMENT_PROVIDER || "unconfigured",
+      status: "provider_not_configured",
+      message: "ระบบชำระเงินอยู่ระหว่างเตรียมเปิดใช้งาน รายการนี้ถูกบันทึกไว้แล้ว",
+      checkoutUrl: `${SITE_ORIGIN}/#apply`,
+    };
+  }
+
+  if (normalizeKey(PAYMENT_PROVIDER) === "xendit") {
+    return createXenditPaymentRequest(order, enrollment);
+  }
+
+  if (normalizeKey(PAYMENT_PROVIDER) === "kbank") {
+    return createKbankQrPaymentRequest(order, enrollment);
+  }
+
+  return {
+    provider: PAYMENT_PROVIDER,
+    status: "adapter_ready",
+    message: "ระบบชำระเงินถูกตั้งค่าแล้ว แต่ยังไม่ได้เปิดใช้งานกับเว็บนี้",
+    checkoutUrl: `${SITE_ORIGIN}/#apply`,
+  };
+}
+
+async function createKbankQrPaymentRequest(order, enrollment) {
+  if (!KBANK_QR_CREATE_URL || !KBANK_MERCHANT_ID) {
+    return {
+      provider: "kbank",
+      status: "provider_not_configured",
+      providerStatus: "missing_kbank_config",
+      message: "ระบบชำระเงินอัตโนมัติยังไม่พร้อมใช้งาน",
+      checkoutUrl: `${SITE_ORIGIN}/#apply`,
+    };
+  }
+
+  const payload = {
+    merchantId: KBANK_MERCHANT_ID,
+    terminalId: KBANK_TERMINAL_ID,
+    branchId: KBANK_BRANCH_ID,
+    partnerTxnUid: order.id,
+    partnerId: "101future",
+    requestDt: new Date().toISOString(),
+    txnAmount: Number(order.amount).toFixed(2),
+    txnCurrencyCode: "THB",
+    reference1: order.id,
+    reference2: order.enrollmentId,
+    reference3: order.packageId,
+    description: `${order.packageName} (${order.id})`.slice(0, 140),
+    expiryDt: order.expiresAt,
+    metadata: {
+      orderId: order.id,
+      enrollmentId: order.enrollmentId,
+      packageId: order.packageId,
+      studentName: clean(enrollment?.name).slice(0, 120),
+    },
+  };
+
+  try {
+    const providerResponse = await fetch(KBANK_QR_CREATE_URL, {
+      method: "POST",
+      headers: {
+        [KBANK_API_KEY_HEADER]: PAYMENT_PROVIDER_API_KEY,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+    const text = await providerResponse.text();
+    const data = parseJsonText(text);
+
+    if (!providerResponse.ok) {
+      return {
+        provider: "kbank",
+        status: "provider_error",
+        providerStatus: "provider_error",
+        message: kbankErrorMessage(data, text, providerResponse.status),
+        checkoutUrl: `${SITE_ORIGIN}/#apply`,
+      };
+    }
+
+    const qrPayload = clean(
+      data.qrPayload ||
+        data.qrCode ||
+        data.qr_code ||
+        data.qr ||
+        data.rawQr ||
+        data.data?.qrPayload ||
+        data.data?.qrCode ||
+        data.data?.qr_code,
+    );
+    const qrImageUrl =
+      clean(data.qrImageUrl || data.qr_image_url || data.data?.qrImageUrl || data.data?.qr_image_url) ||
+      (qrPayload ? await QRCode.toDataURL(qrPayload, { width: 320, margin: 2 }) : "");
+    const providerReference = clean(
+      data.partnerTxnUid ||
+        data.transactionId ||
+        data.txnId ||
+        data.qrId ||
+        data.data?.partnerTxnUid ||
+        data.data?.transactionId ||
+        data.data?.txnId ||
+        data.data?.qrId ||
+        order.id,
+    );
+
+    return {
+      provider: "kbank",
+      status: "created",
+      providerStatus: clean(data.status || data.respCode || data.data?.status || "created"),
+      providerReference,
+      providerPaymentId: clean(data.transactionId || data.txnId || data.data?.transactionId || data.data?.txnId),
+      paymentUrl: "",
+      qrImageUrl,
+      qrPayload,
+      checkoutUrl: `${SITE_ORIGIN}/#apply`,
+      message: qrPayload || qrImageUrl
+        ? "สแกน Thai QR เพื่อชำระเงิน เมื่อธนาคารยืนยันยอดถูกต้องระบบจะเปิดบทเรียนให้อัตโนมัติ"
+        : "สร้างรายการชำระเงินแล้ว แต่ยังไม่พบข้อมูล QR จากระบบธนาคาร",
+    };
+  } catch (error) {
+    return {
+      provider: "kbank",
+      status: "provider_error",
+      providerStatus: "provider_error",
+      message: "เชื่อมต่อระบบชำระเงินอัตโนมัติไม่สำเร็จ",
+      checkoutUrl: `${SITE_ORIGIN}/#apply`,
+    };
+  }
+}
+
+async function createXenditPaymentRequest(order, enrollment) {
+  const payload = {
+    reference_id: order.id,
+    type: "PAY",
+    country: "TH",
+    currency: "THB",
+    request_amount: Number(order.amount),
+    capture_method: "AUTOMATIC",
+    channel_code: "QRPROMPTPAY",
+    channel_properties: {
+      expires_at: xenditTimestamp(order.expiresAt),
+      qr_string_type: "DYNAMIC",
+    },
+    description: `${order.packageName} (${order.id})`.slice(0, 1000),
+    metadata: {
+      order_id: order.id,
+      orderId: order.id,
+      enrollment_id: order.enrollmentId,
+      package_id: order.packageId,
+      student_name: clean(enrollment?.name).slice(0, 120),
+      product: "101future",
+    },
+  };
+
+  try {
+    const providerResponse = await fetch("https://api.xendit.co/v3/payment_requests", {
+      method: "POST",
+      headers: {
+        Authorization: `Basic ${Buffer.from(`${PAYMENT_PROVIDER_API_KEY}:`).toString("base64")}`,
+        "Content-Type": "application/json",
+        "api-version": XENDIT_API_VERSION,
+      },
+      body: JSON.stringify(payload),
+    });
+    const text = await providerResponse.text();
+    const data = parseJsonText(text);
+
+    if (!providerResponse.ok) {
+      return {
+        provider: "xendit",
+        status: "provider_error",
+        providerStatus: "provider_error",
+        message: xenditErrorMessage(data, text, providerResponse.status),
+        checkoutUrl: `${SITE_ORIGIN}/#apply`,
+      };
+    }
+
+    const qrPayload = findXenditAction(data, "QR_STRING")?.value || "";
+    const paymentUrl = findXenditAction(data, "WEB_URL")?.value || "";
+    const qrImageUrl = qrPayload ? await QRCode.toDataURL(qrPayload, { width: 320, margin: 2 }) : "";
+
+    return {
+      provider: "xendit",
+      status: "created",
+      providerStatus: data.status || "",
+      providerReference: clean(data.payment_request_id || data.id || data.reference_id),
+      providerPaymentId: clean(data.latest_payment_id || ""),
+      paymentUrl,
+      qrImageUrl,
+      qrPayload,
+      checkoutUrl: paymentUrl || `${SITE_ORIGIN}/#apply`,
+      message: qrPayload
+        ? "สแกน QR เพื่อชำระเงินได้เลย เมื่อยอดถูกต้องระบบจะเปิดบทเรียนให้อัตโนมัติ"
+        : "สร้างรายการชำระเงินแล้ว แต่ยังไม่พบข้อมูล QR ในผลลัพธ์จากผู้ให้บริการ",
+    };
+  } catch (error) {
+    return {
+      provider: "xendit",
+      status: "provider_error",
+      providerStatus: "provider_error",
+      message: `เชื่อมต่อ Xendit ไม่สำเร็จ: ${error.message}`,
+      checkoutUrl: `${SITE_ORIGIN}/#apply`,
+    };
+  }
+}
+
+function markOrderPaid(order, lead, now = new Date(), paymentEvent = {}) {
+  ensureEnrollmentArtifacts(lead);
+  const nowIso = now.toISOString();
+  const expiresAt = addDays(now, order.durationDays || ACCESS_DAYS).toISOString();
+  order.status = "paid";
+  order.providerReference = paymentEvent.paymentRequestId || order.providerReference || paymentEvent.providerReference || "";
+  order.providerPaymentId = paymentEvent.providerPaymentId || order.providerPaymentId || "";
+  order.providerStatus = paymentEvent.status || order.providerStatus || "";
+  order.paidAt = order.paidAt || nowIso;
+  order.updatedAt = nowIso;
+  lead.status = "paid";
+  lead.payment = {
+    ...lead.payment,
+    status: "approved",
+    amount: String(order.amount || ""),
+    reference: order.id,
+    reviewedAt: nowIso,
+    provider: order.provider,
+    providerReference: order.providerReference,
+    providerPaymentId: order.providerPaymentId,
+    paidAt: nowIso,
+  };
+  lead.access.unlockedAt = lead.access.unlockedAt || nowIso;
+  lead.access.expiresAt = expiresAt;
+  lead.entitlement = {
+    orderId: order.id,
+    packageId: order.packageId,
+    packageName: order.packageName,
+    startsAt: lead.access.unlockedAt,
+    expiresAt,
+    status: "active",
+  };
+  lead.timeline = ensureTimeline(lead);
+  lead.timeline.push({ at: nowIso, action: "order-paid", note: order.id });
+  lead.timeline.push({ at: nowIso, action: "content-unlocked", note: `เปิดสิทธิ์ ${ACCESS_DAYS} วัน` });
+}
+
+function verifyPaymentSignature(request, rawBody) {
+  if (!PAYMENT_WEBHOOK_SECRET) return false;
+  if (normalizeKey(PAYMENT_PROVIDER) === "xendit") {
+    const token = String(request.headers["x-callback-token"] || "");
+    return token ? timingSafeEqual(token, PAYMENT_WEBHOOK_SECRET) : false;
+  }
+  if (normalizeKey(PAYMENT_PROVIDER) === "kbank") {
+    const token = String(request.headers[KBANK_WEBHOOK_TOKEN_HEADER.toLowerCase()] || request.headers["x-api-key"] || "");
+    if (token && timingSafeEqual(token, PAYMENT_WEBHOOK_SECRET)) return true;
+    const kbankSignature = String(request.headers["x-kbank-signature"] || request.headers["x-signature"] || "");
+    if (!kbankSignature) return false;
+    const expected = crypto.createHmac("sha256", PAYMENT_WEBHOOK_SECRET).update(rawBody).digest("hex");
+    return timingSafeEqual(kbankSignature.replace(/^sha256=/, ""), expected);
+  }
+  const signature = String(request.headers["x-signature"] || request.headers["x-callback-token"] || "");
+  if (!signature) return false;
+  const expected = crypto.createHmac("sha256", PAYMENT_WEBHOOK_SECRET).update(rawBody).digest("hex");
+  return timingSafeEqual(signature.replace(/^sha256=/, ""), expected);
+}
+
+function paymentEventFromPayload(payload) {
+  const envelope =
+    payload.paymentCapture?.value ||
+    payload.paymentAuthorization?.value ||
+    payload.paymentFailure?.value ||
+    payload.value ||
+    payload;
+  const data = envelope.data?.data || envelope.data || payload.data?.data || payload.data || envelope;
+  const metadata = data.metadata || envelope.metadata || payload.metadata || {};
+  const providerPaymentId = clean(
+    data.payment_id ||
+      payload.payment_id ||
+      data.latest_payment_id ||
+      payload.id ||
+      data.transactionId ||
+      payload.transactionId ||
+      data.txnId ||
+      payload.txnId,
+  );
+  const paymentRequestId = clean(
+    data.payment_request_id ||
+      payload.payment_request_id ||
+      metadata.payment_request_id ||
+      data.partnerTxnUid ||
+      payload.partnerTxnUid ||
+      data.qrId ||
+      payload.qrId,
+  );
+
+  return {
+    event: String(envelope.event || payload.event || ""),
+    status: String(data.status || envelope.status || payload.status || data.txnStatus || payload.txnStatus || data.paymentStatus || payload.paymentStatus || "").toLowerCase(),
+    reference: clean(
+      data.reference_id ||
+        envelope.reference_id ||
+        payload.reference_id ||
+        data.partnerTxnUid ||
+        payload.partnerTxnUid ||
+        data.reference1 ||
+        payload.reference1 ||
+        data.ref1 ||
+        payload.ref1 ||
+        metadata.orderId ||
+        metadata.order_id ||
+        payload.orderId ||
+        payload.order_id ||
+        payload.reference ||
+        payload.external_id,
+    ),
+    providerReference: clean(providerPaymentId || paymentRequestId || payload.providerReference || data.charge_id || payload.charge_id),
+    providerPaymentId,
+    paymentRequestId,
+    paidAmount: Number(
+      data.request_amount ??
+        data.amount ??
+        data.txnAmount ??
+        data.transactionAmount ??
+        data.paidAmount ??
+        data.paid_amount ??
+        data.capture_amount ??
+        data.captures?.[0]?.capture_amount ??
+        payload.amount ??
+        payload.txnAmount ??
+        payload.transactionAmount ??
+        payload.paidAmount ??
+        payload.paid_amount ??
+        0,
+    ),
+  };
+}
+
+function isPaidPaymentEvent(paymentEvent) {
+  const value = `${paymentEvent.status} ${paymentEvent.event}`.toLowerCase();
+  return value.includes("succeeded") || value.includes("success") || value.includes("paid") || value.includes("completed") || value.includes("settled");
+}
+
+function findXenditAction(data, descriptor) {
+  return (Array.isArray(data.actions) ? data.actions : []).find((action) => {
+    return String(action.descriptor || "").toUpperCase() === descriptor;
+  });
+}
+
+function parseJsonText(text) {
+  if (!text) return {};
+  try {
+    return JSON.parse(text);
+  } catch {
+    return {};
+  }
+}
+
+function xenditErrorMessage(data, text, status) {
+  return clean(data.message || data.error || data.error_code || text) || `Xendit ตอบกลับ status ${status}`;
+}
+
+function kbankErrorMessage(data, text, status) {
+  return clean(data.message || data.error || data.errorCode || data.respMsg || data.respCode || text) || `ระบบชำระเงินตอบกลับ status ${status}`;
+}
+
+function xenditTimestamp(value) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return new Date().toISOString().replace(/\.\d{3}Z$/, "Z");
+  return date.toISOString().replace(/\.\d{3}Z$/, "Z");
+}
+
+function timingSafeEqual(a, b) {
+  const left = Buffer.from(String(a));
+  const right = Buffer.from(String(b));
+  return left.length === right.length && crypto.timingSafeEqual(left, right);
+}
+
+function leadPriority(lead) {
+  if (["paid", "archived", "not-fit"].includes(lead.status)) return "done";
+  if (Number(lead.duplicateCount || 0) > 0) return "warm";
+  if (lead.preferredSchedule && lead.lineId) return "hot";
+  if (lead.preferredSchedule || lead.lineId) return "normal";
+  return "follow";
+}
+
+function isAutomationDue(lead, now = new Date()) {
+  const next = Date.parse(lead.automation?.nextFollowUpAt || "");
+  return Number.isFinite(next) && next <= now.getTime();
+}
+
+function buildAutomationSummary(leads) {
+  const now = new Date();
+  const enriched = sortLeads(leads).map((lead) => {
+    if (!lead.automation) {
+      return { ...lead, automation: nextAutomationPlan(lead, now, "preview") };
+    }
+    return lead;
+  });
+  const due = enriched.filter((lead) => isAutomationDue(lead, now));
+  const upcoming = enriched.filter((lead) => {
+    const next = Date.parse(lead.automation?.nextFollowUpAt || "");
+    return Number.isFinite(next) && next > now.getTime();
+  });
+  const completed = enriched.filter((lead) => !lead.automation?.nextFollowUpAt);
+
+  return {
+    now: now.toISOString(),
+    counts: {
+      due: due.length,
+      upcoming: upcoming.length,
+      completed: completed.length,
+    },
+    due: due.map(adminLead),
+    upcoming: upcoming.slice(0, 20).map(adminLead),
+  };
+}
+
+async function readAgentRoomState() {
+  try {
+    const text = await fs.readFile(AGENT_ROOM_FILE, "utf8");
+    const state = JSON.parse(text);
+    return {
+      ok: true,
+      state,
+      stateFile: AGENT_ROOM_FILE,
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      state: { plan: null, tasks: [], updates: [] },
+      stateFile: AGENT_ROOM_FILE,
+      error: error.code === "ENOENT" ? "agent-room ยังไม่พร้อม" : error.message,
+    };
+  }
+}
+
+function buildAgentHqSummary(agentRoom) {
+  const now = new Date().toISOString();
+  const state = agentRoom.state || {};
+  const tasks = Array.isArray(state.tasks) ? state.tasks : [];
+  const updates = Array.isArray(state.updates) ? state.updates : [];
+  const openTasks = tasks.filter((task) => task.status !== "done");
+  const agents = [
+    { name: "Codex", matches: ["codex"] },
+    { name: "Claude Code / Opus 4.8", matches: ["claude code", "codee-dev-opus"] },
+    { name: "OpenClaw", matches: ["openclaw"] },
+    { name: "DeepSeek Worker", matches: ["deepseek"] },
+    { name: "Gemini / Qwen", matches: ["gemini", "qwen"] },
+    { name: "Human Approver", matches: ["user", "เจ้าของ", "owner"] },
+  ];
+
+  return {
+    ok: true,
+    now,
+    room: {
+      ok: agentRoom.ok,
+      stateFile: agentRoom.stateFile,
+      updatedAt: state.updatedAt || null,
+      error: agentRoom.error || "",
+      plan: state.plan || null,
+    },
+    metrics: {
+      agents: agents.length,
+      openTasks: openTasks.length,
+      doing: openTasks.filter((task) => task.status === "doing").length,
+      review: openTasks.filter((task) => task.status === "review").length,
+      blocked: openTasks.filter((task) => task.status === "blocked").length,
+    },
+    agents: agents.map((agent) => buildAgentStatus(agent, openTasks, updates)),
+    projects: [
+      buildProjectStatus("101future", "Learning platform", openTasks, "101future"),
+      buildProjectStatus("kerdkankaset", "Commerce operations", openTasks, "kerdkankaset"),
+      buildProjectStatus("Agent HQ", "Agent coordination", openTasks, "Agent HQ"),
+    ],
+    orchestrator: buildOrchestrator(openTasks, updates),
+    tasks: openTasks.map((task) => ({
+      id: task.id || task.title,
+      title: clean(task.title),
+      owner: clean(task.owner),
+      status: clean(task.status || "todo"),
+      notes: clean(task.notes),
+      updatedAt: task.updatedAt || "",
+    })),
+    approvals: buildApprovalQueue(openTasks),
+    recent: updates.slice(-12).reverse().map((item) => ({
+      at: item.at || "",
+      from: clean(item.from),
+      kind: clean(item.kind),
+      task: clean(item.task),
+      text: clean(item.text),
+      files: Array.isArray(item.files) ? item.files.map(clean).filter(Boolean).slice(0, 4) : [],
+    })),
+    openclaw: {
+      gateway: "พร้อมใช้ในเครื่องนี้",
+      notify: "Telegram / LINE configured",
+      bridge: openTasks.some((task) => /OpenClaw|bridge/i.test(`${task.title} ${task.notes}`)) ? "รอ watcher จาก Code" : "พร้อมต่อ watcher",
+      guardrail: "งาน production ต้องรอคนอนุมัติ",
+    },
+  };
+}
+
+function buildOrchestrator(tasks, updates) {
+  const activeTasks = tasks.filter((task) => task.status !== "done");
+  const reviewTasks = activeTasks.filter((task) => task.status === "review");
+  const doingTasks = activeTasks.filter((task) => task.status === "doing");
+  const todoTasks = activeTasks.filter((task) => task.status === "todo");
+  const riskyTasks = activeTasks.filter((task) => isRiskyTask(task));
+  const nextActions = [
+    ...reviewTasks.slice(0, 2).map((task) => nextAction("Review", task, "ตรวจงานที่ agent ส่งกลับมาแล้ว", isRiskyTask(task) ? "high" : "normal")),
+    ...doingTasks.slice(0, 2).map((task) => nextAction("Watch", task, "ติดตามงานที่กำลังทำและรอ update", "normal")),
+    ...todoTasks.slice(0, 3).map((task) => nextAction("Route", task, routeReason(task), isRiskyTask(task) ? "high" : "normal")),
+  ].slice(0, 5);
+
+  return {
+    mode: riskyTasks.length ? "human gated" : "auto route only",
+    nextActions,
+    workflow: [
+      {
+        title: "Observe",
+        detail: `${updates.length} events ใน agent-room`,
+        active: true,
+      },
+      {
+        title: "Route",
+        detail: `${todoTasks.length} งานรอมอบหมาย`,
+        active: todoTasks.length > 0,
+      },
+      {
+        title: "Execute",
+        detail: `${doingTasks.length} งานกำลังทำ`,
+        active: doingTasks.length > 0,
+      },
+      {
+        title: "Review",
+        detail: `${reviewTasks.length} งานรอตรวจ`,
+        active: reviewTasks.length > 0,
+      },
+      {
+        title: "Guard",
+        detail: `${riskyTasks.length} งานต้องขออนุมัติ`,
+        active: riskyTasks.length > 0,
+      },
+    ],
+    routing: [
+      {
+        from: "Owner",
+        to: "Codex",
+        rule: "ตัดสินใจงานเสี่ยง, verify, สรุปผลกลับให้เจ้าของ",
+      },
+      {
+        from: "Codex",
+        to: "Claude Code / Opus 4.8",
+        rule: "ให้ช่วยรีวิว/แก้ logic ยาก โดยเฉพาะ production และ architecture",
+      },
+      {
+        from: "Agent HQ",
+        to: "OpenClaw / Telegram",
+        rule: "ส่งสัญญาณ update แบบใกล้ realtime แต่ไม่กด production เอง",
+      },
+      {
+        from: "Content",
+        to: "Gemini / Qwen / DeepSeek",
+        rule: "งาน bulk เช่น รูป เสียง บทเรียน และ QA ที่ไม่ต้องใช้ Anthropic API",
+      },
+    ],
+  };
+}
+
+function nextAction(label, task, reason, priority) {
+  return {
+    label,
+    title: clean(task.title),
+    owner: clean(task.owner || suggestedOwner(task)),
+    reason,
+    priority,
+  };
+}
+
+function routeReason(task) {
+  const text = `${task.title} ${task.notes}`;
+  if (/101future|mission|curriculum|เสียง|รูป|บทเรียน/i.test(text)) return "ต่อยอดบทเรียนหรือ media pipeline";
+  if (/kerdkankaset|order|stock|payment|bigseller|webhook/i.test(text)) return "ต้องตรวจผลกระทบกับระบบร้านก่อนลงมือ";
+  if (/Agent HQ|OpenClaw|bridge/i.test(text)) return "เชื่อมการประสานงานระหว่าง agent";
+  return "รอเลือก agent ที่เหมาะที่สุด";
+}
+
+function suggestedOwner(task) {
+  const text = `${task.title} ${task.notes}`;
+  if (/review|production|restart|deploy|order|stock|payment/i.test(text)) return "Codex + Human Approver";
+  if (/architecture|bridge|OpenClaw|Agent HQ/i.test(text)) return "Claude Code / Opus 4.8";
+  if (/curriculum|เสียง|รูป|content|bulk/i.test(text)) return "Gemini / Qwen / DeepSeek";
+  return "Codex";
+}
+
+function isRiskyTask(task) {
+  return /production|deploy|restart|payment|stock|order|webhook|bigseller|kerdkankaset|อนุมัติ/i.test(`${task.title} ${task.notes}`);
+}
+
+function buildAgentStatus(agent, tasks, updates) {
+  const owner = agent.name;
+  const owned = tasks.filter((task) => agent.matches.some((key) => String(task.owner || "").toLowerCase().includes(key)));
+  const recent = updates
+    .slice()
+    .reverse()
+    .find((item) => agent.matches.some((key) => String(item.from || "").toLowerCase().includes(key)));
+  const activeTask = owned.find((task) => task.status === "doing") || owned.find((task) => task.status === "review") || owned[0];
+  return {
+    id: owner.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
+    name: owner,
+    role: agentRole(owner),
+    status: activeTask?.status || (recent ? "active" : "standby"),
+    taskCount: owned.length,
+    current: activeTask?.title || recent?.text || "พร้อมรับงาน",
+    updatedAt: activeTask?.updatedAt || recent?.at || "",
+  };
+}
+
+function agentRole(owner) {
+  if (owner.includes("Codex")) return "UI, code review, local verification";
+  if (owner.includes("Claude")) return "architecture, bridge, code pairing";
+  if (owner.includes("Opus")) return "deep code reasoning, risky changes";
+  if (owner.includes("OpenClaw")) return "routing, alerts, command center";
+  if (owner.includes("DeepSeek")) return "bulk code and log work";
+  if (owner.includes("Human")) return "approval, production safety";
+  return "content, media, QA support";
+}
+
+function buildProjectStatus(id, label, tasks, keyword) {
+  const list = tasks.filter((task) => `${task.title} ${task.notes}`.toLowerCase().includes(keyword.toLowerCase()));
+  const doneWeight = list.filter((task) => task.status === "review").length * 0.7 + list.filter((task) => task.status === "doing").length * 0.45;
+  const progress = list.length ? Math.max(12, Math.min(92, Math.round((doneWeight / list.length) * 100))) : 0;
+  return {
+    id,
+    label,
+    total: list.length,
+    progress,
+    focus: list[0]?.title || "ยังไม่มีงานเปิด",
+    status: list.some((task) => task.status === "blocked") ? "blocked" : list.some((task) => task.status === "doing") ? "working" : "planning",
+  };
+}
+
+function buildApprovalQueue(tasks) {
+  const reviewTasks = tasks
+    .filter((task) => task.status === "review" || /production|deploy|restart|payment|stock|order|อนุมัติ/i.test(`${task.title} ${task.notes}`))
+    .slice(0, 6)
+    .map((task) => ({
+      title: task.title,
+      owner: task.owner,
+      risk: /payment|stock|order|restart|deploy|production/i.test(`${task.title} ${task.notes}`) ? "high" : "normal",
+      note: task.status === "review" ? "รอตรวจงาน" : "ต้องให้คนอนุมัติก่อนทำ",
+    }));
+
+  if (reviewTasks.length) return reviewTasks;
+  return [
+    {
+      title: "Production guardrail",
+      owner: "System",
+      risk: "high",
+      note: "deploy, payment, stock/order ต้องรออนุมัติ",
+    },
+  ];
+}
+
+function adminLead(lead) {
+  ensureEnrollmentArtifacts(lead);
+  return {
+    id: lead.id,
+    name: lead.name,
+    phone: lead.phone,
+    email: lead.email,
+    lineId: lead.lineId,
+    course: lead.course,
+    status: lead.status,
+    createdAt: lead.createdAt,
+    payment: lead.payment,
+    access: lead.access,
+    automation: lead.automation || null,
+  };
+}
+
+function buildAdminInterests(accounts, leads, orders) {
+  const items = [];
+  for (const account of accounts) {
+    for (const interest of accountInterestList(account)) {
+      const packageItem = PACKAGES.find((item) => item.id === interest.packageId);
+      const enrollment = leads.find((lead) => {
+        return lead.accountId === account.id && packageItem && lead.course === packageItem.name;
+      });
+      const order = enrollment
+        ? [...orders].reverse().find((item) => item.enrollmentId === enrollment.id && item.packageId === interest.packageId)
+        : null;
+      items.push({
+        ...publicInterest(account, interest),
+        enrollment: enrollment ? publicLead(enrollment) : null,
+        order: order ? publicOrder(order) : null,
+      });
+    }
+  }
+  return items.sort((a, b) => String(b.updatedAt || b.createdAt).localeCompare(String(a.updatedAt || a.createdAt)));
+}
+
+function accountInterestList(account) {
+  return Array.isArray(account.interests) ? account.interests : [];
+}
+
+function upsertAccountInterest(account, packageItem, details = {}) {
+  const now = new Date().toISOString();
+  if (!Array.isArray(account.interests)) account.interests = [];
+  let interest = account.interests.find((item) => item.packageId === packageItem.id);
+  if (!interest) {
+    interest = {
+      packageId: packageItem.id,
+      packageName: packageItem.name,
+      level: packageItem.level,
+      price: packageItem.price,
+      durationDays: packageItem.durationDays,
+      status: "interested",
+      source: clean(details.source) || "unknown",
+      note: clean(details.note),
+      createdAt: now,
+      updatedAt: now,
+      lastOrderId: "",
+      count: 0,
+    };
+    account.interests.push(interest);
+  }
+  interest.packageName = packageItem.name;
+  interest.level = packageItem.level;
+  interest.price = packageItem.price;
+  interest.durationDays = packageItem.durationDays;
+  interest.status = interest.status || "interested";
+  interest.source = clean(details.source) || interest.source || "unknown";
+  if (details.note !== undefined) interest.note = clean(details.note);
+  interest.updatedAt = now;
+  interest.count = Number(interest.count || 0) + 1;
+  account.updatedAt = now;
+  return interest;
+}
+
 function createId() {
   const date = new Date().toISOString().slice(0, 10).replaceAll("-", "");
   return `LEAD-${date}-${crypto.randomBytes(3).toString("hex").toUpperCase()}`;
 }
 
+function createAccessCode() {
+  return crypto.randomBytes(4).toString("hex").toUpperCase();
+}
+
 async function readJsonBody(request) {
-  const chunks = [];
-  let size = 0;
-  for await (const chunk of request) {
-    size += chunk.length;
-    if (size > 1_000_000) throw new HttpError(413, "Payload too large");
-    chunks.push(chunk);
-  }
-  if (!chunks.length) return {};
+  const raw = await readRawBody(request);
+  if (!raw) return {};
   try {
-    return JSON.parse(Buffer.concat(chunks).toString("utf8"));
+    return JSON.parse(raw);
   } catch {
     throw new HttpError(400, "Invalid JSON");
   }
 }
 
+async function readRawBody(request) {
+  const chunks = [];
+  let size = 0;
+  for await (const chunk of request) {
+    size += chunk.length;
+    if (size > 8_000_000) throw new HttpError(413, "Payload too large");
+    chunks.push(chunk);
+  }
+  return chunks.length ? Buffer.concat(chunks).toString("utf8") : "";
+}
+
 async function readLeads() {
-  const raw = await fs.readFile(LEADS_FILE, "utf8");
-  return JSON.parse(raw);
+  return readJsonFile(LEADS_FILE);
+}
+
+async function readOrders() {
+  return readJsonFile(ORDERS_FILE);
+}
+
+async function readAccounts() {
+  return readJsonFile(ACCOUNTS_FILE);
+}
+
+async function readSessions() {
+  return readJsonFile(SESSIONS_FILE);
 }
 
 async function writeLeads(leads) {
-  await fs.writeFile(LEADS_FILE, `${JSON.stringify(leads, null, 2)}\n`, "utf8");
+  await writeJsonFileQueued(LEADS_FILE, leads);
+}
+
+async function writeOrders(orders) {
+  await writeJsonFileQueued(ORDERS_FILE, orders);
+}
+
+async function writeAccounts(accounts) {
+  await writeJsonFileQueued(ACCOUNTS_FILE, accounts);
+}
+
+async function writeSessions(sessions) {
+  await writeJsonFileQueued(SESSIONS_FILE, sessions);
+}
+
+async function readJsonFile(filePath) {
+  const raw = await fs.readFile(filePath, "utf8");
+  return JSON.parse(raw || "[]");
+}
+
+async function writeJsonFileQueued(filePath, data) {
+  await withJsonFileLock([filePath], async () => {
+    await writeJsonFileAtomic(filePath, data);
+  });
+}
+
+async function writeJsonFileAtomic(filePath, data) {
+  const tempFile = `${filePath}.${process.pid}.${Date.now()}.${crypto.randomBytes(4).toString("hex")}.tmp`;
+  try {
+    await fs.writeFile(tempFile, `${JSON.stringify(data, null, 2)}\n`, "utf8");
+    await fs.rename(tempFile, filePath);
+  } catch (error) {
+    await fs.unlink(tempFile).catch(() => {});
+    throw error;
+  }
+}
+
+async function writeLeadsUnlocked(leads) {
+  await writeJsonFileAtomic(LEADS_FILE, leads);
+}
+
+async function writeOrdersUnlocked(orders) {
+  await writeJsonFileAtomic(ORDERS_FILE, orders);
+}
+
+async function writeAccountsUnlocked(accounts) {
+  await writeJsonFileAtomic(ACCOUNTS_FILE, accounts);
+}
+
+async function withJsonFileLock(filePaths, operation) {
+  const keys = [...new Set(filePaths)].sort();
+  const previousLocks = keys.map((key) => jsonFileLocks.get(key) || Promise.resolve());
+  const previous = Promise.all(previousLocks);
+  let releaseLock = () => {};
+  const current = previous.then(() => new Promise((resolve) => {
+    releaseLock = resolve;
+  }));
+
+  keys.forEach((key) => jsonFileLocks.set(key, current));
+  await previous;
+  try {
+    return await operation();
+  } finally {
+    releaseLock();
+    keys.forEach((key) => {
+      if (jsonFileLocks.get(key) === current) jsonFileLocks.delete(key);
+    });
+  }
 }
 
 function sortLeads(leads) {
@@ -259,12 +2543,174 @@ function sortLeads(leads) {
 }
 
 function publicLead(lead) {
+  ensureEnrollmentArtifacts(lead);
+  const accessActive = isAccessActive(lead);
   return {
     id: lead.id,
     name: lead.name,
     course: lead.course,
+    status: lead.status,
+    paymentStatus: lead.payment?.status || "unpaid",
+    accessCode: lead.access?.code || "",
+    accessActive,
+    accessExpiresAt: lead.access?.expiresAt || "",
+    learnUrl: "/learn",
     createdAt: lead.createdAt,
+    applicantRole: lead.applicantRole || "",
+    payerType: lead.payerType || "",
+    nextAction: accessActive ? "เข้าเรียนได้ทันที" : "เลือกแพ็กและชำระเงินเพื่อเปิดบทเรียน",
   };
+}
+
+function publicOrder(order) {
+  return {
+    id: order.id,
+    enrollmentId: order.enrollmentId,
+    packageId: order.packageId,
+    packageName: order.packageName,
+    amount: order.amount,
+    currency: order.currency,
+    status: order.status,
+    provider: order.provider,
+    providerStatus: order.providerStatus || "",
+    paymentUrl: order.paymentUrl,
+    qrImageUrl: order.qrImageUrl,
+    qrPayload: order.qrPayload,
+    payerType: order.payerType || "",
+    paymentLink: order.paymentLink || `${SITE_ORIGIN}/pay?order=${encodeURIComponent(order.id)}`,
+    paymentStatusMessage: order.paymentStatusMessage || "",
+    createdAt: order.createdAt,
+    expiresAt: order.expiresAt,
+    paidAt: order.paidAt,
+  };
+}
+
+function publicAccount(account) {
+  return {
+    id: account.id,
+    role: account.role || "",
+    displayName: account.displayName || "",
+    pictureUrl: account.pictureUrl || "",
+    phone: account.phone || "",
+    email: account.email || "",
+    interests: accountInterestList(account).map((interest) => publicInterest(account, interest)),
+    createdAt: account.createdAt || "",
+  };
+}
+
+function publicInterest(account, interest) {
+  const packageItem = PACKAGES.find((item) => item.id === interest.packageId) || {};
+  return {
+    accountId: account.id,
+    displayName: account.displayName || "",
+    pictureUrl: account.pictureUrl || "",
+    role: account.role || "",
+    phone: account.phone || "",
+    email: account.email || "",
+    packageId: interest.packageId || "",
+    packageName: interest.packageName || packageItem.name || "",
+    level: interest.level || packageItem.level || "",
+    price: Number(interest.price || packageItem.price || 0),
+    durationDays: Number(interest.durationDays || packageItem.durationDays || 0),
+    status: interest.status || "interested",
+    source: interest.source || "",
+    note: interest.note || "",
+    lastOrderId: interest.lastOrderId || "",
+    count: Number(interest.count || 0),
+    createdAt: interest.createdAt || "",
+    updatedAt: interest.updatedAt || "",
+  };
+}
+
+async function upsertLineAccount(profile, tokenData = {}) {
+  const accounts = await readAccounts();
+  const now = new Date().toISOString();
+  let account = accounts.find((item) => item.provider === "line" && item.lineUserId === profile.userId);
+  if (!account) {
+    account = {
+      id: `ACCOUNT-${crypto.randomBytes(8).toString("hex").toUpperCase()}`,
+      provider: "line",
+      lineUserId: profile.userId,
+      role: "",
+      displayName: "",
+      pictureUrl: "",
+      phone: "",
+      email: "",
+      createdAt: now,
+      updatedAt: now,
+    };
+    accounts.push(account);
+  }
+  account.displayName = clean(profile.displayName) || account.displayName || "";
+  account.pictureUrl = clean(profile.pictureUrl) || account.pictureUrl || "";
+  if (tokenData.id_token && !account.email) {
+    const claims = decodeJwtPayload(tokenData.id_token);
+    account.email = clean(claims.email) || account.email || "";
+  }
+  account.updatedAt = now;
+  await writeAccounts(accounts);
+  return account;
+}
+
+async function accountFromRequest(request) {
+  const session = sessionFromRequest(request);
+  if (!session?.id) return null;
+  const sessions = await readSessions();
+  const active = sessions.find((item) => item.id === session.id && item.type === "auth");
+  if (!active || Date.parse(active.expiresAt || "") <= Date.now()) return null;
+  const accounts = await readAccounts();
+  return accounts.find((item) => item.id === active.accountId) || null;
+}
+
+function sessionFromRequest(request) {
+  const cookies = parseCookies(request.headers.cookie || "");
+  const id = cookies[SESSION_COOKIE_NAME] || "";
+  return id ? { id } : null;
+}
+
+function parseCookies(cookieHeader) {
+  return String(cookieHeader || "")
+    .split(";")
+    .map((part) => part.trim())
+    .filter(Boolean)
+    .reduce((acc, part) => {
+      const idx = part.indexOf("=");
+      if (idx <= 0) return acc;
+      acc[decodeURIComponent(part.slice(0, idx))] = decodeURIComponent(part.slice(idx + 1));
+      return acc;
+    }, {});
+}
+
+function sessionCookie(value, expiresAt) {
+  const secure = SITE_ORIGIN.startsWith("https://") ? "; Secure" : "";
+  return `${SESSION_COOKIE_NAME}=${encodeURIComponent(value)}; Path=/; HttpOnly; SameSite=Lax; Expires=${expiresAt.toUTCString()}${secure}`;
+}
+
+function redirect(response, location) {
+  response.writeHead(302, { Location: location });
+  response.end();
+}
+
+function safeNextPath(value) {
+  const next = String(value || "/learn").trim();
+  if (!next.startsWith("/") || next.startsWith("//")) return "/learn";
+  if (next.includes("\\") || /[\r\n]/.test(next)) return "/learn";
+  return next;
+}
+
+function decodeJwtPayload(token) {
+  try {
+    const payload = String(token).split(".")[1] || "";
+    const json = Buffer.from(payload.replace(/-/g, "+").replace(/_/g, "/"), "base64").toString("utf8");
+    return JSON.parse(json);
+  } catch {
+    return {};
+  }
+}
+
+function isAccessActive(lead) {
+  const expiresAt = Date.parse(lead.access?.expiresAt || lead.entitlement?.expiresAt || "");
+  return lead.status === "paid" && lead.payment?.status === "approved" && Number.isFinite(expiresAt) && expiresAt > Date.now();
 }
 
 function requireAdmin(request, url) {
@@ -274,31 +2720,55 @@ function requireAdmin(request, url) {
   if (token !== adminToken) throw new HttpError(401, "Unauthorized");
 }
 
-async function serveStatic(response, filename) {
+async function serveStatic(response, filename, isHead = false) {
   const filePath = path.join(ROOT, filename);
   const ext = path.extname(filePath);
+  if (isHead) {
+    await ensureReadableFile(filePath);
+    sendHead(response, 200, MIME_TYPES[ext] || "application/octet-stream");
+    return;
+  }
   const content = await fs.readFile(filePath);
   sendBuffer(response, 200, content, MIME_TYPES[ext] || "application/octet-stream");
 }
 
-async function serveAsset(response, pathname) {
+async function serveAsset(response, pathname, isHead = false) {
   const safeName = path.normalize(decodeURIComponent(pathname)).replace(/^(\.\.[/\\])+/, "");
   const filePath = path.join(ROOT, safeName);
   if (!filePath.startsWith(path.join(ROOT, "assets") + path.sep)) {
     throw new HttpError(404, "Not found");
   }
   const ext = path.extname(filePath).toLowerCase();
+  if (isHead) {
+    await ensureReadableFile(filePath);
+    sendHead(response, 200, MIME_TYPES[ext] || "application/octet-stream");
+    return;
+  }
   const content = await fs.readFile(filePath);
   sendBuffer(response, 200, content, MIME_TYPES[ext] || "application/octet-stream");
+}
+
+async function ensureReadableFile(filePath) {
+  try {
+    await fs.access(filePath);
+  } catch {
+    throw new HttpError(404, "Not found");
+  }
 }
 
 function setBaseHeaders(response) {
   response.setHeader("X-Content-Type-Options", "nosniff");
   response.setHeader("Referrer-Policy", "same-origin");
+  response.setHeader("Cache-Control", "no-store");
 }
 
 function sendJson(response, status, payload) {
   sendText(response, status, JSON.stringify(payload), "application/json; charset=utf-8");
+}
+
+function sendHead(response, status, contentType) {
+  response.writeHead(status, { "Content-Type": contentType });
+  response.end();
 }
 
 function sendText(response, status, text, contentType) {
@@ -311,14 +2781,78 @@ function sendBuffer(response, status, buffer, contentType) {
 }
 
 function toCsv(leads) {
-  const headers = ["id", "createdAt", "status", "name", "phone", "lineId", "ageGroup", "course", "preferredSchedule", "note"];
-  const rows = leads.map((lead) => headers.map((key) => csvCell(lead[key])).join(","));
+  const headers = [
+    "id",
+    "createdAt",
+    "updatedAt",
+    "status",
+    "paymentStatus",
+    "paymentAmount",
+    "paymentReference",
+    "accessCode",
+    "unlockedAt",
+    "duplicateCount",
+    "name",
+    "phone",
+    "email",
+    "lineId",
+    "ageGroup",
+    "course",
+    "preferredSchedule",
+    "note",
+  ];
+  const rows = leads.map((lead) => headers.map((key) => csvCell(csvValue(lead, key))).join(","));
   return `${headers.join(",")}\n${rows.join("\n")}\n`;
 }
 
+function csvValue(lead, key) {
+  ensureEnrollmentArtifacts(lead);
+  if (key === "priority") return lead.automation?.priority || "";
+  if (key === "nextAction") return lead.automation?.nextAction || "";
+  if (key === "nextFollowUpAt") return lead.automation?.nextFollowUpAt || "";
+  if (key === "paymentStatus") return lead.payment?.status || "";
+  if (key === "paymentAmount") return lead.payment?.amount || "";
+  if (key === "paymentReference") return lead.payment?.reference || "";
+  if (key === "accessCode") return lead.access?.code || "";
+  if (key === "unlockedAt") return lead.access?.unlockedAt || "";
+  return lead[key];
+}
+
 function csvCell(value) {
+  if (value === undefined) return '""';
+  if (value && typeof value === "object") return csvCell(JSON.stringify(value));
   const text = String(value || "").replaceAll('"', '""');
   return `"${text}"`;
+}
+
+async function notifyLeadEvent(event, lead, request, extra = {}) {
+  if (!LEAD_WEBHOOK_URL) return;
+
+  const payload = {
+    event,
+    at: new Date().toISOString(),
+    service: "101future-enrollment",
+    lead: adminLead(lead),
+    extra,
+  };
+  const headers = {
+    "Content-Type": "application/json",
+    "User-Agent": "101future-enrollment/0.1",
+  };
+  if (LEAD_WEBHOOK_SECRET) headers["X-Webhook-Secret"] = LEAD_WEBHOOK_SECRET;
+
+  try {
+    const webhookResponse = await fetch(LEAD_WEBHOOK_URL, {
+      method: "POST",
+      headers,
+      body: JSON.stringify(payload),
+    });
+    if (!webhookResponse.ok) {
+      console.warn(`Lead webhook ${event} failed: ${webhookResponse.status}`);
+    }
+  } catch (error) {
+    console.warn(`Lead webhook ${event} failed: ${error.message}`);
+  }
 }
 
 class HttpError extends Error {

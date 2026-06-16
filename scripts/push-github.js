@@ -6,19 +6,79 @@ const repo = "101future-academy";
 const branch = "main";
 const root = path.resolve(__dirname, "..");
 
-const files = [
+const baseFiles = [
   ".gitignore",
+  "EDTECH_10_PHASES.md",
+  "ENGLISH_P1_UNIT1.md",
+  "OPEN_THIS_FIRST.md",
+  "PROJECT_STATUS.md",
+  "CODEX_WORK_ORDERS.md",
   "README.md",
   "admin.html",
   "admin.js",
   "app.js",
   "assets/hero-learning-lab.png",
-  "data/.gitkeep",
+  "assets/school-bag/book.svg",
+  "assets/school-bag/eraser.svg",
+  "assets/school-bag/pencil.svg",
+  "assets/school-bag/real-crayon.png",
+  "assets/school-bag/real-pen.png",
+  "assets/school-bag/real-pencil.png",
+  "assets/school-bag/ruler.svg",
+  "assets/school-bag/school-bag.svg",
+  "assets/school-bag/notebook.svg",
+  "assets/school-bag/pen.svg",
+  "assets/school-bag/crayon.svg",
+  "assets/school-bag/scissors.svg",
+  "assets/school-bag/glue.svg",
+  "assets/school-bag/sharpener.svg",
+  "assets/school-bag/desk.svg",
+  "assets/school-bag/chair.svg",
+  "assets/school-bag/board.svg",
+  "assets/school-bag/clock.svg",
+  "assets/school-bag/apple.svg",
+  "assets/school-bag/banana.svg",
+  "assets/school-bag/ball.svg",
+  "assets/school-bag/bottle.svg",
+  "assets/school-bag/lunch-box.svg",
+  "assets/gamification.js",
+  "curriculum/english-p1.json",
   "index.html",
+  "learn.html",
+  "learn.js",
+  "mission-school-bag.html",
+  "mission-school-bag.js",
+  "mission-lab.html",
+  "mission-lab.js",
+  "mission-this-is.html",
+  "mission-this-is.js",
+  "mission-say-it-back.html",
+  "mission-say-it-back.js",
+  "package-lock.json",
   "package.json",
+  "pay.html",
+  "pay.js",
+  "privacy-policy.html",
+  "refund-policy.html",
   "scripts/push-github.js",
   "server.js",
   "styles.css",
+  "terms.html",
+];
+
+const generatedFileGroups = [
+  {
+    dir: "assets/english-p1/audio",
+    include: (name) => name.endsWith(".mp3"),
+  },
+  {
+    dir: "assets/english-p1/images",
+    include: (name) => name.endsWith(".png"),
+  },
+  {
+    dir: "assets/mascot",
+    include: (name) => /^futuree-.*\.jpg$/i.test(name),
+  },
 ];
 
 async function gh(pathname, options = {}) {
@@ -42,10 +102,9 @@ async function gh(pathname, options = {}) {
   return data;
 }
 
-async function existingSha(file) {
+async function existingFile(file) {
   try {
-    const data = await gh(`/repos/${owner}/${repo}/contents/${encodeURIComponentPath(file)}?ref=${branch}`);
-    return data.sha;
+    return await gh(`/repos/${owner}/${repo}/contents/${encodeURIComponentPath(file)}?ref=${branch}`);
   } catch (error) {
     if (error.status === 404 || error.status === 409) return null;
     throw error;
@@ -54,32 +113,57 @@ async function existingSha(file) {
 
 async function putFile(file) {
   const buffer = await fs.readFile(path.join(root, file));
-  const sha = await existingSha(file);
+  const content = buffer.toString("base64");
+  const existing = await existingFile(file);
+  if (existing?.content?.replace(/\s/g, "") === content) {
+    console.log(`Skipped ${file}`);
+    return false;
+  }
+
   const body = {
-    message: `${sha ? "Update" : "Add"} ${file}`,
-    content: buffer.toString("base64"),
+    message: `${existing ? "Update" : "Add"} ${file}`,
+    content,
     branch,
   };
-  if (sha) body.sha = sha;
+  if (existing?.sha) body.sha = existing.sha;
 
   await gh(`/repos/${owner}/${repo}/contents/${encodeURIComponentPath(file)}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
   });
-  console.log(`${sha ? "Updated" : "Added"} ${file}`);
+  console.log(`${existing ? "Updated" : "Added"} ${file}`);
+  return true;
 }
 
 function encodeURIComponentPath(file) {
   return file.split("/").map(encodeURIComponent).join("/");
 }
 
+async function collectAllowedFiles() {
+  const generatedFiles = [];
+  for (const group of generatedFileGroups) {
+    const names = await fs.readdir(path.join(root, group.dir));
+    for (const name of names) {
+      if (name.includes("/") || name.includes("\\") || name.startsWith(".")) continue;
+      if (!group.include(name)) continue;
+      generatedFiles.push(`${group.dir}/${name}`);
+    }
+  }
+  return [...new Set([...baseFiles, ...generatedFiles])].sort();
+}
+
 async function main() {
   if (!process.env.GITHUB_TOKEN) throw new Error("GITHUB_TOKEN is required");
-  for (const file of files) {
-    await putFile(file);
+  const files = await collectAllowedFiles();
+  const targetFiles = process.argv.slice(2);
+  const publishFiles = targetFiles.length ? targetFiles : files;
+  let changed = 0;
+  for (const file of publishFiles) {
+    if (!files.includes(file)) throw new Error(`Unknown publish file: ${file}`);
+    if (await putFile(file)) changed += 1;
   }
-  console.log(`Published ${files.length} files to https://github.com/${owner}/${repo}`);
+  console.log(`Published ${changed} changed file(s) to https://github.com/${owner}/${repo}`);
 }
 
 main().catch((error) => {

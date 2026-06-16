@@ -1,0 +1,42 @@
+{
+  "id": "colors",
+  "order": 9,
+  "title": "Colors",
+  "theme": "things-around",
+  "intro": { "audio": "audio/phrases/intro-colors.mp3", "text": "Let's learn colors!" },
+
+  "words": [
+    { "id": "red",    "text": "red",    "image": "img/red.png",    "audio": "audio/words/red.mp3",    "meta": { "hex": "#ff5b5b" } },
+    { "id": "yellow", "text": "yellow", "image": "img/yellow.png", "audio": "audio/words/yellow.mp3", "meta": { "hex": "#ffd23f" } },
+    { "id": "blue",   "text": "blue",   "image": "img/blue.png",   "audio": "audio/words/blue.mp3",   "meta": { "hex": "#4d8bff" } },
+    { "id": "green",  "text": "green",  "image": "img/green.png",  "audio": "audio/words/green.mp3",  "meta": { "hex": "#5fd06a" } },
+    { "id": "orange", "text": "orange", "image": "img/orange.png", "audio": "audio/words/orange.mp3", "meta": { "hex": "#ff9f40" } },
+    { "id": "purple", "text": "purple", "image": "img/purple.png", "audio": "audio/words/purple.mp3", "meta": { "hex": "#9b6dff" } },
+    { "id": "pink",   "text": "pink",   "image": "img/pink.png",   "audio": "audio/words/pink.mp3",   "meta": { "hex": "#ff7eb3" } },
+    { "id": "black",  "text": "black",  "image": "img/black.png",  "audio": "audio/words/black.mp3",  "meta": { "hex": "#2b2b3a" } },
+    { "id": "white",  "text": "white",  "image": "img/white.png",  "audio": "audio/words/white.mp3",  "meta": { "hex": "#ffffff" } },
+    { "id": "brown",  "text": "brown",  "image": "img/brown.png",  "audio": "audio/words/brown.mp3",  "meta": { "hex": "#a9744f" } },
+    { "id": "gray",   "text": "gray",   "image": "img/gray.png",   "audio": "audio/words/gray.mp3",   "meta": { "hex": "#9aa3b2" } },
+    { "id": "turquoise", "text": "turquoise", "image": "img/turquoise.png", "audio": "audio/words/turquoise.mp3", "meta": { "hex": "#16c4c0" } }
+  ],
+
+  "missions": [
+    {
+      "id": "colors-explore",
+      "type": "free-explore",
+      "items": ["red", "yellow", "blue", "green"],
+      "prompt": { "text": "Tap a balloon!", "audioPattern": "audio/words/{id}.mp3" },
+      "config": { "render": "balloon" }
+    },
+    {
+      "id": "colors-tap",
+      "type": "listen-and-tap",
+      "items": ["red", "yellow", "blue", "green", "orange", "purple", "pink", "black", "white", "brown", "gray", "turquoise"],
+      "rounds": 12,
+      "prompt": { "text": "Tap the {word} balloon!", "audioPattern": "audio/phrases/tap-{id}.mp3" },
+      "config": { "choices": 4, "render": "balloon" }
+    }
+  ],
+
+  "reward": { "sticker": "img/_sticker-rainbow.png", "audio": "audio/praise/great-job.mp3" }
+}

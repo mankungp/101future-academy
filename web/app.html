@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>เข้าเรียน · 101future</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700;800&family=Itim&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/site.css">
+<style>
+  .app-wrap{max-width:560px;margin:0 auto;padding:26px 18px 60px}
+  .login-card{background:#fff;border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--shadow);padding:26px;text-align:center;margin-bottom:26px}
+  .login-card .mascot{width:96px;margin:0 auto 8px}
+  .or{display:flex;align-items:center;gap:12px;color:var(--ink-3);font-size:13px;margin:18px 0}
+  .or::before,.or::after{content:"";flex:1;height:1px;background:var(--line)}
+  .kids{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:14px;margin-top:14px}
+  .kid{background:#fff;border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow-sm);padding:18px 10px;text-align:center;cursor:pointer;transition:transform .15s var(--ease),box-shadow .15s}
+  .kid:hover{transform:translateY(-4px);box-shadow:var(--shadow)}
+  .kid .av{font-size:46px;line-height:1}
+  .kid .nm{font-weight:700;margin-top:8px;font-size:15px}
+  .kid.add{border:2px dashed var(--line);color:var(--sky-deep);display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:108px}
+  .kid.add .av{font-size:38px;color:var(--sky)}
+  .soon{font-size:12px;color:var(--ink-3);margin-top:6px}
+  .parent-link{display:inline-flex;gap:8px;align-items:center;margin-top:22px;font-weight:700;color:var(--sky-deep);text-decoration:none}
+</style>
+</head>
+<body>
+<header class="nav">
+  <div class="wrap nav-in">
+    <a class="brand" href="index.html"><span class="logo">101</span> 101<b>future</b></a>
+    <nav class="nav-links"><a href="index.html">หน้าแรก</a><a href="kindergarten.html">อนุบาล</a></nav>
+    <button class="nav-burger" aria-label="menu">☰</button>
+  </div>
+</header>
+
+<div class="app-wrap">
+  <div class="login-card">
+    <img class="mascot" src="assets/img/mascot-idle.png" alt="">
+    <h2 style="font-size:22px">ยินดีต้อนรับ! 👋</h2>
+    <p style="color:var(--ink-2);margin:8px 0 18px">เข้าสู่ระบบเพื่อบันทึกความก้าวหน้าของลูกทุกคน ในบัญชีเดียว</p>
+    <button class="btn btn-line btn-lg btn-block" id="lineBtn">เข้าสู่ระบบด้วย LINE</button>
+    <div class="soon" id="lineSoon">(กำลังเปิดให้บริการเร็วๆ นี้ — ตอนนี้เล่นแบบไม่ต้องล็อกอินได้เลย)</div>
+  </div>
+
+  <div class="or">หรือ เริ่มเล่นเลย</div>
+
+  <h3 style="font-size:18px">ใครจะเรียนวันนี้?</h3>
+  <div class="kids" id="kids"></div>
+
+  <div style="text-align:center">
+    <a class="parent-link" href="../k1/parent.html">👪 โซนผู้ปกครอง (ดูพัฒนาการ)</a>
+  </div>
+</div>
+
+<script src="../k1/progress-store.js?v=29"></script>
+<script src="assets/js/supabase-config.js?v=1"></script>
+<script src="assets/js/supabase-store.js?v=1"></script>
+<script src="assets/js/site.js"></script>
+<script>
+(function(){
+  var AV=['🧒','👦','👧','🧑','👶'];
+  var F=window.FutureFamily;
+  function go(id){ F.setCurrent(id); location.href='../k1/home.html'; }
+  function render(){
+    var kids=F.list(), el=document.getElementById('kids'), h='';
+    if(!kids.length){
+      h+='<div class="kid" onclick="__startTrial()"><div class="av">🎈</div><div class="nm">เริ่มเล่น (ทดลองฟรี)</div></div>';
+    } else {
+      kids.forEach(function(k){
+        h+='<div class="kid" data-id="'+k.id+'"><div class="av">'+(k.avatar||'🧒')+'</div><div class="nm">'+k.name+'</div></div>';
+      });
+    }
+    h+='<div class="kid add" id="addKid"><div class="av">＋</div><div class="nm">เพิ่มลูก</div></div>';
+    el.innerHTML=h;
+    Array.prototype.forEach.call(el.querySelectorAll('.kid[data-id]'),function(c){ c.onclick=function(){ go(c.getAttribute('data-id')); }; });
+    document.getElementById('addKid').onclick=function(){
+      var name=prompt('ชื่อลูก (ชื่อเล่น):'); if(name===null) return;
+      var id=F.add((name||'').trim()||'ลูก', AV[F.list().length % AV.length]);
+      render();
+    };
+  }
+  window.__startTrial=function(){ go('local'); };
+  // LINE login = placeholder (ยังไม่ต่อจริง) → ทดลองเล่นเลย
+  document.getElementById('lineBtn').onclick=function(){ window.__startTrial(); };
+  render();
+})();
+</script>
+</body>
+</html>

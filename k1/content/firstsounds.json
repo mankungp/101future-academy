@@ -1,0 +1,139 @@
+{
+  "id": "firstsounds",
+  "order": 14,
+  "title": "First Sounds",
+  "theme": "phonics-onset",
+  "standard": {
+    "earlyYears2560": [
+      "มฐ.9",
+      "มฐ.12"
+    ],
+    "core2551": "ต1.1",
+    "commonCore": "RF.K.2d (isolate first sound) + RF.K.3a (letter-sound)",
+    "cefr": "Pre-A1"
+  },
+  "intro": {
+    "audio": "audio/phrases/intro-firstsounds.mp3",
+    "text": "Listen to the first sound!"
+  },
+  "words": [
+    {
+      "id": "apple",
+      "text": "apple",
+      "image": "img/fruits/apple.png",
+      "audio": "audio/words/apple.mp3",
+      "first": "a"
+    },
+    {
+      "id": "bear",
+      "text": "bear",
+      "image": "img/animals/bear.png",
+      "audio": "audio/words/bear.mp3",
+      "first": "b"
+    },
+    {
+      "id": "cat",
+      "text": "cat",
+      "image": "img/animals/cat.png",
+      "audio": "audio/words/cat.mp3",
+      "first": "c"
+    },
+    {
+      "id": "dog",
+      "text": "dog",
+      "image": "img/animals/dog.png",
+      "audio": "audio/words/dog.mp3",
+      "first": "d"
+    },
+    {
+      "id": "elephant",
+      "text": "elephant",
+      "image": "img/animals/elephant.png",
+      "audio": "audio/words/elephant.mp3",
+      "first": "e"
+    },
+    {
+      "id": "fish",
+      "text": "fish",
+      "image": "img/animals/fish.png",
+      "audio": "audio/words/fish.mp3",
+      "first": "f"
+    },
+    {
+      "id": "lion",
+      "text": "lion",
+      "image": "img/animals/lion.png",
+      "audio": "audio/words/lion.mp3",
+      "first": "l"
+    },
+    {
+      "id": "moon",
+      "text": "moon",
+      "image": "img/weather/moon.png",
+      "audio": "audio/words/moon.mp3",
+      "first": "m"
+    },
+    {
+      "id": "pig",
+      "text": "pig",
+      "image": "img/animals/pig.png",
+      "audio": "audio/words/pig.mp3",
+      "first": "p"
+    },
+    {
+      "id": "sun",
+      "text": "sun",
+      "image": "img/weather/sun.png",
+      "audio": "audio/words/sun.mp3",
+      "first": "s"
+    }
+  ],
+  "missions": [
+    {
+      "id": "fs-explore",
+      "type": "free-explore",
+      "items": [
+        "apple",
+        "bear",
+        "cat",
+        "dog",
+        "elephant",
+        "fish",
+        "lion",
+        "moon",
+        "pig",
+        "sun"
+      ],
+      "prompt": {
+        "text": "Tap and listen!",
+        "audioPattern": "audio/words/{id}.mp3"
+      },
+      "config": {
+        "render": "balloon"
+      }
+    },
+    {
+      "id": "fs-firstletter",
+      "type": "first-letter",
+      "items": [
+        "apple",
+        "bear",
+        "cat",
+        "dog",
+        "elephant",
+        "fish",
+        "lion",
+        "moon",
+        "pig",
+        "sun"
+      ],
+      "rounds": 8,
+      "config": {
+        "choices": 4
+      }
+    }
+  ],
+  "reward": {
+    "sticker": "👂"
+  }
+}

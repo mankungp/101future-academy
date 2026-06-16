@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>อนุบาล 1 · หน่วยสี (ตัวอย่างแนว)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Itim&family=Baloo+2:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --sky1:#aee7ff; --sky2:#d9f2ff; --grass:#9be37d;
+    --ink:#3a2b53; --card:#ffffff;
+    --pop:#ff7eb3; --sun:#ffd23f;
+    --shadow:0 14px 0 rgba(0,0,0,.08), 0 22px 40px rgba(60,40,90,.18);
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent; margin:0; padding:0}
+  html,body{height:100%}
+  body{
+    font-family:'Itim','Baloo 2',system-ui,sans-serif;
+    color:var(--ink);
+    background:linear-gradient(180deg,var(--sky1) 0%,var(--sky2) 55%, #eafff0 100%);
+    overflow:hidden; user-select:none; position:fixed; inset:0;
+  }
+  /* floating clouds */
+  .cloud{position:absolute; font-size:64px; opacity:.85; animation:drift 26s linear infinite}
+  .cloud.c2{font-size:44px; top:14%; left:-15%; animation-duration:34s}
+  .cloud.c1{top:6%; left:-20%}
+  @keyframes drift{from{transform:translateX(0)}to{transform:translateX(130vw)}}
+
+  .stage{position:relative; height:100%; max-width:760px; margin:0 auto; display:flex; flex-direction:column}
+
+  /* top progress: dots not numbers */
+  .topbar{display:flex; align-items:center; justify-content:space-between; padding:16px 18px 4px}
+  .back{width:54px;height:54px;border:none;border-radius:50%;background:#fff;box-shadow:var(--shadow);
+        font-size:26px;cursor:pointer}
+  .dots{display:flex; gap:10px}
+  .dot{width:20px;height:20px;border-radius:50%;background:#ffffff88;border:3px solid #ffffff}
+  .dot.done{background:var(--sun);border-color:#fff;transform:scale(1.05)}
+  .dot.cur{background:var(--pop);border-color:#fff;animation:pulse 1s ease-in-out infinite}
+  @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.25)}}
+  .stickerbtn{width:54px;height:54px;border:none;border-radius:50%;background:#fff;box-shadow:var(--shadow);font-size:26px;cursor:pointer}
+
+  /* mascot + speech */
+  .top-talk{display:flex; align-items:flex-end; gap:10px; padding:6px 18px 0; min-height:120px}
+  .mascot{font-size:84px; line-height:1; transform-origin:bottom center; animation:bob 2.2s ease-in-out infinite}
+  .mascot.happy{animation:cheer .6s ease}
+  @keyframes bob{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-8px) rotate(2deg)}}
+  @keyframes cheer{0%{transform:scale(1)}40%{transform:scale(1.25) rotate(-8deg)}100%{transform:scale(1)}}
+  .bubble{background:#fff;border-radius:26px;padding:14px 20px;box-shadow:var(--shadow);
+          font-size:30px; position:relative; max-width:70%}
+  .bubble:after{content:'';position:absolute;left:-12px;bottom:18px;border:12px solid transparent;border-right-color:#fff}
+  .replay{display:inline-flex;align-items:center;gap:6px;margin-top:4px;background:var(--sun);
+          border:none;border-radius:18px;padding:6px 14px;font-family:inherit;font-size:20px;cursor:pointer;box-shadow:0 5px 0 #e6b800}
+  .replay:active{transform:translateY(4px);box-shadow:none}
+
+  /* play area: balloons */
+  .play{flex:1; position:relative; display:flex; align-items:center; justify-content:center; gap:18px; flex-wrap:wrap; padding:10px 20px 26px}
+  .balloon{
+    width:min(33vw,150px); aspect-ratio:.82; border-radius:50% 50% 48% 48%/46% 46% 54% 54%;
+    position:relative; cursor:pointer; box-shadow:inset -10px -14px 0 rgba(0,0,0,.12);
+    animation:floaty 3s ease-in-out infinite; transition:transform .12s;
+  }
+  .balloon:nth-child(2){animation-delay:.4s}
+  .balloon:nth-child(3){animation-delay:.8s}
+  .balloon:nth-child(4){animation-delay:1.2s}
+  @keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+  .balloon:before{content:'';position:absolute;left:50%;bottom:-12px;transform:translateX(-50%);
+    border:7px solid transparent;border-bottom-color:inherit;filter:brightness(.9)}
+  .balloon:after{content:'';position:absolute;left:50%;bottom:-58px;width:2px;height:48px;background:#ffffffaa;transform:translateX(-50%)}
+  .balloon:active{transform:scale(.92)}
+  .balloon.wrong{animation:wiggle .4s}
+  @keyframes wiggle{0%,100%{transform:translateX(0)}25%{transform:translateX(-12px) rotate(-6deg)}75%{transform:translateX(12px) rotate(6deg)}}
+  .balloon.pop{animation:popout .4s forwards}
+  @keyframes popout{0%{transform:scale(1)}40%{transform:scale(1.3)}100%{transform:scale(0);opacity:0}}
+
+  /* confetti */
+  .confetti{position:absolute;font-size:28px;pointer-events:none;animation:fall 1.1s ease-out forwards}
+  @keyframes fall{0%{transform:translateY(0) rotate(0);opacity:1}100%{transform:translateY(160px) rotate(360deg);opacity:0}}
+
+  /* start + celebrate overlays */
+  .overlay{position:absolute;inset:0;background:rgba(255,255,255,.55);backdrop-filter:blur(2px);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;z-index:20}
+  .bigbtn{border:none;border-radius:30px;padding:20px 44px;font-family:inherit;font-size:34px;color:#fff;
+    background:linear-gradient(180deg,#ff9ecb,#ff5fa2);box-shadow:0 10px 0 #d83b80,var(--shadow);cursor:pointer}
+  .bigbtn:active{transform:translateY(6px);box-shadow:0 4px 0 #d83b80}
+  .celebrate-emoji{font-size:120px;animation:cheer .8s ease}
+  .reward-row{display:flex;gap:12px;font-size:54px}
+  .reward-row span{animation:pop-in .5s backwards}
+  .reward-row span:nth-child(2){animation-delay:.2s}
+  .reward-row span:nth-child(3){animation-delay:.4s}
+  @keyframes pop-in{from{transform:scale(0)}to{transform:scale(1)}}
+  .hidden{display:none !important}
+  .note{position:absolute;bottom:8px;left:0;right:0;text-align:center;font-size:14px;color:#7a6b95;font-family:'Baloo 2',sans-serif}
+</style>
+</head>
+<body>
+  <div class="cloud c1">☁️</div>
+  <div class="cloud c2">☁️</div>
+
+  <div class="stage">
+    <div class="topbar">
+      <button class="back" aria-label="กลับ">🏠</button>
+      <div class="dots" id="dots"></div>
+      <button class="stickerbtn" aria-label="สมุดสะสม">📒</button>
+    </div>
+
+    <div class="top-talk">
+      <div class="mascot" id="mascot">🐥</div>
+      <div>
+        <div class="bubble" id="bubble">Let's play!</div>
+        <button class="replay" id="replay">🔊 Again</button>
+      </div>
+    </div>
+
+    <div class="play" id="play"></div>
+
+    <!-- start -->
+    <div class="overlay" id="startOverlay">
+      <div class="mascot" style="font-size:110px">🐥</div>
+      <button class="bigbtn" id="startBtn">▶ Play</button>
+    </div>
+
+    <!-- celebrate -->
+    <div class="overlay hidden" id="winOverlay">
+      <div class="celebrate-emoji">🎉</div>
+      <div class="bubble" style="font-size:30px">Great job! 💖</div>
+      <div class="reward-row"><span>⭐</span><span>⭐</span><span>⭐</span></div>
+      <button class="bigbtn" id="againBtn">Play again 🔁</button>
+    </div>
+
+    <div class="note">Style mockup · real art &amp; voice will look/sound better · English-only (no Thai) · tap the balloon Future asks for</div>
+  </div>
+
+<script>
+const COLORS = [
+  {name:'แดง',  en:'red',    hex:'#ff5b5b'},
+  {name:'เหลือง',en:'yellow', hex:'#ffd23f'},
+  {name:'น้ำเงิน',en:'blue',  hex:'#4d8bff'},
+  {name:'เขียว', en:'green',  hex:'#5fd06a'},
+];
+const play=document.getElementById('play');
+const bubble=document.getElementById('bubble');
+const mascot=document.getElementById('mascot');
+const dotsWrap=document.getElementById('dots');
+let order=[0,1,2,3], idx=0;
+
+// simple happy/sad tones via WebAudio (no assets needed)
+let actx;
+function tone(freq,dur,type){try{actx=actx||new (window.AudioContext||window.webkitAudioContext)();
+  const o=actx.createOscillator(),g=actx.createGain();o.type=type||'sine';o.frequency.value=freq;
+  o.connect(g);g.connect(actx.destination);g.gain.setValueAtTime(.001,actx.currentTime);
+  g.gain.exponentialRampToValueAtTime(.25,actx.currentTime+.02);
+  g.gain.exponentialRampToValueAtTime(.001,actx.currentTime+dur);o.start();o.stop(actx.currentTime+dur);}catch(e){}}
+function ding(){tone(880,.15);setTimeout(()=>tone(1320,.25),120);}
+function buzz(){tone(200,.18,'square');}
+function popfx(){tone(660,.08);}
+
+// English voice (works where available; silent fallback)
+function say(text){try{const u=new SpeechSynthesisUtterance(text);u.lang='en-US';u.rate=.85;
+  speechSynthesis.cancel();speechSynthesis.speak(u);}catch(e){}}
+
+function buildDots(){dotsWrap.innerHTML='';order.forEach((_,i)=>{const d=document.createElement('div');
+  d.className='dot'+(i<idx?' done':i===idx?' cur':'');dotsWrap.appendChild(d);});}
+
+function shuffled(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=(i*7+3)%(i+1);[a[i],a[j]]=[a[j],a[i]];}return a;}
+
+function round(){
+  buildDots();
+  const target=COLORS[order[idx]];
+  const prompt='Tap the '+target.en+' balloon!';
+  bubble.textContent=prompt; say(prompt);
+  play.innerHTML='';
+  shuffled(COLORS).forEach(c=>{
+    const b=document.createElement('div');
+    b.className='balloon'; b.style.background=c.hex; b.dataset.en=c.en;
+    b.onclick=()=>pick(b,c,target);
+    play.appendChild(b);
+  });
+}
+
+function pick(el,c,target){
+  if(c.en===target.en){
+    popfx();ding();
+    burst(el);
+    el.classList.add('pop');
+    mascot.classList.add('happy');setTimeout(()=>mascot.classList.remove('happy'),600);
+    bubble.textContent='Yes! '+target.en+' 🎈'; say('Yes! '+target.en);
+    idx++;
+    setTimeout(()=> idx>=order.length ? win() : round(), 900);
+  }else{
+    buzz();
+    el.classList.add('wrong');setTimeout(()=>el.classList.remove('wrong'),420);
+    bubble.textContent='Try again 😊'; say('Try again');
+  }
+}
+
+function burst(el){
+  const r=el.getBoundingClientRect(), pr=play.getBoundingClientRect();
+  const emojis=['🎈','✨','⭐','💖','🌟','🎉'];
+  for(let i=0;i<8;i++){const s=document.createElement('div');s.className='confetti';
+    s.textContent=emojis[i%emojis.length];
+    s.style.left=(r.left-pr.left+r.width/2-14+(Math.abs((i*37)%60)-30))+'px';
+    s.style.top=(r.top-pr.top)+'px';
+    play.appendChild(s);setTimeout(()=>s.remove(),1100);}
+}
+
+function win(){document.getElementById('winOverlay').classList.remove('hidden');
+  tone(660,.12);setTimeout(()=>tone(880,.12),140);setTimeout(()=>tone(1320,.3),300);
+  say('Great job!');}
+
+document.getElementById('startBtn').onclick=()=>{
+  document.getElementById('startOverlay').classList.add('hidden');
+  idx=0; round();
+};
+document.getElementById('againBtn').onclick=()=>{
+  document.getElementById('winOverlay').classList.add('hidden'); idx=0; round();
+};
+document.getElementById('replay').onclick=()=>{ if(idx<order.length){const t=COLORS[order[idx]];
+  const p='Tap the '+t.en+' balloon!';bubble.textContent=p;say(p);} };
+buildDots();
+</script>
+</body>
+</html>

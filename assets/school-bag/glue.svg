@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" role="img" aria-label="glue bottle">
+  <rect width="240" height="180" rx="30" fill="#f5f3ff"/>
+  <path d="M96 24h48l8 18v16H88V42z" fill="#fb923c" stroke="#9a3412" stroke-width="7" stroke-linejoin="round"/>
+  <rect x="76" y="54" width="88" height="104" rx="22" fill="#ffffff" stroke="#6d28d9" stroke-width="7"/>
+  <rect x="92" y="86" width="56" height="42" rx="12" fill="#c4b5fd"/>
+  <path d="M104 103h32M104 115h32" stroke="#fff" stroke-width="7" stroke-linecap="round"/>
+  <path d="M90 62c9 12 51 12 60 0" fill="none" stroke="#ede9fe" stroke-width="9" stroke-linecap="round"/>
+  <ellipse cx="120" cy="164" rx="54" ry="9" fill="#ddd6fe" opacity=".7"/>
+</svg>

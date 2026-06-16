@@ -1,0 +1,46 @@
+{
+  "id": "music",
+  "order": 12,
+  "title": "Move & Music",
+  "theme": "sounds-music-actions",
+  "standard": {
+    "earlyYears2560": ["มฐ.2", "มฐ.4", "มฐ.9"],
+    "core2551": "ต1.1",
+    "commonCore": "L.K.5",
+    "cefr": "Pre-A1"
+  },
+  "intro": { "audio": "audio/phrases/intro-music.mp3", "text": "Let's move and play!" },
+
+  "words": [
+    { "id": "clap",  "text": "clap",  "image": "img/music/clap.png",  "audio": "audio/words/clap.mp3" },
+    { "id": "sing",  "text": "sing",  "image": "img/music/sing.png",  "audio": "audio/words/sing.mp3" },
+    { "id": "dance", "text": "dance", "image": "img/music/dance.png", "audio": "audio/words/dance.mp3" },
+    { "id": "jump",  "text": "jump",  "image": "img/music/jump.png",  "audio": "audio/words/jump.mp3" },
+    { "id": "run",   "text": "run",   "image": "img/music/run.png",   "audio": "audio/words/run.mp3" },
+    { "id": "drum",  "text": "drum",  "image": "img/music/drum.png",  "audio": "audio/words/drum.mp3" }
+  ],
+
+  "missions": [
+    {
+      "id": "music-explore", "type": "free-explore",
+      "items": ["clap","sing","dance","jump","run","drum"],
+      "prompt": { "text": "Tap to move!", "audioPattern": "audio/words/{id}.mp3" },
+      "config": { "render": "balloon" }
+    },
+    {
+      "id": "music-tap", "type": "listen-and-tap",
+      "items": ["clap","sing","dance","jump","run","drum"],
+      "rounds": 6,
+      "prompt": { "text": "Tap {word}!", "audioPattern": "audio/phrases/tap-music-{id}.mp3" },
+      "config": { "choices": 4 }
+    },
+    {
+      "id": "music-match", "type": "match",
+      "items": ["clap","sing","dance","jump","run","drum"],
+      "prompt": { "text": "Tap {word}!" },
+      "config": { "mode": "image-sound", "pairs": 4 }
+    }
+  ],
+
+  "reward": { "sticker": "🎵" }
+}

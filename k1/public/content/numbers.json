@@ -1,0 +1,46 @@
+{
+  "id": "numbers",
+  "order": 11,
+  "title": "Numbers",
+  "theme": "things-around",
+  "intro": { "audio": "audio/phrases/intro-numbers.mp3", "text": "Let's count!" },
+
+  "words": [
+    { "id": "one",   "text": "one",   "label": "1",  "audio": "audio/words/one.mp3",   "meta": { "hex": "#ff5b5b" } },
+    { "id": "two",   "text": "two",   "label": "2",  "audio": "audio/words/two.mp3",   "meta": { "hex": "#ff9f40" } },
+    { "id": "three", "text": "three", "label": "3",  "audio": "audio/words/three.mp3", "meta": { "hex": "#ffd23f" } },
+    { "id": "four",  "text": "four",  "label": "4",  "audio": "audio/words/four.mp3",  "meta": { "hex": "#5fd06a" } },
+    { "id": "five",  "text": "five",  "label": "5",  "audio": "audio/words/five.mp3",  "meta": { "hex": "#16c4c0" } },
+    { "id": "six",   "text": "six",   "label": "6",  "audio": "audio/words/six.mp3",   "meta": { "hex": "#4d8bff" } },
+    { "id": "seven", "text": "seven", "label": "7",  "audio": "audio/words/seven.mp3", "meta": { "hex": "#9b6dff" } },
+    { "id": "eight", "text": "eight", "label": "8",  "audio": "audio/words/eight.mp3", "meta": { "hex": "#ff7eb3" } },
+    { "id": "nine",  "text": "nine",  "label": "9",  "audio": "audio/words/nine.mp3",  "meta": { "hex": "#a9744f" } },
+    { "id": "ten",   "text": "ten",   "label": "10", "audio": "audio/words/ten.mp3",   "meta": { "hex": "#ff5fa2" } }
+  ],
+
+  "missions": [
+    {
+      "id": "numbers-explore",
+      "type": "free-explore",
+      "items": ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten"],
+      "prompt": { "text": "Pop the balloons!", "audioPattern": "audio/words/{id}.mp3" },
+      "config": { "render": "balloon" }
+    },
+    {
+      "id": "numbers-count",
+      "type": "count",
+      "counts": [1, 2, 3, 4, 5],
+      "prompt": { "text": "How many?", "audio": "audio/praise/howmany.mp3" }
+    },
+    {
+      "id": "numbers-tap",
+      "type": "listen-and-tap",
+      "items": ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten"],
+      "rounds": 10,
+      "prompt": { "text": "Tap the number {word}!", "audioPattern": "audio/phrases/tap-num-{id}.mp3" },
+      "config": { "choices": 4 }
+    }
+  ],
+
+  "reward": { "audio": "audio/praise/great-job.mp3" }
+}

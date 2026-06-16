@@ -1,0 +1,46 @@
+{
+  "id": "selfcare",
+  "order": 3,
+  "title": "Take Care",
+  "theme": "self-care",
+  "standard": {
+    "earlyYears2560": ["มฐ.1", "มฐ.2", "มฐ.9"],
+    "core2551": "ต1.1",
+    "commonCore": "L.K.5",
+    "cefr": "Pre-A1"
+  },
+  "intro": { "audio": "audio/phrases/intro-selfcare.mp3", "text": "Let's take care of ourselves!" },
+
+  "words": [
+    { "id": "wash-hands",  "text": "wash hands",  "image": "img/selfcare/wash-hands.png",  "audio": "audio/words/wash-hands.mp3" },
+    { "id": "brush-teeth", "text": "brush teeth", "image": "img/selfcare/brush-teeth.png", "audio": "audio/words/brush-teeth.mp3" },
+    { "id": "eat",         "text": "eat",         "image": "img/selfcare/eat.png",         "audio": "audio/words/eat.mp3" },
+    { "id": "drink",       "text": "drink",       "image": "img/selfcare/drink.png",       "audio": "audio/words/drink.mp3" },
+    { "id": "sleep",       "text": "sleep",       "image": "img/selfcare/sleep.png",       "audio": "audio/words/sleep.mp3" },
+    { "id": "bath",        "text": "bath",        "image": "img/selfcare/bath.png",        "audio": "audio/words/bath.mp3" }
+  ],
+
+  "missions": [
+    {
+      "id": "selfcare-explore", "type": "free-explore",
+      "items": ["wash-hands","brush-teeth","eat","drink","sleep","bath"],
+      "prompt": { "text": "Tap to see!", "audioPattern": "audio/words/{id}.mp3" },
+      "config": { "render": "balloon" }
+    },
+    {
+      "id": "selfcare-tap", "type": "listen-and-tap",
+      "items": ["wash-hands","brush-teeth","eat","drink","sleep","bath"],
+      "rounds": 6,
+      "prompt": { "text": "Tap {word}!", "audioPattern": "audio/phrases/tap-selfcare-{id}.mp3" },
+      "config": { "choices": 4 }
+    },
+    {
+      "id": "selfcare-match", "type": "match",
+      "items": ["wash-hands","brush-teeth","eat","drink","sleep","bath"],
+      "prompt": { "text": "Tap {word}!" },
+      "config": { "mode": "image-sound", "pairs": 4 }
+    }
+  ],
+
+  "reward": { "sticker": "🧼" }
+}

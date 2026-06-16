@@ -1,0 +1,102 @@
+{
+  "id": "k2have",
+  "order": 29,
+  "level": "k2",
+  "title": "I Have...",
+  "theme": "k2-sentences",
+  "standard": {
+    "earlyYears2560": [
+      "มฐ.9",
+      "มฐ.10"
+    ],
+    "core2551": "ต1.1",
+    "commonCore": "SL.K.2 / L.K (have + noun)",
+    "cefr": "Pre-A1 → A1"
+  },
+  "intro": {
+    "audio": "audio/phrases/intro-k2have.mp3",
+    "text": "What do you have?"
+  },
+  "words": [
+    {
+      "id": "book",
+      "text": "book",
+      "image": "img/school/book.png",
+      "audio": "audio/words/book.mp3"
+    },
+    {
+      "id": "bag",
+      "text": "bag",
+      "image": "img/school/bag.png",
+      "audio": "audio/words/bag.mp3"
+    },
+    {
+      "id": "pencil",
+      "text": "pencil",
+      "image": "img/school/pencil.png",
+      "audio": "audio/words/pencil.mp3"
+    },
+    {
+      "id": "crayon",
+      "text": "crayon",
+      "image": "img/school/crayon.png",
+      "audio": "audio/words/crayon.mp3"
+    },
+    {
+      "id": "scissors",
+      "text": "scissors",
+      "image": "img/school/scissors.png",
+      "audio": "audio/words/scissors.mp3"
+    },
+    {
+      "id": "chair",
+      "text": "chair",
+      "image": "img/school/chair.png",
+      "audio": "audio/words/chair.mp3"
+    }
+  ],
+  "missions": [
+    {
+      "id": "k2have-explore",
+      "type": "free-explore",
+      "items": [
+        "book",
+        "bag",
+        "pencil",
+        "crayon",
+        "scissors",
+        "chair"
+      ],
+      "prompt": {
+        "text": "Tap and listen!",
+        "audioPattern": "audio/words/{id}.mp3"
+      },
+      "config": {
+        "render": "balloon"
+      }
+    },
+    {
+      "id": "k2have-choose",
+      "type": "listen-and-choose",
+      "items": [
+        "book",
+        "bag",
+        "pencil",
+        "crayon",
+        "scissors",
+        "chair"
+      ],
+      "rounds": 6,
+      "prompt": {
+        "text": "I have a {word}!",
+        "audioPattern": "audio/phrases/k2-have-{id}.mp3"
+      },
+      "config": {
+        "choices": 3
+      }
+    }
+  ],
+  "reward": {
+    "sticker": "🙌"
+  }
+}

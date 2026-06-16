@@ -1,0 +1,42 @@
+{
+  "id": "fruits",
+  "order": 7,
+  "title": "Fruits",
+  "theme": "nature",
+  "intro": { "audio": "audio/phrases/intro-fruits.mp3", "text": "Let's eat some fruits!" },
+
+  "words": [
+    { "id": "apple",      "text": "apple",      "image": "img/fruits/apple.png",      "audio": "audio/words/apple.mp3" },
+    { "id": "banana",     "text": "banana",     "image": "img/fruits/banana.png",     "audio": "audio/words/banana.mp3" },
+    { "id": "orange",     "text": "orange",     "image": "img/fruits/orange.png",     "audio": "audio/words/orange.mp3" },
+    { "id": "grape",      "text": "grape",      "image": "img/fruits/grape.png",      "audio": "audio/words/grape.mp3" },
+    { "id": "mango",      "text": "mango",      "image": "img/fruits/mango.png",      "audio": "audio/words/mango.mp3" },
+    { "id": "watermelon", "text": "watermelon", "image": "img/fruits/watermelon.png", "audio": "audio/words/watermelon.mp3" },
+    { "id": "strawberry", "text": "strawberry", "image": "img/fruits/strawberry.png", "audio": "audio/words/strawberry.mp3" },
+    { "id": "pineapple",  "text": "pineapple",  "image": "img/fruits/pineapple.png",  "audio": "audio/words/pineapple.mp3" },
+    { "id": "lemon",      "text": "lemon",      "image": "img/fruits/lemon.png",      "audio": "audio/words/lemon.mp3" },
+    { "id": "cherry",     "text": "cherry",     "image": "img/fruits/cherry.png",     "audio": "audio/words/cherry.mp3" },
+    { "id": "pear",       "text": "pear",       "image": "img/fruits/pear.png",       "audio": "audio/words/pear.mp3" },
+    { "id": "coconut",    "text": "coconut",    "image": "img/fruits/coconut.png",    "audio": "audio/words/coconut.mp3" }
+  ],
+
+  "missions": [
+    {
+      "id": "fruits-explore",
+      "type": "free-explore",
+      "items": ["apple", "banana", "orange", "grape", "mango", "watermelon", "strawberry", "pineapple", "lemon", "cherry", "pear", "coconut"],
+      "prompt": { "text": "Pop the balloons!", "audioPattern": "audio/words/{id}.mp3" },
+      "config": { "render": "balloon" }
+    },
+    {
+      "id": "fruits-tap",
+      "type": "listen-and-tap",
+      "items": ["apple", "banana", "orange", "grape", "mango", "watermelon", "strawberry", "pineapple", "lemon", "cherry", "pear", "coconut"],
+      "rounds": 12,
+      "prompt": { "text": "Tap the {word}!", "audioPattern": "audio/phrases/tap-fruit-{id}.mp3" },
+      "config": { "choices": 4 }
+    }
+  ],
+
+  "reward": { "audio": "audio/praise/great-job.mp3" }
+}

@@ -1,0 +1,103 @@
+{
+  "id": "k2family",
+  "order": 30,
+  "level": "k2",
+  "title": "This Is My...",
+  "theme": "k2-sentences",
+  "standard": {
+    "earlyYears2560": [
+      "มฐ.7",
+      "มฐ.8",
+      "มฐ.9"
+    ],
+    "core2551": "ต1.1, ต2.2",
+    "commonCore": "SL.K.2 / L.K (this is + family)",
+    "cefr": "Pre-A1 → A1"
+  },
+  "intro": {
+    "audio": "audio/phrases/intro-k2family.mp3",
+    "text": "Meet my family!"
+  },
+  "words": [
+    {
+      "id": "mom",
+      "text": "mom",
+      "image": "img/family/mom.png",
+      "audio": "audio/words/mom.mp3"
+    },
+    {
+      "id": "dad",
+      "text": "dad",
+      "image": "img/family/dad.png",
+      "audio": "audio/words/dad.mp3"
+    },
+    {
+      "id": "brother",
+      "text": "brother",
+      "image": "img/family/brother.png",
+      "audio": "audio/words/brother.mp3"
+    },
+    {
+      "id": "sister",
+      "text": "sister",
+      "image": "img/family/sister.png",
+      "audio": "audio/words/sister.mp3"
+    },
+    {
+      "id": "grandma",
+      "text": "grandma",
+      "image": "img/family/grandma.png",
+      "audio": "audio/words/grandma.mp3"
+    },
+    {
+      "id": "grandpa",
+      "text": "grandpa",
+      "image": "img/family/grandpa.png",
+      "audio": "audio/words/grandpa.mp3"
+    }
+  ],
+  "missions": [
+    {
+      "id": "k2family-explore",
+      "type": "free-explore",
+      "items": [
+        "mom",
+        "dad",
+        "brother",
+        "sister",
+        "grandma",
+        "grandpa"
+      ],
+      "prompt": {
+        "text": "Tap and listen!",
+        "audioPattern": "audio/words/{id}.mp3"
+      },
+      "config": {
+        "render": "balloon"
+      }
+    },
+    {
+      "id": "k2family-choose",
+      "type": "listen-and-choose",
+      "items": [
+        "mom",
+        "dad",
+        "brother",
+        "sister",
+        "grandma",
+        "grandpa"
+      ],
+      "rounds": 6,
+      "prompt": {
+        "text": "This is my {word}!",
+        "audioPattern": "audio/phrases/k2-thisis-{id}.mp3"
+      },
+      "config": {
+        "choices": 3
+      }
+    }
+  ],
+  "reward": {
+    "sticker": "🏠"
+  }
+}

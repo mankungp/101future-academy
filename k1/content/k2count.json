@@ -1,0 +1,144 @@
+{
+  "id": "k2count",
+  "order": 26,
+  "level": "k2",
+  "title": "How Many?",
+  "theme": "k2-counting",
+  "standard": {
+    "earlyYears2560": [
+      "มฐ.10"
+    ],
+    "core2551": "ต1.1",
+    "commonCore": "Math K.CC (counting to 10)",
+    "cefr": "Pre-A1 → A1"
+  },
+  "intro": {
+    "audio": "audio/phrases/intro-k2count.mp3",
+    "text": "Let's count!"
+  },
+  "words": [
+    {
+      "id": "one",
+      "text": "one",
+      "label": "1",
+      "audio": "audio/words/one.mp3",
+      "meta": {
+        "hex": "#ff5b5b"
+      }
+    },
+    {
+      "id": "two",
+      "text": "two",
+      "label": "2",
+      "audio": "audio/words/two.mp3",
+      "meta": {
+        "hex": "#ff9f40"
+      }
+    },
+    {
+      "id": "three",
+      "text": "three",
+      "label": "3",
+      "audio": "audio/words/three.mp3",
+      "meta": {
+        "hex": "#ffd23f"
+      }
+    },
+    {
+      "id": "four",
+      "text": "four",
+      "label": "4",
+      "audio": "audio/words/four.mp3",
+      "meta": {
+        "hex": "#5fd06a"
+      }
+    },
+    {
+      "id": "five",
+      "text": "five",
+      "label": "5",
+      "audio": "audio/words/five.mp3",
+      "meta": {
+        "hex": "#16c4c0"
+      }
+    },
+    {
+      "id": "six",
+      "text": "six",
+      "label": "6",
+      "audio": "audio/words/six.mp3",
+      "meta": {
+        "hex": "#4d8bff"
+      }
+    },
+    {
+      "id": "seven",
+      "text": "seven",
+      "label": "7",
+      "audio": "audio/words/seven.mp3",
+      "meta": {
+        "hex": "#9b6dff"
+      }
+    },
+    {
+      "id": "eight",
+      "text": "eight",
+      "label": "8",
+      "audio": "audio/words/eight.mp3",
+      "meta": {
+        "hex": "#ff7eb3"
+      }
+    },
+    {
+      "id": "nine",
+      "text": "nine",
+      "label": "9",
+      "audio": "audio/words/nine.mp3",
+      "meta": {
+        "hex": "#ff5b5b"
+      }
+    },
+    {
+      "id": "ten",
+      "text": "ten",
+      "label": "10",
+      "audio": "audio/words/ten.mp3",
+      "meta": {
+        "hex": "#5fd06a"
+      }
+    }
+  ],
+  "missions": [
+    {
+      "id": "k2count-count",
+      "type": "count",
+      "items": [
+        "one",
+        "two",
+        "three",
+        "four",
+        "five",
+        "six",
+        "seven",
+        "eight",
+        "nine",
+        "ten"
+      ],
+      "counts": [
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "prompt": {
+        "text": "How many?",
+        "audio": "audio/praise/howmany.mp3"
+      }
+    }
+  ],
+  "reward": {
+    "sticker": "🧮"
+  }
+}

@@ -1,0 +1,468 @@
+{
+  "id": "abc",
+  "order": 13,
+  "title": "ABC",
+  "theme": "phonics-letters",
+  "standard": {
+    "earlyYears2560": [
+      "มฐ.9",
+      "มฐ.12"
+    ],
+    "core2551": "ต1.1",
+    "commonCore": "RF.K.1d (recognize letters) + RF.K.3 (phonics)",
+    "cefr": "Pre-A1"
+  },
+  "intro": {
+    "audio": "audio/phrases/intro-abc.mp3",
+    "text": "Let's learn the ABC!"
+  },
+  "words": [
+    {
+      "id": "letter-a",
+      "text": "A",
+      "label": "A",
+      "audio": "audio/words/letter-a.mp3",
+      "meta": {
+        "hex": "#ff5b5b"
+      }
+    },
+    {
+      "id": "letter-b",
+      "text": "B",
+      "label": "B",
+      "audio": "audio/words/letter-b.mp3",
+      "meta": {
+        "hex": "#ff9f40"
+      }
+    },
+    {
+      "id": "letter-c",
+      "text": "C",
+      "label": "C",
+      "audio": "audio/words/letter-c.mp3",
+      "meta": {
+        "hex": "#ffd23f"
+      },
+      "trace": [
+        [
+          0.66,
+          0.32
+        ],
+        [
+          0.5,
+          0.25
+        ],
+        [
+          0.36,
+          0.34
+        ],
+        [
+          0.31,
+          0.5
+        ],
+        [
+          0.36,
+          0.66
+        ],
+        [
+          0.5,
+          0.75
+        ],
+        [
+          0.66,
+          0.68
+        ]
+      ]
+    },
+    {
+      "id": "letter-d",
+      "text": "D",
+      "label": "D",
+      "audio": "audio/words/letter-d.mp3",
+      "meta": {
+        "hex": "#5fd06a"
+      }
+    },
+    {
+      "id": "letter-e",
+      "text": "E",
+      "label": "E",
+      "audio": "audio/words/letter-e.mp3",
+      "meta": {
+        "hex": "#16c4c0"
+      }
+    },
+    {
+      "id": "letter-f",
+      "text": "F",
+      "label": "F",
+      "audio": "audio/words/letter-f.mp3",
+      "meta": {
+        "hex": "#4d8bff"
+      }
+    },
+    {
+      "id": "letter-g",
+      "text": "G",
+      "label": "G",
+      "audio": "audio/words/letter-g.mp3",
+      "meta": {
+        "hex": "#9b6dff"
+      }
+    },
+    {
+      "id": "letter-h",
+      "text": "H",
+      "label": "H",
+      "audio": "audio/words/letter-h.mp3",
+      "meta": {
+        "hex": "#ff7eb3"
+      }
+    },
+    {
+      "id": "letter-i",
+      "text": "I",
+      "label": "I",
+      "audio": "audio/words/letter-i.mp3",
+      "meta": {
+        "hex": "#ff5b5b"
+      },
+      "trace": [
+        [
+          0.5,
+          0.24
+        ],
+        [
+          0.5,
+          0.5
+        ],
+        [
+          0.5,
+          0.76
+        ]
+      ]
+    },
+    {
+      "id": "letter-j",
+      "text": "J",
+      "label": "J",
+      "audio": "audio/words/letter-j.mp3",
+      "meta": {
+        "hex": "#ff9f40"
+      }
+    },
+    {
+      "id": "letter-k",
+      "text": "K",
+      "label": "K",
+      "audio": "audio/words/letter-k.mp3",
+      "meta": {
+        "hex": "#ffd23f"
+      }
+    },
+    {
+      "id": "letter-l",
+      "text": "L",
+      "label": "L",
+      "audio": "audio/words/letter-l.mp3",
+      "meta": {
+        "hex": "#5fd06a"
+      },
+      "trace": [
+        [
+          0.42,
+          0.2
+        ],
+        [
+          0.42,
+          0.45
+        ],
+        [
+          0.42,
+          0.72
+        ],
+        [
+          0.64,
+          0.72
+        ]
+      ]
+    },
+    {
+      "id": "letter-m",
+      "text": "M",
+      "label": "M",
+      "audio": "audio/words/letter-m.mp3",
+      "meta": {
+        "hex": "#16c4c0"
+      }
+    },
+    {
+      "id": "letter-n",
+      "text": "N",
+      "label": "N",
+      "audio": "audio/words/letter-n.mp3",
+      "meta": {
+        "hex": "#4d8bff"
+      }
+    },
+    {
+      "id": "letter-o",
+      "text": "O",
+      "label": "O",
+      "audio": "audio/words/letter-o.mp3",
+      "meta": {
+        "hex": "#9b6dff"
+      },
+      "trace": [
+        [
+          0.5,
+          0.22
+        ],
+        [
+          0.34,
+          0.32
+        ],
+        [
+          0.3,
+          0.5
+        ],
+        [
+          0.34,
+          0.68
+        ],
+        [
+          0.5,
+          0.78
+        ],
+        [
+          0.66,
+          0.68
+        ],
+        [
+          0.7,
+          0.5
+        ],
+        [
+          0.66,
+          0.32
+        ],
+        [
+          0.5,
+          0.22
+        ]
+      ]
+    },
+    {
+      "id": "letter-p",
+      "text": "P",
+      "label": "P",
+      "audio": "audio/words/letter-p.mp3",
+      "meta": {
+        "hex": "#ff7eb3"
+      }
+    },
+    {
+      "id": "letter-q",
+      "text": "Q",
+      "label": "Q",
+      "audio": "audio/words/letter-q.mp3",
+      "meta": {
+        "hex": "#ff5b5b"
+      }
+    },
+    {
+      "id": "letter-r",
+      "text": "R",
+      "label": "R",
+      "audio": "audio/words/letter-r.mp3",
+      "meta": {
+        "hex": "#ff9f40"
+      }
+    },
+    {
+      "id": "letter-s",
+      "text": "S",
+      "label": "S",
+      "audio": "audio/words/letter-s.mp3",
+      "meta": {
+        "hex": "#ffd23f"
+      }
+    },
+    {
+      "id": "letter-t",
+      "text": "T",
+      "label": "T",
+      "audio": "audio/words/letter-t.mp3",
+      "meta": {
+        "hex": "#5fd06a"
+      }
+    },
+    {
+      "id": "letter-u",
+      "text": "U",
+      "label": "U",
+      "audio": "audio/words/letter-u.mp3",
+      "meta": {
+        "hex": "#16c4c0"
+      },
+      "trace": [
+        [
+          0.33,
+          0.24
+        ],
+        [
+          0.33,
+          0.54
+        ],
+        [
+          0.41,
+          0.71
+        ],
+        [
+          0.5,
+          0.74
+        ],
+        [
+          0.59,
+          0.71
+        ],
+        [
+          0.67,
+          0.54
+        ],
+        [
+          0.67,
+          0.24
+        ]
+      ]
+    },
+    {
+      "id": "letter-v",
+      "text": "V",
+      "label": "V",
+      "audio": "audio/words/letter-v.mp3",
+      "meta": {
+        "hex": "#4d8bff"
+      },
+      "trace": [
+        [
+          0.32,
+          0.24
+        ],
+        [
+          0.41,
+          0.5
+        ],
+        [
+          0.5,
+          0.75
+        ],
+        [
+          0.59,
+          0.5
+        ],
+        [
+          0.68,
+          0.24
+        ]
+      ]
+    },
+    {
+      "id": "letter-w",
+      "text": "W",
+      "label": "W",
+      "audio": "audio/words/letter-w.mp3",
+      "meta": {
+        "hex": "#9b6dff"
+      }
+    },
+    {
+      "id": "letter-x",
+      "text": "X",
+      "label": "X",
+      "audio": "audio/words/letter-x.mp3",
+      "meta": {
+        "hex": "#ff7eb3"
+      }
+    },
+    {
+      "id": "letter-y",
+      "text": "Y",
+      "label": "Y",
+      "audio": "audio/words/letter-y.mp3",
+      "meta": {
+        "hex": "#ff5b5b"
+      }
+    },
+    {
+      "id": "letter-z",
+      "text": "Z",
+      "label": "Z",
+      "audio": "audio/words/letter-z.mp3",
+      "meta": {
+        "hex": "#ff9f40"
+      }
+    }
+  ],
+  "missions": [
+    {
+      "id": "abc-find",
+      "type": "listen-and-tap",
+      "items": [
+        "letter-a",
+        "letter-b",
+        "letter-c",
+        "letter-d",
+        "letter-e",
+        "letter-f",
+        "letter-g",
+        "letter-h",
+        "letter-i",
+        "letter-j",
+        "letter-k",
+        "letter-l",
+        "letter-m",
+        "letter-n",
+        "letter-o",
+        "letter-p",
+        "letter-q",
+        "letter-r",
+        "letter-s",
+        "letter-t",
+        "letter-u",
+        "letter-v",
+        "letter-w",
+        "letter-x",
+        "letter-y",
+        "letter-z"
+      ],
+      "rounds": 10,
+      "prompt": {
+        "text": "Find the letter {word}!",
+        "audioPattern": "audio/words/{id}.mp3"
+      },
+      "config": {
+        "choices": 4
+      }
+    },
+    {
+      "id": "abc-trace",
+      "type": "trace",
+      "items": [
+        "letter-c",
+        "letter-o",
+        "letter-l",
+        "letter-i",
+        "letter-u",
+        "letter-v"
+      ],
+      "prompt": {
+        "text": "Trace the letter {word}!",
+        "audioPattern": "audio/words/{id}.mp3"
+      }
+    }
+  ],
+  "reward": {
+    "sticker": "🔤"
+  }
+}

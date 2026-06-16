@@ -1,0 +1,2830 @@
+{
+  "schemaVersion": 1,
+  "subject": "english",
+  "grade": "p1",
+  "version": "20260604-en-p1-core-v2",
+  "author": "Codex + Claude Code",
+  "principles": [
+    "animation-first, mission-based, mobile one-screen",
+    "phonics-first + chant/song เพื่อจำง่าย",
+    "AI ใช้ตรวจ/แก้/สรุปจุดอ่อน ไม่ใช่สร้างเนื้อหาเปิดกว้าง (low hallucination)",
+    "scripted/cached: gen เสียง/รูปล่วงหน้าเป็น asset static",
+    "แยกหน้าสรุปผู้ปกครองออกจากจอเล่นของเด็ก"
+  ],
+  "voice": {
+    "lang": "en-US",
+    "rate": 0.6,
+    "style": "ครูเด็กประถม: ช้า อบอุ่น ชัด ใช้ pause ระหว่างคำ",
+    "note": "เพิ่ม audio key แล้ว แต่ไฟล์เสียงใหม่ให้ Claude/ElevenLabs gen และ cache ทีหลัง; ห้ามใช้ TTS สดบน production"
+  },
+  "assetGuide": {
+    "imageDir": "/assets/english-p1/images/",
+    "audioDir": "/assets/english-p1/audio/",
+    "imageFormatPreferred": "svg/png ตัดพื้นหลังสะอาด, สไตล์ 3D/realistic เป็นมิตรกับเด็ก",
+    "audioFormat": "mp3, ตั้งชื่อตาม item.audio key",
+    "note": "Canva สร้างทีละชิ้น + คน curate; ห้ามสร้าง 20 ชิ้นรวดแล้วใช้เลย"
+  },
+  "missionTypes": {
+    "listen-tap": "ฟังคำ/เสียง แล้วแตะรูปให้ตรง (เหมือน Mission 1)",
+    "sentence": "Q&A ป.1: What is it? It is a/an ... หรือ pattern ใกล้เคียงตามชนิดคำ; รูปประโยคชี้สิ่งของของ ป.2 ให้เก็บไปใช้ทีหลัง",
+    "say-it-back": "พูดตาม + เทียบคำในเบราว์เซอร์ no-fail (เหมือน Mission 3)",
+    "phonics": "ฟังเสียงตัวอักษร แล้วจับคู่เสียง-ตัวอักษร-คำ",
+    "review": "ทบทวนคำที่ผิดซ้ำ ดึงจาก localStorage 101future.learningAttempts",
+    "intro-video": "วิดีโอ/แอนิเมชันสั้น 20-60s เปิดเรื่อง + เพลง phonics (ทำทีหลัง)",
+    "tpr": "ฟังคำสั่งในห้องเรียนแล้วทำท่าหรือแตะภาพคำสั่ง เช่น Stand up / Sit down",
+    "culture": "เรียนคำง่าย ๆ เกี่ยวกับมารยาทและเทศกาลไทย/สากลตาม ต2.1 ผ่านรูป เสียง และเกมจับคู่"
+  },
+  "units": [
+    {
+      "id": "u1-my-school-bag",
+      "order": 1,
+      "title": "My School Bag",
+      "theme": "classroom objects",
+      "status": "live",
+      "priority": "P0",
+      "routes": [
+        "/mission/school-bag",
+        "/mission/this-is",
+        "/mission/say-it-back"
+      ],
+      "note": "Unit 1 live แล้ว ใช้เป็น reference ของ schema และใช้รูปแบบ ป.1: What is it? It is a/an ...",
+      "vocab": [
+        {
+          "key": "book",
+          "en": "book",
+          "th": "หนังสือ",
+          "sentence": "It is a book.",
+          "image": "book",
+          "audio": "book",
+          "tts": "book. What is it? It is a book."
+        },
+        {
+          "key": "pencil",
+          "en": "pencil",
+          "th": "ดินสอ",
+          "sentence": "It is a pencil.",
+          "image": "pencil",
+          "audio": "pencil",
+          "tts": "pencil. What is it? It is a pencil."
+        },
+        {
+          "key": "ruler",
+          "en": "ruler",
+          "th": "ไม้บรรทัด",
+          "sentence": "It is a ruler.",
+          "image": "ruler",
+          "audio": "ruler",
+          "tts": "ruler. What is it? It is a ruler."
+        },
+        {
+          "key": "eraser",
+          "en": "eraser",
+          "th": "ยางลบ",
+          "sentence": "It is an eraser.",
+          "image": "eraser",
+          "audio": "eraser",
+          "tts": "eraser. What is it? It is an eraser.",
+          "pattern": "an eraser"
+        },
+        {
+          "key": "school-bag",
+          "en": "school bag",
+          "th": "กระเป๋านักเรียน",
+          "sentence": "It is a school bag.",
+          "image": "school-bag",
+          "audio": "school-bag",
+          "tts": "school bag. What is it? It is a school bag."
+        },
+        {
+          "key": "notebook",
+          "en": "notebook",
+          "th": "สมุด",
+          "sentence": "It is a notebook.",
+          "image": "notebook",
+          "audio": "notebook",
+          "tts": "notebook. What is it? It is a notebook."
+        },
+        {
+          "key": "pen",
+          "en": "pen",
+          "th": "ปากกา",
+          "sentence": "It is a pen.",
+          "image": "pen",
+          "audio": "pen",
+          "tts": "pen. What is it? It is a pen."
+        },
+        {
+          "key": "crayon",
+          "en": "crayon",
+          "th": "สีเทียน",
+          "sentence": "It is a crayon.",
+          "image": "crayon",
+          "audio": "crayon",
+          "tts": "crayon. What is it? It is a crayon."
+        },
+        {
+          "key": "scissors",
+          "en": "scissors",
+          "th": "กรรไกร",
+          "sentence": "They are scissors.",
+          "image": "scissors",
+          "audio": "scissors",
+          "tts": "scissors. What are they? They are scissors."
+        },
+        {
+          "key": "glue",
+          "en": "glue",
+          "th": "กาว",
+          "sentence": "It is glue.",
+          "image": "glue",
+          "audio": "glue",
+          "tts": "glue. What is it? It is glue."
+        },
+        {
+          "key": "sharpener",
+          "en": "sharpener",
+          "th": "กบเหลาดินสอ",
+          "sentence": "It is a sharpener.",
+          "image": "sharpener",
+          "audio": "sharpener",
+          "tts": "sharpener. What is it? It is a sharpener."
+        },
+        {
+          "key": "desk",
+          "en": "desk",
+          "th": "โต๊ะเรียน",
+          "sentence": "It is a desk.",
+          "image": "desk",
+          "audio": "desk",
+          "tts": "desk. What is it? It is a desk."
+        },
+        {
+          "key": "chair",
+          "en": "chair",
+          "th": "เก้าอี้",
+          "sentence": "It is a chair.",
+          "image": "chair",
+          "audio": "chair",
+          "tts": "chair. What is it? It is a chair."
+        },
+        {
+          "key": "board",
+          "en": "board",
+          "th": "กระดาน",
+          "sentence": "It is a board.",
+          "image": "board",
+          "audio": "board",
+          "tts": "board. What is it? It is a board."
+        },
+        {
+          "key": "clock",
+          "en": "clock",
+          "th": "นาฬิกา",
+          "sentence": "It is a clock.",
+          "image": "clock",
+          "audio": "clock",
+          "tts": "clock. What is it? It is a clock."
+        },
+        {
+          "key": "apple",
+          "en": "apple",
+          "th": "แอปเปิล",
+          "sentence": "It is an apple.",
+          "image": "apple",
+          "audio": "apple",
+          "tts": "apple. What is it? It is an apple.",
+          "pattern": "an apple"
+        },
+        {
+          "key": "banana",
+          "en": "banana",
+          "th": "กล้วย",
+          "sentence": "It is a banana.",
+          "image": "banana",
+          "audio": "banana",
+          "tts": "banana. What is it? It is a banana."
+        },
+        {
+          "key": "ball",
+          "en": "ball",
+          "th": "ลูกบอล",
+          "sentence": "It is a ball.",
+          "image": "ball",
+          "audio": "ball",
+          "tts": "ball. What is it? It is a ball."
+        },
+        {
+          "key": "bottle",
+          "en": "bottle",
+          "th": "ขวดน้ำ",
+          "sentence": "It is a bottle.",
+          "image": "bottle",
+          "audio": "bottle",
+          "tts": "bottle. What is it? It is a bottle."
+        },
+        {
+          "key": "lunch-box",
+          "en": "lunch box",
+          "th": "กล่องข้าว",
+          "sentence": "It is a lunch box.",
+          "image": "lunch-box",
+          "audio": "lunch-box",
+          "tts": "lunch box. What is it? It is a lunch box."
+        }
+      ],
+      "lessonFlow": {
+        "durationMinutes": "5-8",
+        "principle": "learn through play, one screen one task, immediate feedback under 0.5s",
+        "qaPattern": "What is it? It is a/an ...",
+        "segments": [
+          {
+            "id": "warm-up",
+            "title": "Warm-up",
+            "time": "30-45s",
+            "activity": "น้องฟิวเจอร์ทักทายและเปิดภารกิจ My School Bag",
+            "reward": "no reward yet"
+          },
+          {
+            "id": "learn",
+            "title": "Learn",
+            "time": "1-1.5m",
+            "activity": "ภาพใหญ่ + เสียงครู + repeat ช้า ๆ 2 รอบ",
+            "reward": "none"
+          },
+          {
+            "id": "practice",
+            "title": "Practice",
+            "time": "1.5-2m",
+            "activity": "ฟังคำถาม แตะรูป/คำตอบให้ตรง ตอบผิดให้กำลังใจและเฉลยคำที่แตะ",
+            "reward": "star per correct answer"
+          },
+          {
+            "id": "game",
+            "title": "Game",
+            "time": "1-1.5m",
+            "activity": "mini-game เลือกรูปเร็วแบบไม่จับแพ้หนัก",
+            "reward": "bonus XP"
+          },
+          {
+            "id": "review",
+            "title": "Review",
+            "time": "30-60s",
+            "activity": "ทวน 1 ข้อจากบทนี้ + 1 ข้อจากคำที่เคยผิด",
+            "reward": "star"
+          },
+          {
+            "id": "celebration",
+            "title": "Celebration",
+            "time": "20s",
+            "activity": "confetti + น้องฟิวเจอร์ฉลอง + สรุปดาว/XP/streak",
+            "reward": "sticker if daily goal reached"
+          }
+        ]
+      },
+      "missions": [
+        {
+          "type": "listen-tap",
+          "title": "Pack My School Bag",
+          "targetCount": 20
+        },
+        {
+          "type": "sentence",
+          "title": "What Is It?",
+          "pattern": "What is it? It is a/an ..."
+        },
+        {
+          "type": "say-it-back",
+          "title": "Say It Back",
+          "note": "speaking practice ใช้ pattern ป.1 เป็น What is it?/It is... และใช้เสียงประโยค It is... ที่ cache ไว้"
+        }
+      ]
+    },
+    {
+      "id": "u2-abc-phonics",
+      "order": 2,
+      "title": "ABC Phonics",
+      "theme": "letter sounds",
+      "status": "ready-for-assets",
+      "priority": "P0",
+      "note": "สอนเสียงตัวอักษร a-z + keyword/ตัว ผ่าน chant/song และเกมจับคู่เสียง",
+      "items": [
+        {
+          "letter": "a",
+          "sound": "ah",
+          "ipa": "/æ/",
+          "en": "apple",
+          "th": "แอปเปิล",
+          "image": "apple",
+          "audio": "phonics-a",
+          "tts": "A. a says ah. apple."
+        },
+        {
+          "letter": "b",
+          "sound": "buh",
+          "ipa": "/b/",
+          "en": "ball",
+          "th": "ลูกบอล",
+          "image": "ball",
+          "audio": "phonics-b",
+          "tts": "B. b says buh. ball."
+        },
+        {
+          "letter": "c",
+          "sound": "kuh",
+          "ipa": "/k/",
+          "en": "cat",
+          "th": "แมว",
+          "image": "cat",
+          "audio": "phonics-c",
+          "tts": "C. c says kuh. cat."
+        },
+        {
+          "letter": "d",
+          "sound": "duh",
+          "ipa": "/d/",
+          "en": "dog",
+          "th": "หมา",
+          "image": "dog",
+          "audio": "phonics-d",
+          "tts": "D. d says duh. dog."
+        },
+        {
+          "letter": "e",
+          "sound": "eh",
+          "ipa": "/e/",
+          "en": "egg",
+          "th": "ไข่",
+          "image": "egg",
+          "audio": "phonics-e",
+          "tts": "E. e says eh. egg."
+        },
+        {
+          "letter": "f",
+          "sound": "fuh",
+          "ipa": "/f/",
+          "en": "fish",
+          "th": "ปลา",
+          "image": "fish",
+          "audio": "phonics-f",
+          "tts": "F. f says fuh. fish."
+        },
+        {
+          "letter": "g",
+          "sound": "guh",
+          "ipa": "/g/",
+          "en": "goat",
+          "th": "แพะ",
+          "image": "goat",
+          "audio": "phonics-g",
+          "tts": "G. g says guh. goat."
+        },
+        {
+          "letter": "h",
+          "sound": "huh",
+          "ipa": "/h/",
+          "en": "hat",
+          "th": "หมวก",
+          "image": "hat",
+          "audio": "phonics-h",
+          "tts": "H. h says huh. hat."
+        },
+        {
+          "letter": "i",
+          "sound": "ih",
+          "ipa": "/i/",
+          "en": "igloo",
+          "th": "บ้านน้ำแข็ง",
+          "image": "igloo",
+          "audio": "phonics-i",
+          "tts": "I. i says ih. igloo."
+        },
+        {
+          "letter": "j",
+          "sound": "juh",
+          "ipa": "/dʒ/",
+          "en": "jam",
+          "th": "แยม",
+          "image": "jam",
+          "audio": "phonics-j",
+          "tts": "J. j says juh. jam."
+        },
+        {
+          "letter": "k",
+          "sound": "kuh",
+          "ipa": "/k/",
+          "en": "kite",
+          "th": "ว่าว",
+          "image": "kite",
+          "audio": "phonics-k",
+          "tts": "K. k says kuh. kite."
+        },
+        {
+          "letter": "l",
+          "sound": "luh",
+          "ipa": "/l/",
+          "en": "lion",
+          "th": "สิงโต",
+          "image": "lion",
+          "audio": "phonics-l",
+          "tts": "L. l says luh. lion."
+        },
+        {
+          "letter": "m",
+          "sound": "muh",
+          "ipa": "/m/",
+          "en": "moon",
+          "th": "พระจันทร์",
+          "image": "moon",
+          "audio": "phonics-m",
+          "tts": "M. m says muh. moon."
+        },
+        {
+          "letter": "n",
+          "sound": "nuh",
+          "ipa": "/n/",
+          "en": "nest",
+          "th": "รัง",
+          "image": "nest",
+          "audio": "phonics-n",
+          "tts": "N. n says nuh. nest."
+        },
+        {
+          "letter": "o",
+          "sound": "oh",
+          "ipa": "/ɒ/",
+          "en": "orange",
+          "th": "ส้ม",
+          "image": "orange",
+          "audio": "phonics-o",
+          "tts": "O. o says oh. orange."
+        },
+        {
+          "letter": "p",
+          "sound": "puh",
+          "ipa": "/p/",
+          "en": "pig",
+          "th": "หมู",
+          "image": "pig",
+          "audio": "phonics-p",
+          "tts": "P. p says puh. pig."
+        },
+        {
+          "letter": "q",
+          "sound": "kwuh",
+          "ipa": "/kw/",
+          "en": "queen",
+          "th": "ราชินี",
+          "image": "queen",
+          "audio": "phonics-q",
+          "tts": "Q. q says kwuh. queen."
+        },
+        {
+          "letter": "r",
+          "sound": "ruh",
+          "ipa": "/r/",
+          "en": "rabbit",
+          "th": "กระต่าย",
+          "image": "rabbit",
+          "audio": "phonics-r",
+          "tts": "R. r says ruh. rabbit."
+        },
+        {
+          "letter": "s",
+          "sound": "sss",
+          "ipa": "/s/",
+          "en": "sun",
+          "th": "พระอาทิตย์",
+          "image": "sun",
+          "audio": "phonics-s",
+          "tts": "S. s says sss. sun."
+        },
+        {
+          "letter": "t",
+          "sound": "tuh",
+          "ipa": "/t/",
+          "en": "tiger",
+          "th": "เสือ",
+          "image": "tiger",
+          "audio": "phonics-t",
+          "tts": "T. t says tuh. tiger."
+        },
+        {
+          "letter": "u",
+          "sound": "uh",
+          "ipa": "/ʌ/",
+          "en": "umbrella",
+          "th": "ร่ม",
+          "image": "umbrella",
+          "audio": "phonics-u",
+          "tts": "U. u says uh. umbrella."
+        },
+        {
+          "letter": "v",
+          "sound": "vuh",
+          "ipa": "/v/",
+          "en": "van",
+          "th": "รถตู้",
+          "image": "van",
+          "audio": "phonics-v",
+          "tts": "V. v says vuh. van."
+        },
+        {
+          "letter": "w",
+          "sound": "wuh",
+          "ipa": "/w/",
+          "en": "web",
+          "th": "ใยแมงมุม",
+          "image": "web",
+          "audio": "phonics-w",
+          "tts": "W. w says wuh. web."
+        },
+        {
+          "letter": "x",
+          "sound": "ks",
+          "ipa": "/ks/",
+          "en": "box",
+          "th": "กล่อง",
+          "image": "box",
+          "audio": "phonics-x",
+          "tts": "X. x says ks. box."
+        },
+        {
+          "letter": "y",
+          "sound": "yuh",
+          "ipa": "/j/",
+          "en": "yo-yo",
+          "th": "โยโย่",
+          "image": "yo-yo",
+          "audio": "phonics-y",
+          "tts": "Y. y says yuh. yo-yo."
+        },
+        {
+          "letter": "z",
+          "sound": "zzz",
+          "ipa": "/z/",
+          "en": "zebra",
+          "th": "ม้าลาย",
+          "image": "zebra",
+          "audio": "phonics-z",
+          "tts": "Z. z says zzz. zebra."
+        }
+      ],
+      "lessonFlow": {
+        "durationMinutes": "5-8",
+        "principle": "learn through play, one screen one task, immediate feedback under 0.5s",
+        "qaPattern": "What sound? /a/ as in apple.",
+        "segments": [
+          {
+            "id": "warm-up",
+            "title": "Warm-up",
+            "time": "30-45s",
+            "activity": "น้องฟิวเจอร์ทักทายและเปิดภารกิจ ABC Phonics",
+            "reward": "no reward yet"
+          },
+          {
+            "id": "learn",
+            "title": "Learn",
+            "time": "1-1.5m",
+            "activity": "ฟังเสียงตัวอักษร + เห็นตัวอักษรใหญ่/เล็ก + keyword image",
+            "reward": "none"
+          },
+          {
+            "id": "practice",
+            "title": "Practice",
+            "time": "1.5-2m",
+            "activity": "ฟังเสียงแล้วแตะตัวอักษรหรือรูป keyword",
+            "reward": "star per correct answer"
+          },
+          {
+            "id": "game",
+            "title": "Game",
+            "time": "1-1.5m",
+            "activity": "จับคู่ letter-sound-keyword แบบเร็ว",
+            "reward": "bonus XP"
+          },
+          {
+            "id": "review",
+            "title": "Review",
+            "time": "30-60s",
+            "activity": "ทวน 1 ข้อจากบทนี้ + 1 ข้อจากคำที่เคยผิด",
+            "reward": "star"
+          },
+          {
+            "id": "celebration",
+            "title": "Celebration",
+            "time": "20s",
+            "activity": "confetti + น้องฟิวเจอร์ฉลอง + สรุปดาว/XP/streak",
+            "reward": "sticker if daily goal reached"
+          }
+        ]
+      },
+      "missions": [
+        {
+          "type": "phonics",
+          "title": "Letter Sounds A-Z",
+          "targetCount": 26
+        },
+        {
+          "type": "listen-tap",
+          "title": "Find the Letter"
+        },
+        {
+          "type": "review",
+          "title": "Phonics Review"
+        }
+      ]
+    },
+    {
+      "id": "u3-hello",
+      "order": 3,
+      "title": "Hello!",
+      "theme": "greetings + self intro",
+      "status": "ready-for-assets",
+      "priority": "P0",
+      "vocab": [
+        {
+          "key": "hello",
+          "en": "Hello!",
+          "th": "สวัสดี",
+          "gesture": "wave",
+          "image": "hello",
+          "audio": "hello",
+          "tts": "Hello!."
+        },
+        {
+          "key": "hi",
+          "en": "Hi!",
+          "th": "ไฮ/สวัสดี",
+          "gesture": "wave",
+          "image": "hi",
+          "audio": "hi",
+          "tts": "Hi!."
+        },
+        {
+          "key": "good-morning",
+          "en": "Good morning.",
+          "th": "อรุณสวัสดิ์",
+          "gesture": "morning",
+          "image": "good-morning",
+          "audio": "good-morning",
+          "tts": "Good morning.."
+        },
+        {
+          "key": "goodbye",
+          "en": "Goodbye.",
+          "th": "ลาก่อน",
+          "gesture": "wave-bye",
+          "image": "goodbye",
+          "audio": "goodbye",
+          "tts": "Goodbye.."
+        },
+        {
+          "key": "whats-your-name",
+          "en": "What's your name?",
+          "th": "คุณชื่ออะไร",
+          "gesture": "ask-name",
+          "image": "whats-your-name",
+          "audio": "whats-your-name",
+          "tts": "What's your name?."
+        },
+        {
+          "key": "my-name-is",
+          "en": "My name is ...",
+          "th": "ฉันชื่อ ...",
+          "gesture": "name-tag",
+          "image": "my-name-is",
+          "audio": "my-name-is",
+          "tts": "My name is ...."
+        },
+        {
+          "key": "thank-you",
+          "en": "Thank you.",
+          "th": "ขอบคุณ",
+          "gesture": "thanks",
+          "image": "thank-you",
+          "audio": "thank-you",
+          "tts": "Thank you.."
+        },
+        {
+          "key": "please",
+          "en": "Please.",
+          "th": "กรุณา/ได้โปรด",
+          "gesture": "polite",
+          "image": "please",
+          "audio": "please",
+          "tts": "Please.."
+        }
+      ],
+      "lessonFlow": {
+        "durationMinutes": "5-8",
+        "principle": "learn through play, one screen one task, immediate feedback under 0.5s",
+        "qaPattern": "What's your name? My name is ...",
+        "segments": [
+          {
+            "id": "warm-up",
+            "title": "Warm-up",
+            "time": "30-45s",
+            "activity": "น้องฟิวเจอร์ทักทายและเปิดภารกิจ Hello!",
+            "reward": "no reward yet"
+          },
+          {
+            "id": "learn",
+            "title": "Learn",
+            "time": "1-1.5m",
+            "activity": "มาสคอตทักทาย + ฝึก wave + ฟังคำทักทายต่างเวลา",
+            "reward": "none"
+          },
+          {
+            "id": "practice",
+            "title": "Practice",
+            "time": "1.5-2m",
+            "activity": "ฟังคำทักทายแล้วแตะภาพ/สถานการณ์ที่ตรง",
+            "reward": "star per correct answer"
+          },
+          {
+            "id": "game",
+            "title": "Game",
+            "time": "1-1.5m",
+            "activity": "จับคู่ hello/goodbye/thank you กับภาพ",
+            "reward": "bonus XP"
+          },
+          {
+            "id": "review",
+            "title": "Review",
+            "time": "30-60s",
+            "activity": "ทวน 1 ข้อจากบทนี้ + 1 ข้อจากคำที่เคยผิด",
+            "reward": "star"
+          },
+          {
+            "id": "celebration",
+            "title": "Celebration",
+            "time": "20s",
+            "activity": "confetti + น้องฟิวเจอร์ฉลอง + สรุปดาว/XP/streak",
+            "reward": "sticker if daily goal reached"
+          }
+        ]
+      },
+      "missions": [
+        {
+          "type": "listen-tap",
+          "title": "Say Hello"
+        },
+        {
+          "type": "say-it-back",
+          "title": "What's Your Name?"
+        },
+        {
+          "type": "review",
+          "title": "Polite Words"
+        }
+      ]
+    },
+    {
+      "id": "u4-classroom-commands",
+      "order": 4,
+      "title": "Classroom Commands",
+      "theme": "classroom language + TPR",
+      "status": "ready-for-assets",
+      "priority": "P0",
+      "note": "ย้ายขึ้นต้นหลักสูตรเพราะใช้ตั้งแต่ต้นเทอม เด็กต้องฟังคำสั่งครูได้เร็ว",
+      "vocab": [
+        {
+          "key": "stand-up",
+          "en": "Stand up.",
+          "th": "ยืนขึ้น",
+          "gesture": "stand",
+          "image": "stand-up",
+          "audio": "stand-up",
+          "tts": "Stand up.."
+        },
+        {
+          "key": "sit-down",
+          "en": "Sit down.",
+          "th": "นั่งลง",
+          "gesture": "sit",
+          "image": "sit-down",
+          "audio": "sit-down",
+          "tts": "Sit down.."
+        },
+        {
+          "key": "open-your-book",
+          "en": "Open your book.",
+          "th": "เปิดหนังสือ",
+          "gesture": "open-book",
+          "image": "open-your-book",
+          "audio": "open-your-book",
+          "tts": "Open your book.."
+        },
+        {
+          "key": "close-your-book",
+          "en": "Close your book.",
+          "th": "ปิดหนังสือ",
+          "gesture": "close-book",
+          "image": "close-your-book",
+          "audio": "close-your-book",
+          "tts": "Close your book.."
+        },
+        {
+          "key": "listen",
+          "en": "Listen.",
+          "th": "ฟัง",
+          "gesture": "listen",
+          "image": "listen",
+          "audio": "listen",
+          "tts": "Listen.."
+        },
+        {
+          "key": "look",
+          "en": "Look.",
+          "th": "ดู",
+          "gesture": "look",
+          "image": "look",
+          "audio": "look",
+          "tts": "Look.."
+        },
+        {
+          "key": "repeat",
+          "en": "Repeat.",
+          "th": "พูดตาม",
+          "gesture": "repeat",
+          "image": "repeat",
+          "audio": "repeat",
+          "tts": "Repeat.."
+        },
+        {
+          "key": "raise-your-hand",
+          "en": "Raise your hand.",
+          "th": "ยกมือ",
+          "gesture": "raise-hand",
+          "image": "raise-your-hand",
+          "audio": "raise-your-hand",
+          "tts": "Raise your hand.."
+        },
+        {
+          "key": "line-up",
+          "en": "Line up.",
+          "th": "เข้าแถว",
+          "gesture": "line-up",
+          "image": "line-up",
+          "audio": "line-up",
+          "tts": "Line up.."
+        },
+        {
+          "key": "be-quiet",
+          "en": "Be quiet.",
+          "th": "เงียบ",
+          "gesture": "quiet",
+          "image": "be-quiet",
+          "audio": "be-quiet",
+          "tts": "Be quiet.."
+        }
+      ],
+      "lessonFlow": {
+        "durationMinutes": "5-8",
+        "principle": "learn through play, one screen one task, immediate feedback under 0.5s",
+        "qaPattern": "Listen and do. Stand up.",
+        "segments": [
+          {
+            "id": "warm-up",
+            "title": "Warm-up",
+            "time": "30-45s",
+            "activity": "น้องฟิวเจอร์ทักทายและเปิดภารกิจ Classroom Commands",
+            "reward": "no reward yet"
+          },
+          {
+            "id": "learn",
+            "title": "Learn",
+            "time": "1-1.5m",
+            "activity": "น้องฟิวเจอร์ทำท่าให้ดูทีละคำสั่ง",
+            "reward": "none"
+          },
+          {
+            "id": "practice",
+            "title": "Practice",
+            "time": "1.5-2m",
+            "activity": "ฟังคำสั่งแล้วแตะภาพท่าทางหรือทำตาม",
+            "reward": "star per correct answer"
+          },
+          {
+            "id": "game",
+            "title": "Game",
+            "time": "1-1.5m",
+            "activity": "Simon Says แบบไม่คัดออก เด็กทำตามเพื่อเก็บ XP",
+            "reward": "bonus XP"
+          },
+          {
+            "id": "review",
+            "title": "Review",
+            "time": "30-60s",
+            "activity": "ทวน 1 ข้อจากบทนี้ + 1 ข้อจากคำที่เคยผิด",
+            "reward": "star"
+          },
+          {
+            "id": "celebration",
+            "title": "Celebration",
+            "time": "20s",
+            "activity": "confetti + น้องฟิวเจอร์ฉลอง + สรุปดาว/XP/streak",
+            "reward": "sticker if daily goal reached"
+          }
+        ]
+      },
+      "missions": [
+        {
+          "type": "tpr",
+          "title": "Listen and Do",
+          "targetCount": 10
+        },
+        {
+          "type": "listen-tap",
+          "title": "Tap the Command"
+        },
+        {
+          "type": "review",
+          "title": "Teacher Says"
+        }
+      ]
+    },
+    {
+      "id": "u5-numbers-1-20",
+      "order": 5,
+      "title": "Numbers 1-20",
+      "theme": "counting",
+      "status": "ready-for-assets",
+      "priority": "P0",
+      "note": "ขยายจาก 1-10 เป็น 1-20 เพื่อครอบคลุมตัวชี้วัด ป.1 และ Cambridge Starters-style counting",
+      "items": [
+        {
+          "key": "1",
+          "digit": 1,
+          "en": "one",
+          "th": "หนึ่ง",
+          "image": "count-1",
+          "audio": "num-1",
+          "tts": "one. Number 1."
+        },
+        {
+          "key": "2",
+          "digit": 2,
+          "en": "two",
+          "th": "สอง",
+          "image": "count-2",
+          "audio": "num-2",
+          "tts": "two. Number 2."
+        },
+        {
+          "key": "3",
+          "digit": 3,
+          "en": "three",
+          "th": "สาม",
+          "image": "count-3",
+          "audio": "num-3",
+          "tts": "three. Number 3."
+        },
+        {
+          "key": "4",
+          "digit": 4,
+          "en": "four",
+          "th": "สี่",
+          "image": "count-4",
+          "audio": "num-4",
+          "tts": "four. Number 4."
+        },
+        {
+          "key": "5",
+          "digit": 5,
+          "en": "five",
+          "th": "ห้า",
+          "image": "count-5",
+          "audio": "num-5",
+          "tts": "five. Number 5."
+        },
+        {
+          "key": "6",
+          "digit": 6,
+          "en": "six",
+          "th": "หก",
+          "image": "count-6",
+          "audio": "num-6",
+          "tts": "six. Number 6."
+        },
+        {
+          "key": "7",
+          "digit": 7,
+          "en": "seven",
+          "th": "เจ็ด",
+          "image": "count-7",
+          "audio": "num-7",
+          "tts": "seven. Number 7."
+        },
+        {
+          "key": "8",
+          "digit": 8,
+          "en": "eight",
+          "th": "แปด",
+          "image": "count-8",
+          "audio": "num-8",
+          "tts": "eight. Number 8."
+        },
+        {
+          "key": "9",
+          "digit": 9,
+          "en": "nine",
+          "th": "เก้า",
+          "image": "count-9",
+          "audio": "num-9",
+          "tts": "nine. Number 9."
+        },
+        {
+          "key": "10",
+          "digit": 10,
+          "en": "ten",
+          "th": "สิบ",
+          "image": "count-10",
+          "audio": "num-10",
+          "tts": "ten. Number 10."
+        },
+        {
+          "key": "11",
+          "digit": 11,
+          "en": "eleven",
+          "th": "สิบเอ็ด",
+          "image": "count-11",
+          "audio": "num-11",
+          "tts": "eleven. Number 11."
+        },
+        {
+          "key": "12",
+          "digit": 12,
+          "en": "twelve",
+          "th": "สิบสอง",
+          "image": "count-12",
+          "audio": "num-12",
+          "tts": "twelve. Number 12."
+        },
+        {
+          "key": "13",
+          "digit": 13,
+          "en": "thirteen",
+          "th": "สิบสาม",
+          "image": "count-13",
+          "audio": "num-13",
+          "tts": "thirteen. Number 13."
+        },
+        {
+          "key": "14",
+          "digit": 14,
+          "en": "fourteen",
+          "th": "สิบสี่",
+          "image": "count-14",
+          "audio": "num-14",
+          "tts": "fourteen. Number 14."
+        },
+        {
+          "key": "15",
+          "digit": 15,
+          "en": "fifteen",
+          "th": "สิบห้า",
+          "image": "count-15",
+          "audio": "num-15",
+          "tts": "fifteen. Number 15."
+        },
+        {
+          "key": "16",
+          "digit": 16,
+          "en": "sixteen",
+          "th": "สิบหก",
+          "image": "count-16",
+          "audio": "num-16",
+          "tts": "sixteen. Number 16."
+        },
+        {
+          "key": "17",
+          "digit": 17,
+          "en": "seventeen",
+          "th": "สิบเจ็ด",
+          "image": "count-17",
+          "audio": "num-17",
+          "tts": "seventeen. Number 17."
+        },
+        {
+          "key": "18",
+          "digit": 18,
+          "en": "eighteen",
+          "th": "สิบแปด",
+          "image": "count-18",
+          "audio": "num-18",
+          "tts": "eighteen. Number 18."
+        },
+        {
+          "key": "19",
+          "digit": 19,
+          "en": "nineteen",
+          "th": "สิบเก้า",
+          "image": "count-19",
+          "audio": "num-19",
+          "tts": "nineteen. Number 19."
+        },
+        {
+          "key": "20",
+          "digit": 20,
+          "en": "twenty",
+          "th": "ยี่สิบ",
+          "image": "count-20",
+          "audio": "num-20",
+          "tts": "twenty. Number 20."
+        }
+      ],
+      "newAudioNeeded": [
+        "num-11.mp3",
+        "num-12.mp3",
+        "num-13.mp3",
+        "num-14.mp3",
+        "num-15.mp3",
+        "num-16.mp3",
+        "num-17.mp3",
+        "num-18.mp3",
+        "num-19.mp3",
+        "num-20.mp3"
+      ],
+      "lessonFlow": {
+        "durationMinutes": "5-8",
+        "principle": "learn through play, one screen one task, immediate feedback under 0.5s",
+        "qaPattern": "How many? It is number ...",
+        "segments": [
+          {
+            "id": "warm-up",
+            "title": "Warm-up",
+            "time": "30-45s",
+            "activity": "น้องฟิวเจอร์ทักทายและเปิดภารกิจ Numbers 1-20",
+            "reward": "no reward yet"
+          },
+          {
+            "id": "learn",
+            "title": "Learn",
+            "time": "1-1.5m",
+            "activity": "นับของ 1-20 ด้วยภาพและเสียงครูช้า ๆ",
+            "reward": "none"
+          },
+          {
+            "id": "practice",
+            "title": "Practice",
+            "time": "1.5-2m",
+            "activity": "ฟังตัวเลขแล้วแตะจำนวน/ตัวเลข",
+            "reward": "star per correct answer"
+          },
+          {
+            "id": "game",
+            "title": "Game",
+            "time": "1-1.5m",
+            "activity": "เก็บดาวจากการนับของบนจอแบบเร็ว",
+            "reward": "bonus XP"
+          },
+          {
+            "id": "review",
+            "title": "Review",
+            "time": "30-60s",
+            "activity": "ทวน 1 ข้อจากบทนี้ + 1 ข้อจากคำที่เคยผิด",
+            "reward": "star"
+          },
+          {
+            "id": "celebration",
+            "title": "Celebration",
+            "time": "20s",
+            "activity": "confetti + น้องฟิวเจอร์ฉลอง + สรุปดาว/XP/streak",
+            "reward": "sticker if daily goal reached"
+          }
+        ]
+      },
+      "missions": [
+        {
+          "type": "listen-tap",
+          "title": "Count With Me",
+          "targetCount": 20
+        },
+        {
+          "type": "say-it-back",
+          "title": "Say the Number"
+        },
+        {
+          "type": "review",
+          "title": "Numbers Review"
+        }
+      ]
+    },
+    {
+      "id": "u6-colors",
+      "order": 6,
+      "title": "Colors",
+      "theme": "colors",
+      "status": "ready-for-assets",
+      "priority": "P1",
+      "vocab": [
+        {
+          "key": "red",
+          "en": "red",
+          "th": "สีแดง",
+          "sentence": "It is red.",
+          "image": "color-red",
+          "audio": "red",
+          "tts": "red. What color is it? It is red.",
+          "hex": "#e53935"
+        },
+        {
+          "key": "blue",
+          "en": "blue",
+          "th": "สีน้ำเงิน",
+          "sentence": "It is blue.",
+          "image": "color-blue",
+          "audio": "blue",
+          "tts": "blue. What color is it? It is blue.",
+          "hex": "#1e88e5"
+        },
+        {
+          "key": "yellow",
+          "en": "yellow",
+          "th": "สีเหลือง",
+          "sentence": "It is yellow.",
+          "image": "color-yellow",
+          "audio": "yellow",
+          "tts": "yellow. What color is it? It is yellow.",
+          "hex": "#fdd835"
+        },
+        {
+          "key": "green",
+          "en": "green",
+          "th": "สีเขียว",
+          "sentence": "It is green.",
+          "image": "color-green",
+          "audio": "green",
+          "tts": "green. What color is it? It is green.",
+          "hex": "#43a047"
+        },
+        {
+          "key": "orange",
+          "en": "orange",
+          "th": "สีส้ม",
+          "sentence": "It is orange.",
+          "image": "color-orange",
+          "audio": "color-orange",
+          "tts": "orange. What color is it? It is orange.",
+          "hex": "#fb8c00"
+        },
+        {
+          "key": "purple",
+          "en": "purple",
+          "th": "สีม่วง",
+          "sentence": "It is purple.",
+          "image": "color-purple",
+          "audio": "purple",
+          "tts": "purple. What color is it? It is purple.",
+          "hex": "#8e24aa"
+        },
+        {
+          "key": "pink",
+          "en": "pink",
+          "th": "สีชมพู",
+          "sentence": "It is pink.",
+          "image": "color-pink",
+          "audio": "pink",
+          "tts": "pink. What color is it? It is pink.",
+          "hex": "#ec407a"
+        },
+        {
+          "key": "black",
+          "en": "black",
+          "th": "สีดำ",
+          "sentence": "It is black.",
+          "image": "color-black",
+          "audio": "black",
+          "tts": "black. What color is it? It is black.",
+          "hex": "#212121"
+        },
+        {
+          "key": "white",
+          "en": "white",
+          "th": "สีขาว",
+          "sentence": "It is white.",
+          "image": "color-white",
+          "audio": "white",
+          "tts": "white. What color is it? It is white.",
+          "hex": "#fafafa"
+        },
+        {
+          "key": "brown",
+          "en": "brown",
+          "th": "สีน้ำตาล",
+          "sentence": "It is brown.",
+          "image": "color-brown",
+          "audio": "brown",
+          "tts": "brown. What color is it? It is brown.",
+          "hex": "#8d6e63"
+        }
+      ],
+      "lessonFlow": {
+        "durationMinutes": "5-8",
+        "principle": "learn through play, one screen one task, immediate feedback under 0.5s",
+        "qaPattern": "What color is it? It is red.",
+        "segments": [
+          {
+            "id": "warm-up",
+            "title": "Warm-up",
+            "time": "30-45s",
+            "activity": "น้องฟิวเจอร์ทักทายและเปิดภารกิจ Colors",
+            "reward": "no reward yet"
+          },
+          {
+            "id": "learn",
+            "title": "Learn",
+            "time": "1-1.5m",
+            "activity": "โชว์สีทีละสีบนวัตถุจริง ไม่ใช่ swatch ล้วน",
+            "reward": "none"
+          },
+          {
+            "id": "practice",
+            "title": "Practice",
+            "time": "1.5-2m",
+            "activity": "ฟังสีแล้วแตะวัตถุสีตรงกัน",
+            "reward": "star per correct answer"
+          },
+          {
+            "id": "game",
+            "title": "Game",
+            "time": "1-1.5m",
+            "activity": "paint bucket match เติมสีให้มาสคอต",
+            "reward": "bonus XP"
+          },
+          {
+            "id": "review",
+            "title": "Review",
+            "time": "30-60s",
+            "activity": "ทวน 1 ข้อจากบทนี้ + 1 ข้อจากคำที่เคยผิด",
+            "reward": "star"
+          },
+          {
+            "id": "celebration",
+            "title": "Celebration",
+            "time": "20s",
+            "activity": "confetti + น้องฟิวเจอร์ฉลอง + สรุปดาว/XP/streak",
+            "reward": "sticker if daily goal reached"
+          }
+        ]
+      },
+      "missions": [
+        {
+          "type": "listen-tap",
+          "title": "Tap the Color",
+          "targetCount": 10
+        },
+        {
+          "type": "sentence",
+          "title": "What Color Is It?",
+          "pattern": "What color is it? It is ..."
+        },
+        {
+          "type": "say-it-back",
+          "title": "Say the Color"
+        }
+      ]
+    },
+    {
+      "id": "u7-my-family",
+      "order": 7,
+      "title": "My Family",
+      "theme": "family members",
+      "status": "ready-for-assets",
+      "priority": "P1",
+      "vocab": [
+        {
+          "key": "mother",
+          "en": "mother",
+          "th": "แม่",
+          "sentence": "It is my mother.",
+          "image": "mother",
+          "audio": "mother",
+          "tts": "mother. Who is it? It is my mother."
+        },
+        {
+          "key": "father",
+          "en": "father",
+          "th": "พ่อ",
+          "sentence": "It is my father.",
+          "image": "father",
+          "audio": "father",
+          "tts": "father. Who is it? It is my father."
+        },
+        {
+          "key": "brother",
+          "en": "brother",
+          "th": "พี่ชาย/น้องชาย",
+          "sentence": "It is my brother.",
+          "image": "brother",
+          "audio": "brother",
+          "tts": "brother. Who is it? It is my brother."
+        },
+        {
+          "key": "sister",
+          "en": "sister",
+          "th": "พี่สาว/น้องสาว",
+          "sentence": "It is my sister.",
+          "image": "sister",
+          "audio": "sister",
+          "tts": "sister. Who is it? It is my sister."
+        },
+        {
+          "key": "baby",
+          "en": "baby",
+          "th": "น้องเล็ก/ทารก",
+          "sentence": "It is my baby.",
+          "image": "baby",
+          "audio": "baby",
+          "tts": "baby. Who is it? It is my baby."
+        },
+        {
+          "key": "grandma",
+          "en": "grandma",
+          "th": "คุณยาย/คุณย่า",
+          "sentence": "It is my grandma.",
+          "image": "grandma",
+          "audio": "grandma",
+          "tts": "grandma. Who is it? It is my grandma."
+        },
+        {
+          "key": "grandpa",
+          "en": "grandpa",
+          "th": "คุณตา/คุณปู่",
+          "sentence": "It is my grandpa.",
+          "image": "grandpa",
+          "audio": "grandpa",
+          "tts": "grandpa. Who is it? It is my grandpa."
+        },
+        {
+          "key": "teacher",
+          "en": "teacher",
+          "th": "ครู",
+          "sentence": "It is my teacher.",
+          "image": "teacher",
+          "audio": "teacher",
+          "tts": "teacher. Who is it? It is my teacher."
+        },
+        {
+          "key": "friend",
+          "en": "friend",
+          "th": "เพื่อน",
+          "sentence": "It is my friend.",
+          "image": "friend",
+          "audio": "friend",
+          "tts": "friend. Who is it? It is my friend."
+        },
+        {
+          "key": "family",
+          "en": "family",
+          "th": "ครอบครัว",
+          "sentence": "It is my family.",
+          "image": "family",
+          "audio": "family",
+          "tts": "family. Who is it? It is my family."
+        }
+      ],
+      "lessonFlow": {
+        "durationMinutes": "5-8",
+        "principle": "learn through play, one screen one task, immediate feedback under 0.5s",
+        "qaPattern": "Who is it? It is my mother.",
+        "segments": [
+          {
+            "id": "warm-up",
+            "title": "Warm-up",
+            "time": "30-45s",
+            "activity": "น้องฟิวเจอร์ทักทายและเปิดภารกิจ My Family",
+            "reward": "no reward yet"
+          },
+          {
+            "id": "learn",
+            "title": "Learn",
+            "time": "1-1.5m",
+            "activity": "ภาพครอบครัวเรียบง่าย + เสียงคำเรียกสมาชิก",
+            "reward": "none"
+          },
+          {
+            "id": "practice",
+            "title": "Practice",
+            "time": "1.5-2m",
+            "activity": "ฟังคำแล้วแตะสมาชิกในภาพ",
+            "reward": "star per correct answer"
+          },
+          {
+            "id": "game",
+            "title": "Game",
+            "time": "1-1.5m",
+            "activity": "family photo match จับคู่คำกับคนในภาพ",
+            "reward": "bonus XP"
+          },
+          {
+            "id": "review",
+            "title": "Review",
+            "time": "30-60s",
+            "activity": "ทวน 1 ข้อจากบทนี้ + 1 ข้อจากคำที่เคยผิด",
+            "reward": "star"
+          },
+          {
+            "id": "celebration",
+            "title": "Celebration",
+            "time": "20s",
+            "activity": "confetti + น้องฟิวเจอร์ฉลอง + สรุปดาว/XP/streak",
+            "reward": "sticker if daily goal reached"
+          }
+        ]
+      },
+      "missions": [
+        {
+          "type": "listen-tap",
+          "title": "Find My Family",
+          "targetCount": 10
+        },
+        {
+          "type": "sentence",
+          "title": "Who Is It?",
+          "pattern": "Who is it? It is my ..."
+        },
+        {
+          "type": "review",
+          "title": "Family Review"
+        }
+      ]
+    },
+    {
+      "id": "u8-my-body",
+      "order": 8,
+      "title": "My Body",
+      "theme": "body parts + TPR",
+      "status": "ready-for-assets",
+      "priority": "P1",
+      "vocab": [
+        {
+          "key": "head",
+          "en": "head",
+          "th": "ศีรษะ",
+          "sentence": "It is a head.",
+          "image": "head",
+          "audio": "head",
+          "tts": "head. What is it? It is a head. Touch your head."
+        },
+        {
+          "key": "hair",
+          "en": "hair",
+          "th": "ผม",
+          "sentence": "It is hair.",
+          "image": "hair",
+          "audio": "hair",
+          "tts": "hair. What is it? It is hair. Touch your hair."
+        },
+        {
+          "key": "eye",
+          "en": "eye",
+          "th": "ตา",
+          "sentence": "It is an eye.",
+          "image": "eye",
+          "audio": "eye",
+          "tts": "eye. What is it? It is an eye. Touch your eye."
+        },
+        {
+          "key": "ear",
+          "en": "ear",
+          "th": "หู",
+          "sentence": "It is an ear.",
+          "image": "ear",
+          "audio": "ear",
+          "tts": "ear. What is it? It is an ear. Touch your ear."
+        },
+        {
+          "key": "nose",
+          "en": "nose",
+          "th": "จมูก",
+          "sentence": "It is a nose.",
+          "image": "nose",
+          "audio": "nose",
+          "tts": "nose. What is it? It is a nose. Touch your nose."
+        },
+        {
+          "key": "mouth",
+          "en": "mouth",
+          "th": "ปาก",
+          "sentence": "It is a mouth.",
+          "image": "mouth",
+          "audio": "mouth",
+          "tts": "mouth. What is it? It is a mouth. Touch your mouth."
+        },
+        {
+          "key": "tooth",
+          "en": "tooth",
+          "th": "ฟัน",
+          "sentence": "It is a tooth.",
+          "image": "tooth",
+          "audio": "tooth",
+          "tts": "tooth. What is it? It is a tooth. Touch your tooth."
+        },
+        {
+          "key": "hand",
+          "en": "hand",
+          "th": "มือ",
+          "sentence": "It is a hand.",
+          "image": "hand",
+          "audio": "hand",
+          "tts": "hand. What is it? It is a hand. Touch your hand."
+        },
+        {
+          "key": "finger",
+          "en": "finger",
+          "th": "นิ้ว",
+          "sentence": "It is a finger.",
+          "image": "finger",
+          "audio": "finger",
+          "tts": "finger. What is it? It is a finger. Touch your finger."
+        },
+        {
+          "key": "arm",
+          "en": "arm",
+          "th": "แขน",
+          "sentence": "It is an arm.",
+          "image": "arm",
+          "audio": "arm",
+          "tts": "arm. What is it? It is an arm. Touch your arm."
+        },
+        {
+          "key": "leg",
+          "en": "leg",
+          "th": "ขา",
+          "sentence": "It is a leg.",
+          "image": "leg",
+          "audio": "leg",
+          "tts": "leg. What is it? It is a leg. Touch your leg."
+        },
+        {
+          "key": "foot",
+          "en": "foot",
+          "th": "เท้า",
+          "sentence": "It is a foot.",
+          "image": "foot",
+          "audio": "foot",
+          "tts": "foot. What is it? It is a foot. Touch your foot."
+        }
+      ],
+      "lessonFlow": {
+        "durationMinutes": "5-8",
+        "principle": "learn through play, one screen one task, immediate feedback under 0.5s",
+        "qaPattern": "What is it? It is a hand. / Touch your head.",
+        "segments": [
+          {
+            "id": "warm-up",
+            "title": "Warm-up",
+            "time": "30-45s",
+            "activity": "น้องฟิวเจอร์ทักทายและเปิดภารกิจ My Body",
+            "reward": "no reward yet"
+          },
+          {
+            "id": "learn",
+            "title": "Learn",
+            "time": "1-1.5m",
+            "activity": "มาสคอตชี้ส่วนต่าง ๆ ของร่างกาย เด็กทำตามได้",
+            "reward": "none"
+          },
+          {
+            "id": "practice",
+            "title": "Practice",
+            "time": "1.5-2m",
+            "activity": "ฟังคำแล้วแตะภาพส่วนร่างกาย",
+            "reward": "star per correct answer"
+          },
+          {
+            "id": "game",
+            "title": "Game",
+            "time": "1-1.5m",
+            "activity": "touch game แตะตามคำสั่งแบบช้าและสนุก",
+            "reward": "bonus XP"
+          },
+          {
+            "id": "review",
+            "title": "Review",
+            "time": "30-60s",
+            "activity": "ทวน 1 ข้อจากบทนี้ + 1 ข้อจากคำที่เคยผิด",
+            "reward": "star"
+          },
+          {
+            "id": "celebration",
+            "title": "Celebration",
+            "time": "20s",
+            "activity": "confetti + น้องฟิวเจอร์ฉลอง + สรุปดาว/XP/streak",
+            "reward": "sticker if daily goal reached"
+          }
+        ]
+      },
+      "missions": [
+        {
+          "type": "listen-tap",
+          "title": "Touch the Body Part",
+          "targetCount": 12
+        },
+        {
+          "type": "tpr",
+          "title": "Touch Your Head"
+        },
+        {
+          "type": "review",
+          "title": "Body Review"
+        }
+      ]
+    },
+    {
+      "id": "u9-animals",
+      "order": 9,
+      "title": "Animals",
+      "theme": "pets + farm animals",
+      "status": "ready-for-assets",
+      "priority": "P2",
+      "vocab": [
+        {
+          "key": "cat",
+          "en": "cat",
+          "th": "แมว",
+          "sentence": "It is a cat.",
+          "image": "cat",
+          "audio": "cat",
+          "tts": "cat. What is it? It is a cat."
+        },
+        {
+          "key": "dog",
+          "en": "dog",
+          "th": "หมา",
+          "sentence": "It is a dog.",
+          "image": "dog",
+          "audio": "dog",
+          "tts": "dog. What is it? It is a dog."
+        },
+        {
+          "key": "bird",
+          "en": "bird",
+          "th": "นก",
+          "sentence": "It is a bird.",
+          "image": "bird",
+          "audio": "bird",
+          "tts": "bird. What is it? It is a bird."
+        },
+        {
+          "key": "fish",
+          "en": "fish",
+          "th": "ปลา",
+          "sentence": "It is fish.",
+          "image": "fish",
+          "audio": "fish",
+          "tts": "fish. What is it? It is fish."
+        },
+        {
+          "key": "cow",
+          "en": "cow",
+          "th": "วัว",
+          "sentence": "It is a cow.",
+          "image": "cow",
+          "audio": "cow",
+          "tts": "cow. What is it? It is a cow."
+        },
+        {
+          "key": "pig",
+          "en": "pig",
+          "th": "หมู",
+          "sentence": "It is a pig.",
+          "image": "pig",
+          "audio": "pig",
+          "tts": "pig. What is it? It is a pig."
+        },
+        {
+          "key": "duck",
+          "en": "duck",
+          "th": "เป็ด",
+          "sentence": "It is a duck.",
+          "image": "duck",
+          "audio": "duck",
+          "tts": "duck. What is it? It is a duck."
+        },
+        {
+          "key": "chicken",
+          "en": "chicken",
+          "th": "ไก่",
+          "sentence": "It is chicken.",
+          "image": "chicken",
+          "audio": "chicken",
+          "tts": "chicken. What is it? It is chicken."
+        },
+        {
+          "key": "rabbit",
+          "en": "rabbit",
+          "th": "กระต่าย",
+          "sentence": "It is a rabbit.",
+          "image": "rabbit",
+          "audio": "rabbit",
+          "tts": "rabbit. What is it? It is a rabbit."
+        },
+        {
+          "key": "frog",
+          "en": "frog",
+          "th": "กบ",
+          "sentence": "It is a frog.",
+          "image": "frog",
+          "audio": "frog",
+          "tts": "frog. What is it? It is a frog."
+        },
+        {
+          "key": "horse",
+          "en": "horse",
+          "th": "ม้า",
+          "sentence": "It is a horse.",
+          "image": "horse",
+          "audio": "horse",
+          "tts": "horse. What is it? It is a horse."
+        },
+        {
+          "key": "sheep",
+          "en": "sheep",
+          "th": "แกะ",
+          "sentence": "It is a sheep.",
+          "image": "sheep",
+          "audio": "sheep",
+          "tts": "sheep. What is it? It is a sheep."
+        },
+        {
+          "key": "lion",
+          "en": "lion",
+          "th": "สิงโต",
+          "sentence": "It is a lion.",
+          "image": "lion",
+          "audio": "lion",
+          "tts": "lion. What is it? It is a lion."
+        },
+        {
+          "key": "tiger",
+          "en": "tiger",
+          "th": "เสือ",
+          "sentence": "It is a tiger.",
+          "image": "tiger",
+          "audio": "tiger",
+          "tts": "tiger. What is it? It is a tiger."
+        }
+      ],
+      "lessonFlow": {
+        "durationMinutes": "5-8",
+        "principle": "learn through play, one screen one task, immediate feedback under 0.5s",
+        "qaPattern": "What is it? It is a cat.",
+        "segments": [
+          {
+            "id": "warm-up",
+            "title": "Warm-up",
+            "time": "30-45s",
+            "activity": "น้องฟิวเจอร์ทักทายและเปิดภารกิจ Animals",
+            "reward": "no reward yet"
+          },
+          {
+            "id": "learn",
+            "title": "Learn",
+            "time": "1-1.5m",
+            "activity": "ภาพสัตว์ชัด ๆ + เสียงชื่อสัตว์ + เสียงร้อง optional",
+            "reward": "none"
+          },
+          {
+            "id": "practice",
+            "title": "Practice",
+            "time": "1.5-2m",
+            "activity": "ฟังชื่อสัตว์แล้วแตะรูป",
+            "reward": "star per correct answer"
+          },
+          {
+            "id": "game",
+            "title": "Game",
+            "time": "1-1.5m",
+            "activity": "animal rescue เลือกสัตว์ให้กลับบ้าน",
+            "reward": "bonus XP"
+          },
+          {
+            "id": "review",
+            "title": "Review",
+            "time": "30-60s",
+            "activity": "ทวน 1 ข้อจากบทนี้ + 1 ข้อจากคำที่เคยผิด",
+            "reward": "star"
+          },
+          {
+            "id": "celebration",
+            "title": "Celebration",
+            "time": "20s",
+            "activity": "confetti + น้องฟิวเจอร์ฉลอง + สรุปดาว/XP/streak",
+            "reward": "sticker if daily goal reached"
+          }
+        ]
+      },
+      "missions": [
+        {
+          "type": "listen-tap",
+          "title": "Find the Animal",
+          "targetCount": 14
+        },
+        {
+          "type": "sentence",
+          "title": "What Animal Is It?",
+          "pattern": "What is it? It is a/an ..."
+        },
+        {
+          "type": "review",
+          "title": "Animal Review"
+        }
+      ]
+    },
+    {
+      "id": "u10-fruits-food",
+      "order": 10,
+      "title": "Fruits & Food",
+      "theme": "food + I like ...",
+      "status": "ready-for-assets",
+      "priority": "P2",
+      "vocab": [
+        {
+          "key": "apple",
+          "en": "apple",
+          "th": "แอปเปิล",
+          "sentence": "It is an apple.",
+          "image": "apple",
+          "audio": "apple",
+          "tts": "apple. What is it? It is an apple. I like apple."
+        },
+        {
+          "key": "banana",
+          "en": "banana",
+          "th": "กล้วย",
+          "sentence": "It is a banana.",
+          "image": "banana",
+          "audio": "banana",
+          "tts": "banana. What is it? It is a banana. I like banana."
+        },
+        {
+          "key": "orange",
+          "en": "orange",
+          "th": "ส้ม",
+          "sentence": "It is an orange.",
+          "image": "orange",
+          "audio": "orange",
+          "tts": "orange. What is it? It is an orange. I like orange."
+        },
+        {
+          "key": "mango",
+          "en": "mango",
+          "th": "มะม่วง",
+          "sentence": "It is a mango.",
+          "image": "mango",
+          "audio": "mango",
+          "tts": "mango. What is it? It is a mango. I like mango."
+        },
+        {
+          "key": "grape",
+          "en": "grape",
+          "th": "องุ่น",
+          "sentence": "It is a grape.",
+          "image": "grape",
+          "audio": "grape",
+          "tts": "grape. What is it? It is a grape. I like grape."
+        },
+        {
+          "key": "rice",
+          "en": "rice",
+          "th": "ข้าว",
+          "sentence": "It is rice.",
+          "image": "rice",
+          "audio": "rice",
+          "tts": "rice. What is it? It is rice. I like rice."
+        },
+        {
+          "key": "egg",
+          "en": "egg",
+          "th": "ไข่",
+          "sentence": "It is an egg.",
+          "image": "egg",
+          "audio": "egg",
+          "tts": "egg. What is it? It is an egg. I like egg."
+        },
+        {
+          "key": "milk",
+          "en": "milk",
+          "th": "นม",
+          "sentence": "It is milk.",
+          "image": "milk",
+          "audio": "milk",
+          "tts": "milk. What is it? It is milk. I like milk."
+        },
+        {
+          "key": "water",
+          "en": "water",
+          "th": "น้ำ",
+          "sentence": "It is water.",
+          "image": "water",
+          "audio": "water",
+          "tts": "water. What is it? It is water. I like water."
+        },
+        {
+          "key": "bread",
+          "en": "bread",
+          "th": "ขนมปัง",
+          "sentence": "It is bread.",
+          "image": "bread",
+          "audio": "bread",
+          "tts": "bread. What is it? It is bread. I like bread."
+        },
+        {
+          "key": "cake",
+          "en": "cake",
+          "th": "เค้ก",
+          "sentence": "It is a cake.",
+          "image": "cake",
+          "audio": "cake",
+          "tts": "cake. What is it? It is a cake. I like cake."
+        },
+        {
+          "key": "fish",
+          "en": "fish",
+          "th": "ปลา",
+          "sentence": "It is fish.",
+          "image": "fish",
+          "audio": "fish",
+          "tts": "fish. What is it? It is fish. I like fish."
+        },
+        {
+          "key": "chicken",
+          "en": "chicken",
+          "th": "ไก่",
+          "sentence": "It is chicken.",
+          "image": "chicken",
+          "audio": "chicken",
+          "tts": "chicken. What is it? It is chicken. I like chicken."
+        },
+        {
+          "key": "soup",
+          "en": "soup",
+          "th": "ซุป",
+          "sentence": "It is soup.",
+          "image": "soup",
+          "audio": "soup",
+          "tts": "soup. What is it? It is soup. I like soup."
+        }
+      ],
+      "lessonFlow": {
+        "durationMinutes": "5-8",
+        "principle": "learn through play, one screen one task, immediate feedback under 0.5s",
+        "qaPattern": "What is it? It is an apple. / I like apples.",
+        "segments": [
+          {
+            "id": "warm-up",
+            "title": "Warm-up",
+            "time": "30-45s",
+            "activity": "น้องฟิวเจอร์ทักทายและเปิดภารกิจ Fruits & Food",
+            "reward": "no reward yet"
+          },
+          {
+            "id": "learn",
+            "title": "Learn",
+            "time": "1-1.5m",
+            "activity": "โชว์อาหารใกล้ตัว เด็กฟังชื่อและเห็นภาพจริง",
+            "reward": "none"
+          },
+          {
+            "id": "practice",
+            "title": "Practice",
+            "time": "1.5-2m",
+            "activity": "ฟังชื่ออาหารแล้วแตะรูป",
+            "reward": "star per correct answer"
+          },
+          {
+            "id": "game",
+            "title": "Game",
+            "time": "1-1.5m",
+            "activity": "lunch tray match จัดอาหารใส่ถาด",
+            "reward": "bonus XP"
+          },
+          {
+            "id": "review",
+            "title": "Review",
+            "time": "30-60s",
+            "activity": "ทวน 1 ข้อจากบทนี้ + 1 ข้อจากคำที่เคยผิด",
+            "reward": "star"
+          },
+          {
+            "id": "celebration",
+            "title": "Celebration",
+            "time": "20s",
+            "activity": "confetti + น้องฟิวเจอร์ฉลอง + สรุปดาว/XP/streak",
+            "reward": "sticker if daily goal reached"
+          }
+        ]
+      },
+      "missions": [
+        {
+          "type": "listen-tap",
+          "title": "Find the Food",
+          "targetCount": 14
+        },
+        {
+          "type": "sentence",
+          "title": "What Food Is It?",
+          "pattern": "What is it? It is a/an ..."
+        },
+        {
+          "type": "say-it-back",
+          "title": "I Like ..."
+        }
+      ]
+    },
+    {
+      "id": "u11-feelings",
+      "order": 11,
+      "title": "Feelings",
+      "theme": "emotions + I am ...",
+      "status": "ready-for-assets",
+      "priority": "P2",
+      "vocab": [
+        {
+          "key": "happy",
+          "en": "happy",
+          "th": "มีความสุข",
+          "sentence": "I am happy.",
+          "image": "feeling-happy",
+          "audio": "feeling-happy",
+          "tts": "happy. How are you? I am happy."
+        },
+        {
+          "key": "sad",
+          "en": "sad",
+          "th": "เศร้า",
+          "sentence": "I am sad.",
+          "image": "feeling-sad",
+          "audio": "feeling-sad",
+          "tts": "sad. How are you? I am sad."
+        },
+        {
+          "key": "angry",
+          "en": "angry",
+          "th": "โกรธ",
+          "sentence": "I am angry.",
+          "image": "feeling-angry",
+          "audio": "feeling-angry",
+          "tts": "angry. How are you? I am angry."
+        },
+        {
+          "key": "sleepy",
+          "en": "sleepy",
+          "th": "ง่วง",
+          "sentence": "I am sleepy.",
+          "image": "feeling-sleepy",
+          "audio": "feeling-sleepy",
+          "tts": "sleepy. How are you? I am sleepy."
+        },
+        {
+          "key": "hungry",
+          "en": "hungry",
+          "th": "หิว",
+          "sentence": "I am hungry.",
+          "image": "feeling-hungry",
+          "audio": "feeling-hungry",
+          "tts": "hungry. How are you? I am hungry."
+        },
+        {
+          "key": "thirsty",
+          "en": "thirsty",
+          "th": "กระหายน้ำ",
+          "sentence": "I am thirsty.",
+          "image": "feeling-thirsty",
+          "audio": "feeling-thirsty",
+          "tts": "thirsty. How are you? I am thirsty."
+        },
+        {
+          "key": "hot",
+          "en": "hot",
+          "th": "ร้อน",
+          "sentence": "I am hot.",
+          "image": "feeling-hot",
+          "audio": "feeling-hot",
+          "tts": "hot. How are you? I am hot."
+        },
+        {
+          "key": "cold",
+          "en": "cold",
+          "th": "หนาว",
+          "sentence": "I am cold.",
+          "image": "feeling-cold",
+          "audio": "feeling-cold",
+          "tts": "cold. How are you? I am cold."
+        },
+        {
+          "key": "tired",
+          "en": "tired",
+          "th": "เหนื่อย",
+          "sentence": "I am tired.",
+          "image": "feeling-tired",
+          "audio": "feeling-tired",
+          "tts": "tired. How are you? I am tired."
+        },
+        {
+          "key": "scared",
+          "en": "scared",
+          "th": "กลัว",
+          "sentence": "I am scared.",
+          "image": "feeling-scared",
+          "audio": "feeling-scared",
+          "tts": "scared. How are you? I am scared."
+        }
+      ],
+      "lessonFlow": {
+        "durationMinutes": "5-8",
+        "principle": "learn through play, one screen one task, immediate feedback under 0.5s",
+        "qaPattern": "How are you? I am happy.",
+        "segments": [
+          {
+            "id": "warm-up",
+            "title": "Warm-up",
+            "time": "30-45s",
+            "activity": "น้องฟิวเจอร์ทักทายและเปิดภารกิจ Feelings",
+            "reward": "no reward yet"
+          },
+          {
+            "id": "learn",
+            "title": "Learn",
+            "time": "1-1.5m",
+            "activity": "มาสคอตแสดงสีหน้าแต่ละอารมณ์",
+            "reward": "none"
+          },
+          {
+            "id": "practice",
+            "title": "Practice",
+            "time": "1.5-2m",
+            "activity": "ฟังอารมณ์แล้วแตะใบหน้าที่ตรง",
+            "reward": "star per correct answer"
+          },
+          {
+            "id": "game",
+            "title": "Game",
+            "time": "1-1.5m",
+            "activity": "emotion mirror เลือกหน้าให้มาสคอต",
+            "reward": "bonus XP"
+          },
+          {
+            "id": "review",
+            "title": "Review",
+            "time": "30-60s",
+            "activity": "ทวน 1 ข้อจากบทนี้ + 1 ข้อจากคำที่เคยผิด",
+            "reward": "star"
+          },
+          {
+            "id": "celebration",
+            "title": "Celebration",
+            "time": "20s",
+            "activity": "confetti + น้องฟิวเจอร์ฉลอง + สรุปดาว/XP/streak",
+            "reward": "sticker if daily goal reached"
+          }
+        ]
+      },
+      "missions": [
+        {
+          "type": "listen-tap",
+          "title": "Find the Feeling",
+          "targetCount": 10
+        },
+        {
+          "type": "sentence",
+          "title": "How Are You?",
+          "pattern": "How are you? I am ..."
+        },
+        {
+          "type": "review",
+          "title": "Feelings Review"
+        }
+      ]
+    },
+    {
+      "id": "u12-culture-festivals",
+      "order": 12,
+      "title": "Culture & Festivals",
+      "theme": "polite words + Thai/global festivals",
+      "status": "ready-for-assets",
+      "priority": "P2",
+      "standard": "ต2.1 ป.1",
+      "note": "เพิ่มเพื่อเติมช่องว่างภาษากับวัฒนธรรม: มารยาทง่าย ๆ + เทศกาลไทย/สากลแบบไม่ซับซ้อน",
+      "vocab": [
+        {
+          "key": "wai",
+          "en": "wai",
+          "th": "การไหว้",
+          "sentence": "It is a wai.",
+          "image": "wai",
+          "audio": "wai",
+          "tts": "wai. What is it? It is a wai. Say hello politely.",
+          "pattern": "a wai"
+        },
+        {
+          "key": "smile",
+          "en": "smile",
+          "th": "รอยยิ้ม",
+          "sentence": "It is a smile.",
+          "image": "smile",
+          "audio": "smile",
+          "tts": "smile. What is it? It is a smile.",
+          "pattern": "a smile"
+        },
+        {
+          "key": "songkran",
+          "en": "Songkran",
+          "th": "สงกรานต์",
+          "sentence": "It is Songkran.",
+          "image": "songkran",
+          "audio": "songkran",
+          "tts": "Songkran. What is it? It is Songkran.",
+          "pattern": "Songkran"
+        },
+        {
+          "key": "water-bowl",
+          "en": "water bowl",
+          "th": "ขันน้ำ",
+          "sentence": "It is a water bowl.",
+          "image": "water-bowl",
+          "audio": "water-bowl",
+          "tts": "water bowl. What is it? It is a water bowl.",
+          "pattern": "a water bowl"
+        },
+        {
+          "key": "loy-krathong",
+          "en": "Loy Krathong",
+          "th": "ลอยกระทง",
+          "sentence": "It is Loy Krathong.",
+          "image": "loy-krathong",
+          "audio": "loy-krathong",
+          "tts": "Loy Krathong. What is it? It is Loy Krathong.",
+          "pattern": "Loy Krathong"
+        },
+        {
+          "key": "krathong",
+          "en": "krathong",
+          "th": "กระทง",
+          "sentence": "It is a krathong.",
+          "image": "krathong",
+          "audio": "krathong",
+          "tts": "krathong. What is it? It is a krathong.",
+          "pattern": "a krathong"
+        },
+        {
+          "key": "christmas",
+          "en": "Christmas",
+          "th": "คริสต์มาส",
+          "sentence": "It is Christmas.",
+          "image": "christmas",
+          "audio": "christmas",
+          "tts": "Christmas. What is it? It is Christmas.",
+          "pattern": "Christmas"
+        },
+        {
+          "key": "gift",
+          "en": "gift",
+          "th": "ของขวัญ",
+          "sentence": "It is a gift.",
+          "image": "gift",
+          "audio": "gift",
+          "tts": "gift. What is it? It is a gift.",
+          "pattern": "a gift"
+        },
+        {
+          "key": "new-year",
+          "en": "New Year",
+          "th": "ปีใหม่",
+          "sentence": "It is New Year.",
+          "image": "new-year",
+          "audio": "new-year",
+          "tts": "New Year. What is it? It is New Year.",
+          "pattern": "New Year"
+        },
+        {
+          "key": "thank-you",
+          "en": "thank you",
+          "th": "ขอบคุณ",
+          "sentence": "We say thank you.",
+          "image": "thank-you",
+          "audio": "thank-you",
+          "tts": "Thank you. We say thank you.",
+          "pattern": "thank you"
+        }
+      ],
+      "lessonFlow": {
+        "durationMinutes": "5-8",
+        "principle": "learn through play, one screen one task, immediate feedback under 0.5s",
+        "qaPattern": "What is it? It is Songkran. / We say thank you.",
+        "segments": [
+          {
+            "id": "warm-up",
+            "title": "Warm-up",
+            "time": "30-45s",
+            "activity": "น้องฟิวเจอร์ทักทายและเปิดภารกิจ Culture & Festivals",
+            "reward": "no reward yet"
+          },
+          {
+            "id": "learn",
+            "title": "Learn",
+            "time": "1-1.5m",
+            "activity": "ภาพเทศกาล/มารยาท 1 ภาพ 1 คำ พร้อมคำไทยช่วยเข้าใจ",
+            "reward": "none"
+          },
+          {
+            "id": "practice",
+            "title": "Practice",
+            "time": "1.5-2m",
+            "activity": "ฟังคำแล้วแตะภาพเทศกาลหรือมารยาทที่ตรง",
+            "reward": "star per correct answer"
+          },
+          {
+            "id": "game",
+            "title": "Game",
+            "time": "1-1.5m",
+            "activity": "festival card match จับคู่เทศกาลกับของ/คำพูด",
+            "reward": "bonus XP"
+          },
+          {
+            "id": "review",
+            "title": "Review",
+            "time": "30-60s",
+            "activity": "ทวน 1 ข้อจากบทนี้ + 1 ข้อจากคำที่เคยผิด",
+            "reward": "star"
+          },
+          {
+            "id": "celebration",
+            "title": "Celebration",
+            "time": "20s",
+            "activity": "confetti + น้องฟิวเจอร์ฉลอง + สรุปดาว/XP/streak",
+            "reward": "sticker if daily goal reached"
+          }
+        ]
+      },
+      "missions": [
+        {
+          "type": "culture",
+          "title": "Polite Words and Festivals",
+          "targetCount": 10
+        },
+        {
+          "type": "listen-tap",
+          "title": "Find the Festival"
+        },
+        {
+          "type": "review",
+          "title": "Culture Review"
+        }
+      ]
+    }
+  ],
+  "pipeline": {
+    "genAudio": "อ่าน item.audio ทุกตัว -> เรียก TTS (MiniMax/Gemini/Qwen) -> เซฟ mp3 ที่ audioDir/<audio>.mp3 (cache)",
+    "genImages": "อ่าน item.image ทุกตัว -> gen รูป (Gemini/Qwen/Canva) -> เซฟ imageDir/<image>.png + curate",
+    "qaImages": "Gemini vision ตรวจรูปว่าใช่สิ่งที่ตั้งใจ + เหมาะเด็ก ก่อนให้คนดูรอบสุดท้าย",
+    "costRule": "ห้ามใช้ Anthropic API key; งาน gen ส่งตัวถูก (DeepSeek/Qwen/Gemini/MiniMax); เสียง prototype ใช้ Web Speech ได้",
+    "audioTodo": [
+      "book.mp3",
+      "pencil.mp3",
+      "ruler.mp3",
+      "eraser.mp3",
+      "school-bag.mp3",
+      "notebook.mp3",
+      "pen.mp3",
+      "crayon.mp3",
+      "scissors.mp3",
+      "glue.mp3",
+      "sharpener.mp3",
+      "desk.mp3",
+      "chair.mp3",
+      "board.mp3",
+      "clock.mp3",
+      "apple.mp3",
+      "banana.mp3",
+      "ball.mp3",
+      "bottle.mp3",
+      "lunch-box.mp3",
+      "phonics-a.mp3",
+      "phonics-b.mp3",
+      "phonics-c.mp3",
+      "phonics-d.mp3",
+      "phonics-e.mp3",
+      "phonics-f.mp3",
+      "phonics-g.mp3",
+      "phonics-h.mp3",
+      "phonics-i.mp3",
+      "phonics-j.mp3",
+      "phonics-k.mp3",
+      "phonics-l.mp3",
+      "phonics-m.mp3",
+      "phonics-n.mp3",
+      "phonics-o.mp3",
+      "phonics-p.mp3",
+      "phonics-q.mp3",
+      "phonics-r.mp3",
+      "phonics-s.mp3",
+      "phonics-t.mp3",
+      "phonics-u.mp3",
+      "phonics-v.mp3",
+      "phonics-w.mp3",
+      "phonics-x.mp3",
+      "phonics-y.mp3",
+      "phonics-z.mp3",
+      "hello.mp3",
+      "hi.mp3",
+      "good-morning.mp3",
+      "goodbye.mp3",
+      "whats-your-name.mp3",
+      "my-name-is.mp3",
+      "thank-you.mp3",
+      "please.mp3",
+      "stand-up.mp3",
+      "sit-down.mp3",
+      "open-your-book.mp3",
+      "close-your-book.mp3",
+      "listen.mp3",
+      "look.mp3",
+      "repeat.mp3",
+      "raise-your-hand.mp3",
+      "line-up.mp3",
+      "be-quiet.mp3",
+      "num-1.mp3",
+      "num-2.mp3",
+      "num-3.mp3",
+      "num-4.mp3",
+      "num-5.mp3",
+      "num-6.mp3",
+      "num-7.mp3",
+      "num-8.mp3",
+      "num-9.mp3",
+      "num-10.mp3",
+      "num-11.mp3",
+      "num-12.mp3",
+      "num-13.mp3",
+      "num-14.mp3",
+      "num-15.mp3",
+      "num-16.mp3",
+      "num-17.mp3",
+      "num-18.mp3",
+      "num-19.mp3",
+      "num-20.mp3",
+      "red.mp3",
+      "blue.mp3",
+      "yellow.mp3",
+      "green.mp3",
+      "color-orange.mp3",
+      "purple.mp3",
+      "pink.mp3",
+      "black.mp3",
+      "white.mp3",
+      "brown.mp3",
+      "mother.mp3",
+      "father.mp3",
+      "brother.mp3",
+      "sister.mp3",
+      "baby.mp3",
+      "grandma.mp3",
+      "grandpa.mp3",
+      "teacher.mp3",
+      "friend.mp3",
+      "family.mp3",
+      "head.mp3",
+      "hair.mp3",
+      "eye.mp3",
+      "ear.mp3",
+      "nose.mp3",
+      "mouth.mp3",
+      "tooth.mp3",
+      "hand.mp3",
+      "finger.mp3",
+      "arm.mp3",
+      "leg.mp3",
+      "foot.mp3",
+      "cat.mp3",
+      "dog.mp3",
+      "bird.mp3",
+      "fish.mp3",
+      "cow.mp3",
+      "pig.mp3",
+      "duck.mp3",
+      "chicken.mp3",
+      "rabbit.mp3",
+      "frog.mp3",
+      "horse.mp3",
+      "sheep.mp3",
+      "lion.mp3",
+      "tiger.mp3",
+      "apple.mp3",
+      "banana.mp3",
+      "orange.mp3",
+      "mango.mp3",
+      "grape.mp3",
+      "rice.mp3",
+      "egg.mp3",
+      "milk.mp3",
+      "water.mp3",
+      "bread.mp3",
+      "cake.mp3",
+      "fish.mp3",
+      "chicken.mp3",
+      "soup.mp3",
+      "feeling-happy.mp3",
+      "feeling-sad.mp3",
+      "feeling-angry.mp3",
+      "feeling-sleepy.mp3",
+      "feeling-hungry.mp3",
+      "feeling-thirsty.mp3",
+      "feeling-hot.mp3",
+      "feeling-cold.mp3",
+      "feeling-tired.mp3",
+      "feeling-scared.mp3",
+      "wai.mp3",
+      "smile.mp3",
+      "songkran.mp3",
+      "water-bowl.mp3",
+      "loy-krathong.mp3",
+      "krathong.mp3",
+      "christmas.mp3",
+      "gift.mp3",
+      "new-year.mp3",
+      "thank-you.mp3"
+    ],
+    "audioTodoNote": "รวม audio key สำหรับ production cache; ไฟล์ใหม่ให้ Claude/ElevenLabs gen หลัง owner เคาะ asset batch",
+    "imageTodo": [
+      "book",
+      "pencil",
+      "ruler",
+      "eraser",
+      "school-bag",
+      "notebook",
+      "pen",
+      "crayon",
+      "scissors",
+      "glue",
+      "sharpener",
+      "desk",
+      "chair",
+      "board",
+      "clock",
+      "apple",
+      "banana",
+      "ball",
+      "bottle",
+      "lunch-box",
+      "apple",
+      "ball",
+      "cat",
+      "dog",
+      "egg",
+      "fish",
+      "goat",
+      "hat",
+      "igloo",
+      "jam",
+      "kite",
+      "lion",
+      "moon",
+      "nest",
+      "orange",
+      "pig",
+      "queen",
+      "rabbit",
+      "sun",
+      "tiger",
+      "umbrella",
+      "van",
+      "web",
+      "box",
+      "yo-yo",
+      "zebra",
+      "hello",
+      "hi",
+      "good-morning",
+      "goodbye",
+      "whats-your-name",
+      "my-name-is",
+      "thank-you",
+      "please",
+      "stand-up",
+      "sit-down",
+      "open-your-book",
+      "close-your-book",
+      "listen",
+      "look",
+      "repeat",
+      "raise-your-hand",
+      "line-up",
+      "be-quiet",
+      "count-1",
+      "count-2",
+      "count-3",
+      "count-4",
+      "count-5",
+      "count-6",
+      "count-7",
+      "count-8",
+      "count-9",
+      "count-10",
+      "count-11",
+      "count-12",
+      "count-13",
+      "count-14",
+      "count-15",
+      "count-16",
+      "count-17",
+      "count-18",
+      "count-19",
+      "count-20",
+      "color-red",
+      "color-blue",
+      "color-yellow",
+      "color-green",
+      "color-orange",
+      "color-purple",
+      "color-pink",
+      "color-black",
+      "color-white",
+      "color-brown",
+      "mother",
+      "father",
+      "brother",
+      "sister",
+      "baby",
+      "grandma",
+      "grandpa",
+      "teacher",
+      "friend",
+      "family",
+      "head",
+      "hair",
+      "eye",
+      "ear",
+      "nose",
+      "mouth",
+      "tooth",
+      "hand",
+      "finger",
+      "arm",
+      "leg",
+      "foot",
+      "cat",
+      "dog",
+      "bird",
+      "fish",
+      "cow",
+      "pig",
+      "duck",
+      "chicken",
+      "rabbit",
+      "frog",
+      "horse",
+      "sheep",
+      "lion",
+      "tiger",
+      "apple",
+      "banana",
+      "orange",
+      "mango",
+      "grape",
+      "rice",
+      "egg",
+      "milk",
+      "water",
+      "bread",
+      "cake",
+      "fish",
+      "chicken",
+      "soup",
+      "feeling-happy",
+      "feeling-sad",
+      "feeling-angry",
+      "feeling-sleepy",
+      "feeling-hungry",
+      "feeling-thirsty",
+      "feeling-hot",
+      "feeling-cold",
+      "feeling-tired",
+      "feeling-scared",
+      "wai",
+      "smile",
+      "songkran",
+      "water-bowl",
+      "loy-krathong",
+      "krathong",
+      "christmas",
+      "gift",
+      "new-year",
+      "thank-you"
+    ]
+  },
+  "scope": {
+    "officialAlignment": [
+      "หลักสูตรแกนกลางการศึกษาขั้นพื้นฐาน 2551 กลุ่มสาระภาษาต่างประเทศ ป.1",
+      "ต1.1 เข้าใจและตีความเรื่องที่ฟัง/อ่านจากสื่อใกล้ตัว",
+      "ต1.2 ใช้ภาษาเพื่อสื่อสารในสถานการณ์ง่าย ๆ",
+      "ต2.1 เข้าใจความสัมพันธ์ระหว่างภาษาและวัฒนธรรมของเจ้าของภาษาและไทย"
+    ],
+    "externalBenchmark": "Cambridge English Starters-style vocabulary coverage for numbers 1-20 and classroom language",
+    "coreVocabCountExcludingPhonics": 138,
+    "note": "นับ core vocab ไม่รวม phonics letter cards 26 ใบ เพื่อให้ทั้ง ป.1 อยู่ในกรอบประมาณ 120-150 คำ"
+  }
+}

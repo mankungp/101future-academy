@@ -1,0 +1,76 @@
+{
+  "id": "k2size",
+  "order": 28,
+  "level": "k2",
+  "title": "Big or Small?",
+  "theme": "k2-adjectives",
+  "standard": {
+    "earlyYears2560": [
+      "มฐ.9",
+      "มฐ.10"
+    ],
+    "core2551": "ต1.1",
+    "commonCore": "L.K.5b (opposites/adjectives)",
+    "cefr": "Pre-A1 → A1"
+  },
+  "intro": {
+    "audio": "audio/phrases/intro-k2size.mp3",
+    "text": "Big or small?"
+  },
+  "words": [
+    {
+      "id": "dog",
+      "text": "dog",
+      "image": "img/animals/dog.png",
+      "audio": "audio/words/dog.mp3"
+    },
+    {
+      "id": "cat",
+      "text": "cat",
+      "image": "img/animals/cat.png",
+      "audio": "audio/words/cat.mp3"
+    },
+    {
+      "id": "fish",
+      "text": "fish",
+      "image": "img/animals/fish.png",
+      "audio": "audio/words/fish.mp3"
+    },
+    {
+      "id": "sun",
+      "text": "sun",
+      "image": "img/weather/sun.png",
+      "audio": "audio/words/sun.mp3"
+    },
+    {
+      "id": "apple",
+      "text": "apple",
+      "image": "img/fruits/apple.png",
+      "audio": "audio/words/apple.mp3"
+    },
+    {
+      "id": "bear",
+      "text": "bear",
+      "image": "img/animals/bear.png",
+      "audio": "audio/words/bear.mp3"
+    }
+  ],
+  "missions": [
+    {
+      "id": "k2size-pick",
+      "type": "size",
+      "items": [
+        "dog",
+        "cat",
+        "fish",
+        "sun",
+        "apple",
+        "bear"
+      ],
+      "rounds": 6
+    }
+  ],
+  "reward": {
+    "sticker": "🆚"
+  }
+}

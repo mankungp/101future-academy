@@ -6,9 +6,75 @@
     <title>101 Future Academy</title>
     <meta
       name="description"
-      content="101 Future Academy สถาบันทักษะอนาคตจากร้อยเอ็ด สำหรับ AI, English, Coding และ Future Skills"
+      content="101 Future Academy แพลตฟอร์มเรียนเสริมทักษะสำหรับเด็กประถม ป.1-ป.6 เริ่มจากวิชาหลักในห้องเรียน"
     />
-    <link rel="stylesheet" href="/styles.css" />
+    <link rel="stylesheet" href="/styles.css?v=20260530-english-preview-1" />
+    <style>
+      .lead-mobile {
+        display: none;
+      }
+
+      .hero-title-mobile {
+        display: none;
+      }
+
+      @media (max-width: 640px) {
+        .topbar {
+          padding: 12px 5vw 10px;
+        }
+
+        .brand-mark {
+          width: 42px;
+          height: 32px;
+        }
+
+        .nav a[href="#system"],
+        .nav a[href="#course"],
+        .nav a[href="#apply"],
+        .nav a[href="#policies"],
+        .nav a[href="#contact"] {
+          display: none;
+        }
+
+        .hero {
+          min-height: auto;
+          padding-top: 26px;
+          padding-bottom: 34px;
+        }
+
+        .hero-actions .button.secondary {
+          display: none;
+        }
+
+        .strip p {
+          font-size: 16px;
+          line-height: 1.35;
+        }
+
+        .lead {
+          max-width: min(620px, 100%);
+          overflow-wrap: anywhere;
+          word-break: break-word;
+          line-break: anywhere;
+        }
+
+        .lead-desktop {
+          display: none;
+        }
+
+        .lead-mobile {
+          display: inline;
+        }
+
+        .hero-title-desktop {
+          display: none;
+        }
+
+        .hero-title-mobile {
+          display: inline;
+        }
+      }
+    </style>
   </head>
   <body>
     <header class="topbar">
@@ -17,10 +83,14 @@
         <span class="brand-name">Future Academy</span>
       </a>
       <nav class="nav" aria-label="Main navigation">
-        <a href="#programs">Programs</a>
-        <a href="#apply">Apply</a>
-        <a href="#why">Why 101</a>
-        <a href="/admin">Admin</a>
+        <a href="#packages">แพ็กเรียน</a>
+        <a href="#curriculum">หลักสูตร</a>
+        <a href="#system">วิธีเรียน</a>
+        <a href="#course">วิชาที่เปิด</a>
+        <a href="#apply">สมัครเรียน</a>
+        <a class="nav-line-login" href="/auth/line?next=/learn">เข้าเรียนด้วย LINE</a>
+        <a href="#policies">นโยบาย</a>
+        <a href="#contact">ติดต่อ</a>
       </nav>
     </header>
 
@@ -29,151 +99,259 @@
         <img
           class="hero-image"
           src="/assets/hero-learning-lab.png"
-          alt="Students learning AI, English, and coding in a modern classroom"
+          alt="Students learning with a teacher in a modern classroom"
         />
         <div class="hero-shade" aria-hidden="true"></div>
         <div class="hero-copy">
-          <p class="eyebrow">Roi Et Future Skills Institute</p>
-          <h1>101 Future Academy</h1>
+          <p class="eyebrow">แพลตฟอร์มเรียนเสริมทักษะ ป.1-ป.6</p>
+          <h1>
+            <span class="hero-title-desktop">เรียนเสริมทักษะสำหรับเด็กประถม เริ่มจากวิชาหลักในห้องเรียน</span>
+            <span class="hero-title-mobile">เรียนเสริมทักษะ<br />สำหรับเด็กประถม<br />เริ่มจากวิชาหลักในห้องเรียน</span>
+          </h1>
           <p class="lead">
-            สถาบันทักษะอนาคตจากร้อยเอ็ด สำหรับ AI, English, Coding และทักษะใหม่ที่ใช้ได้จริง
+            <span class="lead-desktop">
+              เลือกคณิต วิทย์ อังกฤษ หรือภาษาไทย เรียนเป็นบทสั้น เข้าใจง่าย พร้อมแบบฝึกหัดและสรุปผลหลังเรียนให้เห็นว่าควรทบทวนเรื่องไหนต่อ
+            </span>
+            <span class="lead-mobile">
+              คณิต วิทย์ อังกฤษ หรือภาษาไทย<br />
+              เรียนเป็นบทสั้น เข้าใจง่าย<br />
+              มีแบบฝึกหัดหลังเรียน<br />
+              และสรุปเรื่องที่ควรทบทวนต่อ
+            </span>
           </p>
           <div class="hero-actions">
-            <a class="button primary" href="#apply">สมัครเรียนรุ่นแรก</a>
-            <a class="button secondary" href="#programs">ดูหลักสูตร</a>
+            <a class="button primary" href="#packages">เลือกแพ็กเรียน</a>
+            <a class="button line-button" href="/auth/line?next=/learn">ลงชื่อสนใจด้วย LINE</a>
+            <a class="button secondary" href="#course">ดูวิชาที่เปิด</a>
           </div>
-          <div class="hero-stats" aria-label="101 Future key programs">
-            <span><strong>4</strong> โปรแกรมหลัก</span>
-            <span><strong>101</strong> เริ่มจากพื้นฐาน</span>
-            <span><strong>Roi Et</strong> เรียนใกล้บ้าน</span>
+          <div class="hero-stats" aria-label="101 Future core plan">
+            <span><strong>299 บาท</strong> ต่อวิชา / 30 วัน</span>
+            <span><strong>ป.1-ป.6</strong> รุ่นเริ่มต้น</span>
+            <span><strong>ชำระเงิน</strong> เปิดใช้งานเร็ว ๆ นี้</span>
           </div>
         </div>
       </section>
 
       <section class="strip" aria-label="Brand idea">
-        <p><strong>101</strong> คือร้อยเอ็ด และคือจุดเริ่มต้นของทุกทักษะใหม่</p>
+        <p><strong>101 Future Academy</strong> เสริมทักษะวิชาหลักสำหรับเด็กประถม</p>
       </section>
 
-      <section id="programs" class="section program-section">
+      <section id="curriculum" class="section trust-section">
         <div class="section-head">
-          <p class="eyebrow">Programs</p>
-          <h2>เรียนให้ทันโลก โดยเริ่มจากพื้นฐานที่ถูกต้อง</h2>
-          <p>หลักสูตรรุ่นแรกออกแบบให้เรียนเป็นชิ้นงาน เห็นผลลัพธ์ และใช้ต่อได้จริงในโรงเรียน งาน และธุรกิจ</p>
+          <p class="eyebrow">หลักสูตรการสอน</p>
+          <h2>บทเรียนอิงหลักสูตรไทย เสริมพื้นฐานทีละขั้น</h2>
+          <p>
+            โครงสร้างบทเรียนออกแบบให้เด็กประถมค่อย ๆ เข้าใจจากพื้นฐาน เลือกเริ่มจากวิชาหลักที่เรียนอยู่ในห้องเรียนได้ตามความพร้อมของแต่ละครอบครัว
+          </p>
         </div>
-        <div class="program-grid">
-          <article class="program">
-            <span class="program-tag">AI</span>
-            <h3>AI 101</h3>
-            <p>ใช้ AI เป็นเครื่องมือเรียน ทำงาน คิด และสร้างโปรเจกต์ของตัวเอง</p>
-            <button class="text-button" data-course="AI 101">เลือกหลักสูตรนี้</button>
+        <div class="trust-grid">
+          <article class="trust-card">
+            <span>01</span>
+            <h3>เริ่มจาก ป.1-ป.6</h3>
+            <p>วางบทเรียนให้เหมาะกับเด็กประถม แยกความยากตามระดับชั้นและพื้นฐานของผู้เรียน</p>
           </article>
-          <article class="program">
-            <span class="program-tag">English</span>
-            <h3>English for Future</h3>
-            <p>ภาษาอังกฤษเพื่อสื่อสาร พรีเซนต์ และทำงานกับโลกสากล</p>
-            <button class="text-button" data-course="English for Future">เลือกหลักสูตรนี้</button>
+          <article class="trust-card">
+            <span>02</span>
+            <h3>เริ่มจากวิชาหลักในห้องเรียน</h3>
+            <p>เลือกคณิต วิทย์ อังกฤษ หรือภาษาไทยได้ ไม่จำเป็นต้องเริ่มจากวิชาเดียวกันทุกคน</p>
           </article>
-          <article class="program">
-            <span class="program-tag">Coding</span>
-            <h3>Code & Create</h3>
-            <p>พื้นฐาน coding, web, automation และการสร้างชิ้นงานจริง</p>
-            <button class="text-button" data-course="Code & Create">เลือกหลักสูตรนี้</button>
+          <article class="trust-card">
+            <span>03</span>
+            <h3>เห็นผลหลังเรียน</h3>
+            <p>หลังทำแบบฝึกหัด ระบบช่วยสรุปเรื่องที่เข้าใจแล้ว และเรื่องที่ควรทบทวนเพิ่ม</p>
           </article>
-          <article class="program">
-            <span class="program-tag">Skills</span>
-            <h3>Future Skills</h3>
-            <p>คิดเป็นระบบ แก้ปัญหา ทำพอร์ต และเตรียมพร้อมกับอาชีพใหม่</p>
-            <button class="text-button" data-course="Future Skills">เลือกหลักสูตรนี้</button>
+        </div>
+      </section>
+
+      <section id="packages" class="section program-section">
+        <div class="section-head">
+          <p class="eyebrow">แพ็กเรียน</p>
+          <h2>เลือกวิชาที่อยากเริ่มก่อน</h2>
+          <p>ตอนนี้เปิดให้ลงชื่อสนใจด้วย LINE แยกตามวิชา คณิต วิทย์ อังกฤษ หรือภาษาไทย ก่อนเปิดชำระเงินจริง</p>
+        </div>
+        <div id="packageGrid" class="program-grid"></div>
+      </section>
+
+      <section id="system" class="section system-section">
+        <div class="section-head">
+          <p class="eyebrow">วิธีเรียน</p>
+          <h2>หนึ่งรอบเรียนมีทั้งบทเรียน แบบฝึกหัด และสรุปผล</h2>
+          <p>เด็กไม่ได้แค่อ่านเนื้อหา แต่จะได้ทบทวน ทำแบบฝึกหัด และเห็นภาพรวมว่าควรกลับไปทบทวนเรื่องไหน</p>
+        </div>
+        <div class="system-grid">
+          <article>
+            <span>ช่วงที่ 1</span>
+            <h3>เข้าใจบทเรียน</h3>
+            <p>เรียนคำอธิบายและตัวอย่างที่สั้นพอให้จับประเด็นได้ ไม่ยาวจนเด็กหลุดโฟกัส</p>
+          </article>
+          <article>
+            <span>ช่วงที่ 2</span>
+            <h3>ทำแบบฝึกหัด</h3>
+            <p>ลองทำโจทย์เพื่อเช็กว่าเข้าใจเรื่องที่เรียนจริงหรือไม่ เช่น คำนวณ อ่านโจทย์ คำศัพท์ หรือหลักภาษา</p>
+          </article>
+          <article>
+            <span>ช่วงที่ 3</span>
+            <h3>ฝึกตอบและอธิบาย</h3>
+            <p>ฝึกตอบคำถามหรืออธิบายวิธีคิดตามวิชา เช่น โจทย์คณิต เหตุผลทางวิทย์ หรือจับใจความภาษาไทย</p>
+          </article>
+          <article>
+            <span>ช่วงที่ 4</span>
+            <h3>สรุปผลหลังเรียน</h3>
+            <p>หลังเรียนจะเห็นเรื่องที่ทำได้ดี และเรื่องที่ควรทบทวนเพิ่ม เช่น การคำนวณ การจับใจความ หรือคำศัพท์ที่ใช้บ่อย</p>
+          </article>
+        </div>
+      </section>
+
+      <section id="course" class="section course-section">
+        <div class="section-head">
+          <p class="eyebrow">วิชาที่เปิด</p>
+          <h2>4 วิชาหลักสำหรับเด็กประถม</h2>
+          <p>แต่ละวิชาเน้นเสริมพื้นฐาน เข้าใจบทเรียน และทำแบบฝึกหัดหลังเรียนในจังหวะที่เด็กตามได้</p>
+        </div>
+        <div class="course-grid">
+          <article>
+            <h3>คณิต</h3>
+            <p>ปูพื้นฐานคำนวณ อ่านโจทย์ปัญหา และอธิบายวิธีคิดทีละขั้น</p>
+          </article>
+          <article>
+            <h3>วิทย์</h3>
+            <p>เข้าใจแนวคิดจากสิ่งรอบตัว ฝึกสังเกต ตั้งคำถาม และตอบแบบมีเหตุผล</p>
+          </article>
+          <article>
+            <h3>อังกฤษ</h3>
+            <p>ฝึกคำศัพท์ ประโยคพื้นฐาน การฟังอ่าน และความมั่นใจในการใช้ภาษา</p>
+          </article>
+          <article>
+            <h3>ภาษาไทย</h3>
+            <p>อ่านจับใจความ คำศัพท์ หลักภาษา และเขียนตอบให้ชัดเจนขึ้น</p>
           </article>
         </div>
       </section>
 
       <section id="apply" class="section apply-section">
         <div class="section-head">
-          <p class="eyebrow">Enrollment</p>
-          <h2>สมัครเรียนรุ่นแรก</h2>
-          <p>
-            ทีมงานจะติดต่อกลับเพื่อแนะนำหลักสูตร ตารางเรียน และรอบทดลองเรียนที่เหมาะกับผู้เรียน
-          </p>
+          <p class="eyebrow">สมัครเรียน</p>
+          <h2>ลงชื่อสนใจด้วย LINE ก่อนเปิดชำระเงิน</h2>
+          <p>ไม่ต้องกรอกฟอร์มยาว เข้าสู่ระบบด้วย LINE เพื่อบันทึกบัญชีและแพ็กที่สนใจ เมื่อระบบชำระเงินพร้อมแล้วค่อยชำระและเปิดบทเรียน</p>
         </div>
-        <form id="leadForm" class="lead-form">
-          <label>
-            ชื่อผู้สมัคร / ผู้ปกครอง
-            <input name="name" autocomplete="name" required />
-          </label>
-          <label>
-            เบอร์โทร
-            <input name="phone" inputmode="tel" autocomplete="tel" required />
-          </label>
-          <label>
-            LINE ID
-            <input name="lineId" autocomplete="off" />
-          </label>
-          <label>
-            ช่วงอายุ / ระดับ
-            <select name="ageGroup">
-              <option value="">เลือกช่วงอายุ</option>
-              <option>ประถม</option>
-              <option>มัธยมต้น</option>
-              <option>มัธยมปลาย</option>
-              <option>มหาวิทยาลัย</option>
-              <option>คนทำงาน</option>
-              <option>ผู้ประกอบการ</option>
-            </select>
-          </label>
-          <label>
-            หลักสูตรที่สนใจ
-            <select id="courseSelect" name="course" required>
-              <option value="">เลือกหลักสูตร</option>
-              <option>AI 101</option>
-              <option>English for Future</option>
-              <option>Code & Create</option>
-              <option>Future Skills</option>
-              <option>ยังไม่แน่ใจ</option>
-            </select>
-          </label>
-          <label>
-            เวลาที่สะดวก
-            <select name="preferredSchedule">
-              <option value="">เลือกเวลา</option>
-              <option>วันธรรมดาหลังเลิกเรียน</option>
-              <option>เสาร์-อาทิตย์</option>
-              <option>ช่วงเย็นสำหรับคนทำงาน</option>
-              <option>เรียนออนไลน์</option>
-            </select>
-          </label>
-          <label class="wide">
-            เป้าหมายการเรียน
-            <textarea name="note" rows="4"></textarea>
-          </label>
-          <div class="form-footer wide">
-            <p id="formStatus" role="status"></p>
-            <button class="button primary" type="submit">ส่งใบสมัคร</button>
+        <div class="line-signup-panel">
+          <div class="line-signup-copy">
+            <span class="mini-label">ลงชื่อสนใจ</span>
+            <h3>ใช้ LINE เป็นบัญชีหลัก</h3>
+            <p>เด็กสมัครเองหรือผู้ปกครองสมัครให้ลูกได้ ใช้ขั้นตอนเดียวกัน ตอนนี้ใช้สำหรับบันทึกบัญชีและวิชาที่สนใจไว้ก่อน</p>
+            <a class="button line-button" href="/auth/line?next=/learn">ลงชื่อสนใจด้วย LINE</a>
           </div>
-        </form>
+          <div class="signup-steps" aria-label="ขั้นตอนสมัครเรียน">
+            <article>
+              <span>01</span>
+              <h3>เข้าสู่ระบบด้วย LINE</h3>
+              <p>ใช้บัญชีผู้เรียนหรือผู้ปกครอง</p>
+            </article>
+            <article>
+              <span>02</span>
+              <h3>แจ้งแพ็กที่สนใจ</h3>
+              <p>เลือกได้ว่าจะเริ่มคณิต วิทย์ อังกฤษ หรือภาษาไทย</p>
+            </article>
+            <article>
+              <span>03</span>
+              <h3>รอเปิดชำระเงิน</h3>
+              <p>เมื่อระบบพร้อม จะมี QR สำหรับชำระและเปิดบทเรียน</p>
+            </article>
+          </div>
+        </div>
       </section>
 
-      <section id="why" class="section split">
+      <section id="roadmap" class="section split">
         <div>
-          <p class="eyebrow">Why 101</p>
-          <h2>ท้องถิ่นที่มองไกล</h2>
+          <p class="eyebrow">แผนเปิดคอร์ส</p>
+          <h2>เริ่มจากประถม แล้วค่อยขยายให้ครบขึ้น</h2>
+          <p>ช่วงแรกให้เด็กประถมเลือกวิชาหลักที่อยากเรียนเสริมก่อน จากนั้นค่อยเพิ่มแพ็กหลายวิชาและระดับชั้นถัดไป</p>
         </div>
         <div class="why-list">
-          <p>ออกแบบคอร์สให้เริ่มง่าย แต่ต่อยอดได้จริง</p>
-          <p>สอนแบบ project-based เห็นผลงาน ไม่ใช่แค่จำทฤษฎี</p>
-          <p>เหมาะกับนักเรียน นักศึกษา คนทำงาน และผู้ประกอบการท้องถิ่น</p>
+          <p><strong>เปิดให้ลงชื่อสนใจ</strong> คณิต ป.1-ป.6</p>
+          <p><strong>เปิดให้ลงชื่อสนใจ</strong> วิทย์ ป.1-ป.6</p>
+          <p><strong>เปิดให้ลงชื่อสนใจ</strong> อังกฤษ ป.1-ป.6</p>
+          <p><strong>เปิดให้ลงชื่อสนใจ</strong> ภาษาไทย ป.1-ป.6</p>
+          <p><strong>เร็ว ๆ นี้</strong> แพ็กหลายวิชา สำหรับเด็กที่อยากเรียนมากกว่า 1 วิชา</p>
+          <p>คอร์ส ม.ต้น</p>
+          <p>คอร์สเตรียมสอบเข้า</p>
+          <p>แพ็กสำหรับโรงเรียน</p>
+        </div>
+      </section>
+
+      <section id="faq" class="section faq-section">
+        <div class="section-head">
+          <p class="eyebrow">คำถามที่พบบ่อย</p>
+          <h2>สมัครและเริ่มเรียนอย่างไร</h2>
+          <p>สรุปให้ผู้ปกครองเข้าใจ flow ก่อนกดลงชื่อสนใจ</p>
+        </div>
+        <div class="faq-grid">
+          <article>
+            <h3>ต้องเริ่มจากอังกฤษก่อนไหม</h3>
+            <p>ไม่จำเป็น เริ่มจากคณิต วิทย์ อังกฤษ หรือภาษาไทยก็ได้ ตามวิชาหลักที่ครอบครัวอยากให้เรียนเสริมก่อน</p>
+          </article>
+          <article>
+            <h3>ใช้ LINE ทำไม</h3>
+            <p>LINE ใช้เป็นบัญชีหลักเพื่อบันทึกแพ็กที่สนใจ ติดตามสถานะชำระเงิน และกลับมาเข้าเรียนได้ง่าย</p>
+          </article>
+          <article>
+            <h3>ชำระเงินได้หรือยัง</h3>
+            <p>ตอนนี้เปิดให้ลงชื่อสนใจก่อน ระหว่างรอระบบชำระเงินพร้อมใช้งาน เมื่อพร้อมแล้วจะมีลิงก์หรือ QR สำหรับชำระเงิน</p>
+          </article>
+          <article>
+            <h3>เด็กสมัครเองได้ไหม</h3>
+            <p>สมัครเองได้ หรือผู้ปกครองสมัครให้ก็ได้ ระบบใช้ LINE เป็นบัญชีเดียวกันในการติดตามแพ็กและสิทธิ์เรียน</p>
+          </article>
+        </div>
+      </section>
+
+      <section id="policies" class="section policy-section">
+        <div class="section-head">
+          <p class="eyebrow">นโยบายสำหรับผู้ปกครอง</p>
+          <h2>นโยบายสำคัญก่อนสมัครเรียน</h2>
+          <p>สรุปเงื่อนไขแบบอ่านง่ายสำหรับผู้ปกครอง ก่อนตัดสินใจสมัครหรือชำระเงิน</p>
+        </div>
+        <div class="policy-grid">
+          <a class="policy-card" href="/refund-policy">
+            <span>คืนเงิน / ยกเลิก</span>
+            <h3>ยกเลิกและคืนเงิน</h3>
+            <p>ตรวจสอบกรณีจ่ายซ้ำ ยอดผิด หรือระบบไม่สามารถเปิดคอร์สให้ได้ตามที่ระบุ</p>
+          </a>
+          <a class="policy-card" href="/privacy-policy">
+            <span>ข้อมูลส่วนตัว</span>
+            <h3>ข้อมูลส่วนบุคคล</h3>
+            <p>ใช้ข้อมูลเพื่อสมัครเรียน ติดต่อผู้ปกครอง ตรวจสอบการชำระเงิน และเปิดสิทธิ์เข้าเรียน</p>
+          </a>
+          <a class="policy-card" href="/terms">
+            <span>เงื่อนไข</span>
+            <h3>เงื่อนไขการใช้บริการ</h3>
+            <p>ระบุสิทธิ์เข้าเรียน ระยะเวลาใช้งาน และข้อจำกัดการแชร์บัญชีหรือเนื้อหาคอร์ส</p>
+          </a>
         </div>
       </section>
 
       <section id="contact" class="contact">
         <div>
-          <p class="eyebrow">Coming Soon</p>
-          <h2>เปิดรับรุ่นแรกเร็ว ๆ นี้</h2>
-          <p>101 Future Academy กำลังเตรียมหลักสูตรและพื้นที่เรียนรู้ในจังหวัดร้อยเอ็ด</p>
+          <p class="eyebrow">101 Future Academy</p>
+          <h2>เริ่มจาก 4 วิชาหลักของเด็กประถม</h2>
+          <p>ผู้ปกครองเลือกวิชาที่อยากให้ลูกเรียนเสริมได้ก่อน ส่วนแพ็กหลายวิชาและคอร์สระดับถัดไปจะตามมาเมื่อระบบพร้อม</p>
         </div>
         <a class="button primary" href="mailto:hello@101future.com">hello@101future.com</a>
       </section>
     </main>
-    <script src="/app.js" defer></script>
+
+    <footer class="site-footer">
+      <div>
+        <strong>101 Future Academy</strong>
+        <p>คอร์สออนไลน์สำหรับนักเรียน ป.1-ป.6 เริ่มจากคณิต วิทย์ อังกฤษ และภาษาไทย ผ่าน 101future.com</p>
+      </div>
+      <div>
+        <a href="/refund-policy">นโยบายคืนเงิน</a>
+        <a href="/privacy-policy">นโยบายข้อมูลส่วนบุคคล</a>
+        <a href="/terms">เงื่อนไขการใช้บริการ</a>
+        <a href="mailto:hello@101future.com">hello@101future.com</a>
+      </div>
+    </footer>
+    <script src="/app.js?v=20260530-english-preview-1" defer></script>
   </body>
 </html>

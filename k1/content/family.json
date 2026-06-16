@@ -1,0 +1,110 @@
+{
+  "id": "family",
+  "order": 4,
+  "title": "Family",
+  "theme": "people",
+  "standard": {
+    "earlyYears2560": [
+      "มฐ.7",
+      "มฐ.8",
+      "มฐ.9"
+    ],
+    "core2551": "ต1.1, ต2.2",
+    "commonCore": "L.K.5",
+    "cefr": "Pre-A1"
+  },
+  "intro": {
+    "audio": "audio/phrases/intro-family.mp3",
+    "text": "Let's meet the family!"
+  },
+  "words": [
+    {
+      "id": "mom",
+      "text": "mom",
+      "image": "img/family/mom.png",
+      "audio": "audio/words/mom.mp3"
+    },
+    {
+      "id": "dad",
+      "text": "dad",
+      "image": "img/family/dad.png",
+      "audio": "audio/words/dad.mp3"
+    },
+    {
+      "id": "baby",
+      "text": "baby",
+      "image": "img/family/baby.png",
+      "audio": "audio/words/baby.mp3"
+    },
+    {
+      "id": "brother",
+      "text": "brother",
+      "image": "img/family/brother.png",
+      "audio": "audio/words/brother.mp3"
+    },
+    {
+      "id": "sister",
+      "text": "sister",
+      "image": "img/family/sister.png",
+      "audio": "audio/words/sister.mp3"
+    },
+    {
+      "id": "grandma",
+      "text": "grandma",
+      "image": "img/family/grandma.png",
+      "audio": "audio/words/grandma.mp3"
+    },
+    {
+      "id": "grandpa",
+      "text": "grandpa",
+      "image": "img/family/grandpa.png",
+      "audio": "audio/words/grandpa.mp3"
+    }
+  ],
+  "missions": [
+    {
+      "id": "family-explore",
+      "type": "free-explore",
+      "items": [
+        "mom",
+        "dad",
+        "baby",
+        "brother",
+        "sister",
+        "grandma",
+        "grandpa"
+      ],
+      "prompt": {
+        "text": "Pop the balloons!",
+        "audioPattern": "audio/words/{id}.mp3"
+      },
+      "config": {
+        "render": "balloon"
+      }
+    },
+    {
+      "id": "family-tap",
+      "type": "listen-and-tap",
+      "items": [
+        "mom",
+        "dad",
+        "baby",
+        "brother",
+        "sister",
+        "grandma",
+        "grandpa"
+      ],
+      "rounds": 7,
+      "prompt": {
+        "text": "Tap {word}!",
+        "audioPattern": "audio/phrases/tap-fam-{id}.mp3"
+      },
+      "config": {
+        "choices": 4
+      }
+    }
+  ],
+  "reward": {
+    "audio": "audio/praise/great-job.mp3"
+  }
+}

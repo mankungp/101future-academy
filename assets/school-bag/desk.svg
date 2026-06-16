@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" role="img" aria-label="school desk">
+  <rect width="240" height="180" rx="30" fill="#fff7ed"/>
+  <rect x="42" y="60" width="156" height="32" rx="8" fill="#f59e0b" stroke="#92400e" stroke-width="7"/>
+  <path d="M62 92v58M178 92v58" stroke="#92400e" stroke-width="13" stroke-linecap="round"/>
+  <rect x="72" y="96" width="96" height="34" rx="8" fill="#d97706" stroke="#92400e" stroke-width="6"/>
+  <path d="M58 70h124" stroke="#fed7aa" stroke-width="7" stroke-linecap="round"/>
+  <path d="M58 150h124" stroke="#b45309" stroke-width="8" stroke-linecap="round" opacity=".45"/>
+</svg>

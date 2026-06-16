@@ -1,0 +1,44 @@
+{
+  "id": "_demo",
+  "order": 99,
+  "title": "Match & Trace (demo)",
+  "theme": "test",
+  "intro": { "text": "Let's match and trace!" },
+
+  "words": [
+    { "id": "apple",  "text": "apple",  "image": "img/fruits/apple.png",  "audio": "audio/words/apple.mp3" },
+    { "id": "banana", "text": "banana", "image": "img/fruits/banana.png", "audio": "audio/words/banana.mp3" },
+    { "id": "orange", "text": "orange", "image": "img/fruits/orange.png", "audio": "audio/words/orange.mp3" },
+    { "id": "grape",  "text": "grape",  "image": "img/fruits/grape.png",  "audio": "audio/words/grape.mp3" },
+
+    { "id": "one",   "text": "one",   "label": "1", "audio": "audio/words/one.mp3",
+      "trace": [[0.5,0.2],[0.5,0.42],[0.5,0.62],[0.5,0.82]] },
+    { "id": "two",   "text": "two",   "label": "2", "audio": "audio/words/two.mp3",
+      "trace": [[0.32,0.34],[0.5,0.22],[0.67,0.34],[0.5,0.56],[0.33,0.78],[0.52,0.8],[0.69,0.8]] },
+    { "id": "three", "text": "three", "label": "3", "audio": "audio/words/three.mp3",
+      "trace": [[0.33,0.3],[0.55,0.22],[0.62,0.4],[0.46,0.51],[0.63,0.61],[0.55,0.79],[0.33,0.73]] }
+  ],
+
+  "missions": [
+    {
+      "id": "demo-match-ii",
+      "type": "match",
+      "items": ["apple","banana","orange","grape"],
+      "prompt": { "text": "Match the same pictures!" },
+      "config": { "mode": "image-image", "pairs": 4 }
+    },
+    {
+      "id": "demo-match-is",
+      "type": "match",
+      "items": ["apple","banana","orange","grape"],
+      "prompt": { "text": "Tap the {word}!" },
+      "config": { "mode": "image-sound", "pairs": 4 }
+    },
+    {
+      "id": "demo-trace",
+      "type": "trace",
+      "items": ["one","two","three"],
+      "prompt": { "text": "Trace the {word}!" }
+    }
+  ]
+}

@@ -1,3 +1,12 @@
+node_modules/
+.env
 data/*.json
 data/admin-token.txt
 !data/.gitkeep
+.agent-room/
+# secrets / local-only / junk — keep OUT of git
+.tg-bridge/
+uploads/
+backups/
+assets/_mascot-backup-*/
+*.log

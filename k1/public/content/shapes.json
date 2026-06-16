@@ -1,0 +1,36 @@
+{
+  "id": "shapes",
+  "order": 10,
+  "title": "Shapes",
+  "theme": "things-around",
+  "intro": { "audio": "audio/phrases/intro-shapes.mp3", "text": "Let's learn shapes!" },
+
+  "words": [
+    { "id": "circle",    "text": "circle",    "image": "img/shapes/circle.png",    "audio": "audio/words/circle.mp3" },
+    { "id": "square",    "text": "square",    "image": "img/shapes/square.png",    "audio": "audio/words/square.mp3" },
+    { "id": "triangle",  "text": "triangle",  "image": "img/shapes/triangle.png",  "audio": "audio/words/triangle.mp3" },
+    { "id": "star",      "text": "star",      "image": "img/shapes/star.png",      "audio": "audio/words/star.mp3" },
+    { "id": "heart",     "text": "heart",     "image": "img/shapes/heart.png",     "audio": "audio/words/heart.mp3" },
+    { "id": "rectangle", "text": "rectangle", "image": "img/shapes/rectangle.png", "audio": "audio/words/rectangle.mp3" }
+  ],
+
+  "missions": [
+    {
+      "id": "shapes-explore",
+      "type": "free-explore",
+      "items": ["circle", "square", "triangle", "star", "heart", "rectangle"],
+      "prompt": { "text": "Pop the balloons!", "audioPattern": "audio/words/{id}.mp3" },
+      "config": { "render": "balloon" }
+    },
+    {
+      "id": "shapes-tap",
+      "type": "listen-and-tap",
+      "items": ["circle", "square", "triangle", "star", "heart", "rectangle"],
+      "rounds": 6,
+      "prompt": { "text": "Tap the {word}!", "audioPattern": "audio/phrases/tap-shape-{id}.mp3" },
+      "config": { "choices": 4 }
+    }
+  ],
+
+  "reward": { "audio": "audio/praise/great-job.mp3" }
+}

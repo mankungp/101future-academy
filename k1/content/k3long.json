@@ -1,0 +1,89 @@
+{
+  "id": "k3long",
+  "order": 43,
+  "level": "k3",
+  "title": "Big Sentences",
+  "theme": "k3-reading",
+  "standard": {
+    "earlyYears2560": [
+      "มฐ.9",
+      "มฐ.12"
+    ],
+    "core2551": "ต1.1",
+    "commonCore": "SL.K.2 / RL.K (sentence comprehension)",
+    "cefr": "A1"
+  },
+  "intro": {
+    "audio": "audio/phrases/intro-k3long.mp3",
+    "text": "Listen to the story!"
+  },
+  "words": [
+    {
+      "id": "cat",
+      "text": "cat",
+      "image": "img/animals/cat.png",
+      "audio": "audio/words/cat.mp3",
+      "sentence": "The cat is sleeping."
+    },
+    {
+      "id": "dog",
+      "text": "dog",
+      "image": "img/animals/dog.png",
+      "audio": "audio/words/dog.mp3",
+      "sentence": "The dog can run."
+    },
+    {
+      "id": "bird",
+      "text": "bird",
+      "image": "img/animals/bird.png",
+      "audio": "audio/words/bird.mp3",
+      "sentence": "The bird can fly."
+    },
+    {
+      "id": "fish",
+      "text": "fish",
+      "image": "img/animals/fish.png",
+      "audio": "audio/words/fish.mp3",
+      "sentence": "The fish can swim."
+    },
+    {
+      "id": "lion",
+      "text": "lion",
+      "image": "img/animals/lion.png",
+      "audio": "audio/words/lion.mp3",
+      "sentence": "The lion is big."
+    },
+    {
+      "id": "frog",
+      "text": "frog",
+      "image": "img/animals/frog.png",
+      "audio": "audio/words/frog.mp3",
+      "sentence": "The frog can jump."
+    }
+  ],
+  "missions": [
+    {
+      "id": "k3long-choose",
+      "type": "listen-and-choose",
+      "items": [
+        "cat",
+        "dog",
+        "bird",
+        "fish",
+        "lion",
+        "frog"
+      ],
+      "rounds": 6,
+      "prompt": {
+        "text": "Listen!",
+        "audioPattern": "audio/phrases/k3-long-{id}.mp3"
+      },
+      "config": {
+        "choices": 3
+      }
+    }
+  ],
+  "reward": {
+    "sticker": "📚"
+  }
+}

@@ -1,0 +1,82 @@
+{
+  "id": "k3read",
+  "order": 42,
+  "level": "k3",
+  "title": "Read the Word",
+  "theme": "k3-reading",
+  "standard": {
+    "earlyYears2560": [
+      "มฐ.12"
+    ],
+    "core2551": "ต1.1",
+    "commonCore": "RF.K.3 (decode CVC) / RF.K.4",
+    "cefr": "Pre-A1 → A1"
+  },
+  "intro": {
+    "audio": "audio/phrases/intro-k3read.mp3",
+    "text": "Read and find!"
+  },
+  "words": [
+    {
+      "id": "cat",
+      "text": "cat",
+      "image": "img/animals/cat.png",
+      "audio": "audio/words/cat.mp3"
+    },
+    {
+      "id": "dog",
+      "text": "dog",
+      "image": "img/animals/dog.png",
+      "audio": "audio/words/dog.mp3"
+    },
+    {
+      "id": "sun",
+      "text": "sun",
+      "image": "img/weather/sun.png",
+      "audio": "audio/words/sun.mp3"
+    },
+    {
+      "id": "pig",
+      "text": "pig",
+      "image": "img/animals/pig.png",
+      "audio": "audio/words/pig.mp3"
+    },
+    {
+      "id": "hat",
+      "text": "hat",
+      "image": "img/rhyme/hat.png",
+      "audio": "audio/words/hat.mp3"
+    },
+    {
+      "id": "bat",
+      "text": "bat",
+      "image": "img/rhyme/bat.png",
+      "audio": "audio/words/bat.mp3"
+    }
+  ],
+  "missions": [
+    {
+      "id": "k3read-choose",
+      "type": "listen-and-choose",
+      "items": [
+        "cat",
+        "dog",
+        "sun",
+        "pig",
+        "hat",
+        "bat"
+      ],
+      "rounds": 6,
+      "prompt": {
+        "text": "{word}",
+        "audioPattern": "audio/words/{id}.mp3"
+      },
+      "config": {
+        "choices": 3
+      }
+    }
+  ],
+  "reward": {
+    "sticker": "📕"
+  }
+}

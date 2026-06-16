@@ -1,0 +1,100 @@
+{
+  "id": "k3sight",
+  "order": 41,
+  "level": "k3",
+  "title": "Reading: Words",
+  "theme": "k3-reading",
+  "standard": {
+    "earlyYears2560": [
+      "มฐ.12"
+    ],
+    "core2551": "ต1.1",
+    "commonCore": "RF.K.3c (read high-frequency words)",
+    "cefr": "Pre-A1 → A1"
+  },
+  "intro": {
+    "audio": "audio/phrases/intro-k3sight.mp3",
+    "text": "Let's read words!"
+  },
+  "words": [
+    {
+      "id": "w-the",
+      "text": "the",
+      "label": "the",
+      "audio": "audio/words/w-the.mp3",
+      "meta": {
+        "hex": "#ff5b5b"
+      }
+    },
+    {
+      "id": "w-i",
+      "text": "I",
+      "label": "I",
+      "audio": "audio/words/w-i.mp3",
+      "meta": {
+        "hex": "#ff9f40"
+      }
+    },
+    {
+      "id": "w-see",
+      "text": "see",
+      "label": "see",
+      "audio": "audio/words/w-see.mp3",
+      "meta": {
+        "hex": "#ffd23f"
+      }
+    },
+    {
+      "id": "w-a",
+      "text": "a",
+      "label": "a",
+      "audio": "audio/words/w-a.mp3",
+      "meta": {
+        "hex": "#5fd06a"
+      }
+    },
+    {
+      "id": "w-go",
+      "text": "go",
+      "label": "go",
+      "audio": "audio/words/w-go.mp3",
+      "meta": {
+        "hex": "#16c4c0"
+      }
+    },
+    {
+      "id": "w-you",
+      "text": "you",
+      "label": "you",
+      "audio": "audio/words/w-you.mp3",
+      "meta": {
+        "hex": "#4d8bff"
+      }
+    }
+  ],
+  "missions": [
+    {
+      "id": "k3sight-find",
+      "type": "listen-and-tap",
+      "items": [
+        "w-the",
+        "w-i",
+        "w-see",
+        "w-a",
+        "w-go",
+        "w-you"
+      ],
+      "rounds": 8,
+      "prompt": {
+        "text": "Find the word!",
+        "audioPattern": "audio/words/{id}.mp3"
+      },
+      "config": {
+        "choices": 4
+      }
+    }
+  ],
+  "reward": {
+    "sticker": "📖"
+  }
+}

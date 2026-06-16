@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 260 160" role="img" aria-label="classroom board">
+  <rect width="260" height="160" rx="28" fill="#f0fdf4"/>
+  <rect x="35" y="28" width="190" height="90" rx="10" fill="#15803d" stroke="#7c4a1e" stroke-width="9"/>
+  <rect x="48" y="42" width="164" height="60" rx="5" fill="#166534"/>
+  <path d="M65 58h55M65 76h92M160 58h33" stroke="#dcfce7" stroke-width="6" stroke-linecap="round" opacity=".9"/>
+  <rect x="84" y="118" width="92" height="10" rx="5" fill="#7c4a1e"/>
+  <path d="M105 128l-15 18M155 128l15 18" stroke="#7c4a1e" stroke-width="7" stroke-linecap="round"/>
+</svg>

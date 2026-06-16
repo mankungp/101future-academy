@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>รายงานผู้ปกครอง · 101future</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  :root{--sky:#15b6e0;--sky-deep:#0a8fc4;--gold:#ffb020;--ink:#10243f;--ink2:#5a708a;--line:#e4ecf3;--mint:#2bc48a;--bg:#f3f8fc}
+  body{font-family:"Noto Sans Thai",system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:560px;margin:0 auto;padding:18px 16px 60px}
+  .top{display:flex;align-items:center;gap:12px;margin-bottom:18px}
+  .top .back{width:42px;height:42px;border-radius:13px;background:#fff;border:1px solid var(--line);display:grid;place-items:center;font-size:20px;text-decoration:none;color:var(--ink);box-shadow:0 2px 8px rgba(16,36,63,.06)}
+  .top h1{font-size:21px;font-weight:800}
+  .top .sub{font-size:13px;color:var(--ink2);font-weight:500}
+  /* hero stat */
+  .hero{background:linear-gradient(135deg,var(--sky-deep),var(--sky));color:#fff;border-radius:22px;padding:20px 22px;margin-bottom:16px;box-shadow:0 12px 28px rgba(10,143,196,.25)}
+  .hero .today{display:flex;align-items:center;gap:12px}
+  .hero .today .big{font-size:34px}
+  .hero .today b{font-size:18px;display:block}
+  .hero .today span{font-size:13.5px;opacity:.92}
+  /* stat grid */
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px}
+  .stat{background:#fff;border:1px solid var(--line);border-radius:18px;padding:16px;box-shadow:0 2px 10px rgba(16,36,63,.05)}
+  .stat .n{font-size:30px;font-weight:800;line-height:1.1}
+  .stat .n small{font-size:16px;color:var(--ink2);font-weight:600}
+  .stat .l{font-size:13.5px;color:var(--ink2);font-weight:600;margin-top:2px}
+  .stat .ico{font-size:20px;float:right}
+  .bar{height:8px;border-radius:99px;background:#e9eef4;margin-top:10px;overflow:hidden}
+  .bar i{display:block;height:100%;background:linear-gradient(90deg,var(--mint),var(--sky));border-radius:99px}
+  h2{font-size:16px;font-weight:800;margin:22px 0 10px}
+  .card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:6px 16px;box-shadow:0 2px 10px rgba(16,36,63,.05)}
+  .row{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--line)}
+  .row:last-child{border-bottom:none}
+  .row .em{font-size:24px;width:34px;text-align:center}
+  .row .t{flex:1;font-weight:600;font-size:15px}
+  .row .meta{font-size:12.5px;color:var(--ink2)}
+  .row .chk{color:var(--mint);font-weight:800}
+  .rec{background:#fff7e6;border:1px solid #ffe0a3;border-radius:18px;padding:14px 16px;display:flex;gap:12px;align-items:flex-start}
+  .rec .em{font-size:22px}
+  .rec b{color:#c47f00}
+  .empty{color:var(--ink2);font-size:14px;padding:16px;text-align:center}
+  .note{font-size:12px;color:var(--ink2);text-align:center;margin-top:24px;line-height:1.5}
+  .pill{display:inline-block;background:#eef6fb;color:var(--sky-deep);font-weight:700;font-size:12px;padding:3px 10px;border-radius:99px}
+</style>
+<script src="content/units.js"></script>
+<script src="progress-store.js"></script>
+<script src="../web/assets/js/supabase-config.js?v=1"></script>
+<script src="../web/assets/js/supabase-store.js?v=1"></script>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <a class="back" href="home.html" aria-label="กลับ">←</a>
+    <div>
+      <h1>รายงานผู้ปกครอง</h1>
+      <div class="sub" id="childName">ลูกของคุณ · อนุบาล 1</div>
+    </div>
+  </div>
+
+  <div class="hero">
+    <div class="today">
+      <div class="big" id="todayEmoji">🌟</div>
+      <div>
+        <b id="todayLine">วันนี้ยังไม่ได้เล่น</b>
+        <span id="streakLine">มาเล่นทุกวันเพื่อสร้างนิสัยรักการเรียนรู้</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div class="stat"><span class="ico">📚</span><div class="n" id="unitsN">0<small id="unitsTot">/0</small></div><div class="l">หน่วยที่เรียนจบ</div><div class="bar"><i id="unitsBar" style="width:0%"></i></div></div>
+    <div class="stat"><span class="ico">🔤</span><div class="n" id="wordsN">0</div><div class="l">คำศัพท์ที่ได้เรียน</div></div>
+    <div class="stat"><span class="ico">🔥</span><div class="n" id="streakN">0<small> วัน</small></div><div class="l">เล่นต่อเนื่อง</div></div>
+    <div class="stat"><span class="ico">⭐</span><div class="n" id="starsN">0</div><div class="l">ดาวสะสม</div></div>
+  </div>
+
+  <div class="rec" id="recBox" style="display:none">
+    <div class="em">💡</div>
+    <div><b>แนะนำให้ลองต่อ</b><div id="recText" style="font-size:14px;color:var(--ink)"></div></div>
+  </div>
+
+  <h2>หน่วยที่เรียนจบแล้ว</h2>
+  <div class="card" id="doneList"><div class="empty">ยังไม่มีหน่วยที่จบ — ชวนลูกเริ่มเล่นกันเลย!</div></div>
+
+  <h2>กิจกรรมล่าสุด</h2>
+  <div class="card" id="activityList"><div class="empty">ยังไม่มีกิจกรรม</div></div>
+
+  <div class="note">ข้อมูลนี้เก็บในเครื่องนี้เท่านั้น (ยังไม่ส่งออก) · เมื่อเชื่อมบัญชี LINE จะซิงก์ดูได้ทุกอุปกรณ์<br>เราเชื่อว่าการเรียนรู้ที่ดีของเด็กเล็ก = สนุก ไม่กดดัน — ตัวเลขเหล่านี้ไว้ให้คุณพ่อแม่ดู ไม่ได้แสดงให้เด็กแข่งขัน</div>
+</div>
+
+<script>
+(function(){
+  var P = window.FutureProgress ? window.FutureProgress.load() : {};
+  var UNITS = window.K1_UNITS || {};
+  // unit metadata (ตัด _demo / unit ทดสอบ)
+  var allIds = Object.keys(UNITS).filter(function(id){ return id.charAt(0)!=='_'; });
+  var meta = {};
+  allIds.forEach(function(id){
+    var u = UNITS[id] || {};
+    meta[id] = { title:(u.title||id), sticker:(u.reward&&u.reward.sticker)||'⭐', words:(u.words||[]).length };
+  });
+  var doneIds = Object.keys(P.units||{}).filter(function(id){ return meta[id]; });
+  var totalUnits = allIds.length;
+
+  // words learned ≈ ผลรวมคำของหน่วยที่จบ
+  var words = doneIds.reduce(function(s,id){ return s + (meta[id].words||0); }, 0);
+
+  // today / streak
+  var today = new Date().toISOString().slice(0,10);
+  var playedToday = (P.lastDay === today) && (P.todayCount>0);
+  document.getElementById('todayEmoji').textContent = playedToday ? '🎉' : '🌟';
+  document.getElementById('todayLine').textContent = playedToday
+    ? ('วันนี้เล่นแล้ว ' + (P.todayCount||1) + ' รอบ — เยี่ยมมาก!') : 'วันนี้ยังไม่ได้เล่น';
+  document.getElementById('streakLine').textContent = (P.streak>1)
+    ? ('เล่นต่อเนื่อง ' + P.streak + ' วันติดต่อกัน 🔥') : 'มาเล่นทุกวันเพื่อสร้างนิสัยรักการเรียนรู้';
+
+  document.getElementById('unitsN').firstChild.nodeValue = doneIds.length;
+  document.getElementById('unitsTot').textContent = '/' + totalUnits;
+  document.getElementById('unitsBar').style.width = totalUnits ? Math.round(doneIds.length/totalUnits*100)+'%' : '0%';
+  document.getElementById('wordsN').textContent = words;
+  document.getElementById('streakN').firstChild.nodeValue = (P.streak||0);
+  document.getElementById('starsN').textContent = (P.stars||0);
+
+  // recommendation: หน่วยที่ยังไม่จบ
+  var notDone = allIds.filter(function(id){ return doneIds.indexOf(id)<0; });
+  if (notDone.length){
+    var pick = notDone.slice(0,2).map(function(id){ return meta[id].sticker+' '+meta[id].title; }).join(' · ');
+    document.getElementById('recText').textContent = 'ลองเล่นหน่วยใหม่: ' + pick;
+    document.getElementById('recBox').style.display = 'flex';
+  } else if (doneIds.length){
+    document.getElementById('recText').textContent = 'เก่งมาก! เล่นครบทุกหน่วยแล้ว ลองกลับไปทบทวนหน่วยโปรดได้เลย';
+    document.getElementById('recBox').style.display = 'flex';
+  }
+
+  // done list
+  if (doneIds.length){
+    var dl = doneIds.map(function(id){
+      return '<div class="row"><div class="em">'+meta[id].sticker+'</div><div class="t">'+meta[id].title+
+        '</div><div class="meta">'+meta[id].words+' คำ</div><div class="chk">✓</div></div>';
+    }).join('');
+    document.getElementById('doneList').innerHTML = dl;
+  }
+
+  // activity (จาก event log)
+  function rel(iso){
+    try{
+      var d = iso.slice(0,10);
+      if (d===today) return 'วันนี้';
+      var diff = Math.round((Date.parse(today)-Date.parse(d))/86400000);
+      if (diff===1) return 'เมื่อวาน';
+      if (diff>1) return diff+' วันก่อน';
+      return d;
+    }catch(e){ return ''; }
+  }
+  var VERB = { started:['▶️','เริ่มเล่น'], completed:['🏁','เล่นจบ'], learned_word:['🔤','เรียนคำ'] };
+  var evs = (P.events||[]).slice(-12).reverse();
+  if (evs.length){
+    var al = evs.map(function(e){
+      var v = VERB[e.verb]||['•',e.verb];
+      var name = (e.object_type==='unit' && meta[e.object_id]) ? meta[e.object_id].title : e.object_id;
+      return '<div class="row"><div class="em">'+v[0]+'</div><div class="t">'+v[1]+' · '+name+
+        '</div><div class="meta">'+rel(e.occurred_at)+'</div></div>';
+    }).join('');
+    document.getElementById('activityList').innerHTML = al;
+  }
+})();
+</script>
+</body>
+</html>

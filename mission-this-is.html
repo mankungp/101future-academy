@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="th">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+    <title>What Is It? | 101 Future Academy</title>
+    <link rel="stylesheet" href="/styles.css?v=20260608-animated-learn-v1" />
+  </head>
+  <body class="mission-body no-zoom-body">
+    <header class="mission-topbar">
+      <a class="brand" href="/learn" aria-label="กลับหน้าเรียน 101 Future Academy">
+        <span class="brand-mark">101</span>
+        <span class="brand-name">Future Academy</span>
+      </a>
+      <a class="button secondary mission-exit-link" href="/learn">
+        <span class="exit-full">ออกจาก Mission</span>
+        <span class="exit-short">ออก</span>
+      </a>
+    </header>
+
+    <main class="mission-main">
+      <section class="mission-screen sentence-mission-screen" aria-live="polite">
+        <div class="mission-screen-head">
+          <div>
+            <p class="eyebrow">English Mission · ป.1 · Unit 1</p>
+            <h1>What Is It?</h1>
+            <p>ดูรูป ฟังคำถาม แล้วแตะคำตอบให้ตรงกับของในภาพ</p>
+          </div>
+          <div class="mission-score mission-score-large">
+            <span id="missionStars">0/4</span>
+            <strong>stars</strong>
+          </div>
+        </div>
+
+        <div class="mission-prompt mission-prompt-large">
+          <button id="missionSoundButton" class="sound-button start-button" type="button" aria-label="เริ่ม Mission">Start Mission</button>
+          <div>
+            <span id="missionPromptHint">กดเริ่ม แล้วดูรูปแรก</span>
+            <p id="missionPromptText">Ready to answer?</p>
+          </div>
+        </div>
+
+        <div id="missionFeedback" class="mission-feedback mission-feedback-large">
+          Mission 2: ฟัง What is it? แล้วเลือก It is...
+        </div>
+
+        <div id="correctBurst" class="correct-burst hidden" aria-live="assertive">
+          <div class="correct-burst-card">
+            <span class="burst-confetti" aria-hidden="true">
+              <i></i><i></i><i></i><i></i><i></i><i></i>
+            </span>
+            <span class="mini-label">Yes, correct</span>
+            <strong>ถูกต้อง</strong>
+            <span id="correctBurstWord">It is a book!</span>
+          </div>
+        </div>
+
+        <div class="mission-stage sentence-stage">
+          <article class="teacher-card">
+            <span class="mini-label">Question Game</span>
+            <h2>What is it?</h2>
+            <p>ดูรูปตรงนี้ แล้วเลือกคำตอบด้านล่างให้ถูก</p>
+            <figure id="questionObjectCard" class="question-object-card" aria-label="รูปคำถาม">
+              <img id="questionObjectImage" class="object-image object-image-book" src="/assets/english-p1/images/book.png?v=20260605-unit1-png-v2" alt="" />
+              <figcaption id="questionObjectCaption">Look carefully</figcaption>
+            </figure>
+            <div id="sentenceProgress" class="sentence-progress"></div>
+          </article>
+
+          <div id="missionItems" class="mission-items mission-items-large sentence-items" aria-label="sentence choices">
+          </div>
+        </div>
+
+        <div id="missionComplete" class="result-card mission-complete hidden"></div>
+      </section>
+    </main>
+
+    <script src="/assets/gamification.js?v=20260608-animated-learn-v1" defer></script>
+    <script src="/mission-this-is.js?v=20260606-learn-phase-v1" defer></script>
+  </body>
+</html>

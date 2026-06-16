@@ -1,0 +1,251 @@
+{
+  "id": "k2write",
+  "order": 27,
+  "level": "k2",
+  "title": "Write Letters",
+  "theme": "phonics-writing",
+  "standard": {
+    "earlyYears2560": [
+      "มฐ.9",
+      "มฐ.12"
+    ],
+    "core2551": "ต1.1",
+    "commonCore": "RF.K.1d + L.K.1a (printing letters)",
+    "cefr": "Pre-A1"
+  },
+  "intro": {
+    "audio": "audio/phrases/intro-k2write.mp3",
+    "text": "Let's write letters!"
+  },
+  "words": [
+    {
+      "id": "letter-s",
+      "text": "S",
+      "label": "S",
+      "audio": "audio/words/letter-s.mp3",
+      "trace": [
+        [
+          0.66,
+          0.34
+        ],
+        [
+          0.48,
+          0.27
+        ],
+        [
+          0.36,
+          0.36
+        ],
+        [
+          0.45,
+          0.49
+        ],
+        [
+          0.62,
+          0.58
+        ],
+        [
+          0.55,
+          0.72
+        ],
+        [
+          0.36,
+          0.7
+        ]
+      ]
+    },
+    {
+      "id": "letter-j",
+      "text": "J",
+      "label": "J",
+      "audio": "audio/words/letter-j.mp3",
+      "trace": [
+        [
+          0.62,
+          0.24
+        ],
+        [
+          0.62,
+          0.5
+        ],
+        [
+          0.6,
+          0.68
+        ],
+        [
+          0.5,
+          0.76
+        ],
+        [
+          0.38,
+          0.7
+        ],
+        [
+          0.34,
+          0.58
+        ]
+      ]
+    },
+    {
+      "id": "letter-z",
+      "text": "Z",
+      "label": "Z",
+      "audio": "audio/words/letter-z.mp3",
+      "trace": [
+        [
+          0.34,
+          0.28
+        ],
+        [
+          0.66,
+          0.28
+        ],
+        [
+          0.4,
+          0.72
+        ],
+        [
+          0.68,
+          0.72
+        ]
+      ]
+    },
+    {
+      "id": "letter-g",
+      "text": "G",
+      "label": "G",
+      "audio": "audio/words/letter-g.mp3",
+      "trace": [
+        [
+          0.66,
+          0.34
+        ],
+        [
+          0.5,
+          0.26
+        ],
+        [
+          0.36,
+          0.36
+        ],
+        [
+          0.31,
+          0.5
+        ],
+        [
+          0.36,
+          0.66
+        ],
+        [
+          0.52,
+          0.74
+        ],
+        [
+          0.66,
+          0.66
+        ],
+        [
+          0.66,
+          0.52
+        ],
+        [
+          0.54,
+          0.52
+        ]
+      ]
+    },
+    {
+      "id": "letter-d",
+      "text": "D",
+      "label": "D",
+      "audio": "audio/words/letter-d.mp3",
+      "trace": [
+        [
+          0.36,
+          0.22
+        ],
+        [
+          0.36,
+          0.5
+        ],
+        [
+          0.36,
+          0.78
+        ],
+        [
+          0.56,
+          0.72
+        ],
+        [
+          0.66,
+          0.5
+        ],
+        [
+          0.56,
+          0.28
+        ],
+        [
+          0.36,
+          0.22
+        ]
+      ]
+    },
+    {
+      "id": "letter-p",
+      "text": "P",
+      "label": "P",
+      "audio": "audio/words/letter-p.mp3",
+      "trace": [
+        [
+          0.36,
+          0.78
+        ],
+        [
+          0.36,
+          0.5
+        ],
+        [
+          0.36,
+          0.24
+        ],
+        [
+          0.56,
+          0.26
+        ],
+        [
+          0.64,
+          0.38
+        ],
+        [
+          0.56,
+          0.5
+        ],
+        [
+          0.36,
+          0.5
+        ]
+      ]
+    }
+  ],
+  "missions": [
+    {
+      "id": "k2write-trace",
+      "type": "trace",
+      "items": [
+        "letter-s",
+        "letter-j",
+        "letter-z",
+        "letter-g",
+        "letter-d",
+        "letter-p"
+      ],
+      "prompt": {
+        "text": "Trace the letter {word}!",
+        "audioPattern": "audio/words/{id}.mp3"
+      }
+    }
+  ],
+  "reward": {
+    "sticker": "✏️"
+  }
+}

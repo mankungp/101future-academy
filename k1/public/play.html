@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>101future Kids — Colors</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Itim&family=Baloo+2:wght@600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=12">
+<!-- file:// fallback data (generated from content/*.json by tools/build-data.mjs) -->
+<script src="content/units.js?v=12"></script>
+</head>
+<body>
+  <div class="cloud c1">☁️</div>
+  <div class="cloud c2">☁️</div>
+
+  <div class="stage" id="stage">
+    <div class="topbar">
+      <button class="round-btn" id="homeBtn" aria-label="home">🏠</button>
+      <div class="dots" id="dots"></div>
+      <button class="round-btn" id="bookBtn" aria-label="sticker book">📒</button>
+    </div>
+
+    <div class="top-talk">
+      <img class="mascot" id="mascot" src="img/m-idle.png?v=12" alt="Future">
+      <div class="bubble-wrap">
+        <div class="bubble" id="bubble">Let's play!</div>
+        <button class="replay" id="replayBtn">🔊</button>
+      </div>
+    </div>
+
+    <div class="play" id="play"></div>
+    <button class="next-btn hidden" id="nextBtn">Next ▶</button>
+  </div>
+
+  <!-- start overlay -->
+  <div class="overlay" id="startOverlay">
+    <img class="mascot big" src="img/m-idle.png?v=12" alt="">
+    <div class="title-card" id="startTitle">Colors</div>
+    <button class="bigbtn" id="startBtn">▶ Play</button>
+  </div>
+
+  <!-- celebrate overlay -->
+  <div class="overlay hidden" id="winOverlay">
+    <img class="celebrate-mascot" src="img/m-cheer.png?v=12" alt="">
+    <div class="bubble win-bubble">Great job!</div>
+    <div class="sticker-pop" id="stickerPop">🌈</div>
+    <div class="reward-row"><span>⭐</span><span>⭐</span><span>⭐</span></div>
+    <button class="bigbtn" id="againBtn">Play again 🔁</button>
+  </div>
+
+  <div class="devnote">prototype · English-only · voice: Elli (ElevenLabs)</div>
+
+  <script src="engine.js?v=12"></script>
+</body>
+</html>

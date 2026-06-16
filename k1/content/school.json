@@ -1,0 +1,46 @@
+{
+  "id": "school",
+  "order": 5,
+  "title": "My School",
+  "theme": "school",
+  "standard": {
+    "earlyYears2560": ["มฐ.9", "มฐ.10"],
+    "core2551": "ต1.1",
+    "commonCore": "L.K.5",
+    "cefr": "Pre-A1"
+  },
+  "intro": { "audio": "audio/phrases/intro-school.mp3", "text": "Let's go to school!" },
+
+  "words": [
+    { "id": "book",     "text": "book",     "image": "img/school/book.png",     "audio": "audio/words/book.mp3" },
+    { "id": "bag",      "text": "bag",      "image": "img/school/bag.png",      "audio": "audio/words/bag.mp3" },
+    { "id": "pencil",   "text": "pencil",   "image": "img/school/pencil.png",   "audio": "audio/words/pencil.mp3" },
+    { "id": "crayon",   "text": "crayon",   "image": "img/school/crayon.png",   "audio": "audio/words/crayon.mp3" },
+    { "id": "scissors", "text": "scissors", "image": "img/school/scissors.png", "audio": "audio/words/scissors.mp3" },
+    { "id": "chair",    "text": "chair",    "image": "img/school/chair.png",    "audio": "audio/words/chair.mp3" }
+  ],
+
+  "missions": [
+    {
+      "id": "school-explore", "type": "free-explore",
+      "items": ["book","bag","pencil","crayon","scissors","chair"],
+      "prompt": { "text": "Tap the things!", "audioPattern": "audio/words/{id}.mp3" },
+      "config": { "render": "balloon" }
+    },
+    {
+      "id": "school-tap", "type": "listen-and-tap",
+      "items": ["book","bag","pencil","crayon","scissors","chair"],
+      "rounds": 6,
+      "prompt": { "text": "Tap the {word}!", "audioPattern": "audio/phrases/tap-school-{id}.mp3" },
+      "config": { "choices": 4 }
+    },
+    {
+      "id": "school-match", "type": "match",
+      "items": ["book","bag","pencil","crayon","scissors","chair"],
+      "prompt": { "text": "Tap the {word}!" },
+      "config": { "mode": "image-sound", "pairs": 4 }
+    }
+  ],
+
+  "reward": { "sticker": "🎒" }
+}

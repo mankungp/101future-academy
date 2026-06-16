@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="th">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>เข้าเรียน | 101 Future Academy</title>
+    <link rel="stylesheet" href="/styles.css?v=20260608-animated-learn-v1" />
+  </head>
+  <body class="admin-body">
+    <header class="topbar">
+      <a class="brand" href="/" aria-label="101 Future Academy">
+        <span class="brand-mark">101</span>
+        <span class="brand-name">Future Academy</span>
+      </a>
+      <nav class="nav" aria-label="Learning navigation">
+        <a href="/">หน้าแรก</a>
+        <a href="/#packages">แพ็กเรียน</a>
+      </nav>
+    </header>
+
+    <main class="admin-main learn-main">
+      <section class="learn-hero">
+        <div>
+          <p class="eyebrow">พื้นที่ผู้เรียน</p>
+          <h1>
+            <span class="hero-title-desktop">ติดตามแพ็กที่สนใจ สถานะชำระเงิน และสิทธิ์เรียน</span>
+            <span class="hero-title-mobile">ติดตามแพ็กที่สนใจ<br />สถานะชำระเงิน<br />และสิทธิ์เรียน</span>
+          </h1>
+          <p class="lead">เข้าสู่ระบบด้วย LINE เพื่อบันทึกแพ็กที่เลือกไว้<br />และเช็กสถานะได้ง่าย</p>
+        </div>
+      </section>
+
+      <section id="learnSummary" class="learn-summary-grid" aria-label="สถานะบัญชี">
+        <article class="summary-card">
+          <span>บัญชี LINE</span>
+          <strong id="accountSummary">กำลังตรวจสอบ</strong>
+        </article>
+        <article class="summary-card">
+          <span>แพ็กที่สนใจ</span>
+          <strong id="interestSummary">-</strong>
+        </article>
+        <article class="summary-card">
+          <span>สิทธิ์เรียน</span>
+          <strong id="accessSummary">ยังไม่มีสิทธิ์เรียน</strong>
+        </article>
+      </section>
+
+      <section class="lesson-panel gamified-overview" aria-labelledby="learningMapTitle">
+        <div class="gamified-overview-head">
+          <div>
+            <p class="eyebrow">Learning map</p>
+            <h2 id="learningMapTitle">เส้นทางเก็บดาว English ป.1</h2>
+            <p>เรียนเป็นด่านสั้น ๆ ผ่านแล้วติดเครื่องหมาย ✓ ด่านปัจจุบันเด่น และด่านถัดไปล็อกไว้ให้เห็นเป้าหมาย</p>
+          </div>
+          <div class="daily-goal-card">
+            <span>Daily goal</span>
+            <strong>5 ดาว / วัน</strong>
+            <small>ครบแล้วปลดล็อกสติกเกอร์น้องฟิวเจอร์</small>
+          </div>
+        </div>
+        <div id="learningMap" class="learning-map" aria-label="เส้นทางบทเรียน"></div>
+      </section>
+
+      <section id="parentProgressPanel" class="lesson-panel parent-progress-panel" aria-live="polite"></section>
+
+      <section class="login-card access-card">
+        <div>
+          <p class="eyebrow">เข้าเรียนด้วย LINE</p>
+          <h2>บัญชีสำหรับติดตามการเรียน</h2>
+          <p>ใช้บัญชี LINE เป็นช่องทางหลักสำหรับผู้เรียนหรือผู้ปกครอง เพื่อบันทึกแพ็กที่สนใจและติดตามสิทธิ์เรียน</p>
+        </div>
+        <div id="lineAccountBox" class="share-link">
+          <p id="lineStatus">กำลังตรวจสอบบัญชี...</p>
+          <a id="lineLoginButton" class="button line-button" href="/auth/line?next=/learn">เข้าสู่ระบบด้วย LINE</a>
+          <div id="selectedPackageBox" class="selected-package hidden"></div>
+          <form id="profileForm" class="access-form hidden">
+            <label>
+              คุณคือ
+              <select name="role" required>
+                <option value="student">นักเรียน</option>
+                <option value="parent">ผู้ปกครอง</option>
+                <option value="both">ทั้งนักเรียน/ผู้ปกครอง</option>
+              </select>
+            </label>
+            <label>
+              เบอร์โทร
+              <input name="phone" inputmode="tel" autocomplete="tel" />
+            </label>
+            <label>
+              อีเมล
+              <input name="email" type="email" autocomplete="email" />
+            </label>
+            <button class="button secondary" type="submit">บันทึกข้อมูลบัญชี</button>
+          </form>
+          <button id="logoutButton" class="button secondary hidden" type="button">ออกจากระบบ</button>
+        </div>
+      </section>
+
+      <section id="interestPanel" class="lesson-panel hidden" aria-live="polite">
+        <div>
+          <p class="eyebrow">แพ็กที่สนใจ</p>
+          <h2>รายการที่บันทึกไว้ในบัญชี LINE</h2>
+          <p>เมื่อระบบชำระเงินพร้อม ทีมงานจะใช้รายการนี้สร้างลิงก์หรือ QR สำหรับเปิดสิทธิ์เรียน</p>
+        </div>
+        <div id="interestList" class="lesson-grid"></div>
+      </section>
+
+      <section id="englishPreview" class="lesson-panel english-preview" aria-labelledby="englishPreviewTitle">
+        <div>
+          <p class="eyebrow">English ป.1 · Unit 1</p>
+          <h2 id="englishPreviewTitle">My School Bag</h2>
+          <p>เริ่มจากคำศัพท์ของใช้ในห้องเรียน ต่อด้วยเกมถามตอบ What is it? และค่อยไปฝึกพูดประโยคสั้นแบบเล่นสนุก</p>
+        </div>
+        <div class="unit-roadmap" aria-label="ลำดับบทเรียน Unit 1">
+          <article>
+            <span class="mini-label">Mission 1</span>
+            <h3>Pack My School Bag</h3>
+            <p>20 ด่านคำศัพท์ ฟังคำถามสั้น ๆ แล้วแตะรูปภาพให้ถูก โดยรูปและคำไม่ซ้ำเป็นโจทย์เดิม</p>
+            <a class="button primary" href="/mission/school-bag?reset=1">เริ่ม Mission 1</a>
+          </article>
+          <article>
+            <span class="mini-label">Mission 2</span>
+            <h3>What Is It?</h3>
+            <p>ดูรูป ฟังคำถาม What is it? แล้วเลือกคำตอบ It is a/an ... ให้ตรงกับภาพ</p>
+            <a class="button primary" href="/mission/this-is?reset=1">เริ่ม Mission 2</a>
+          </article>
+          <article>
+            <span class="mini-label">Mission 3</span>
+            <h3>Say It Back</h3>
+            <p>ฟังครูพูด This is a/an ... แล้วลองพูดตาม ไม่ต้องกลัวผิด ลองได้เรื่อย ๆ</p>
+            <a class="button primary" href="/mission/say-it-back?reset=1">เริ่ม Mission 3</a>
+          </article>
+        </div>
+        <div class="lesson-workspace">
+          <article class="lesson-reader">
+            <span class="mini-label">Lesson 1 · 15 นาที</span>
+            <h3>My School Bag</h3>
+            <p class="story-text">
+              This is my school bag. I have a book, a pencil, and a ruler. My book is blue. My pencil is yellow.
+            </p>
+            <div class="vocab-list" aria-label="คำศัพท์ในบทเรียน">
+              <span><strong>school bag</strong> กระเป๋านักเรียน</span>
+              <span><strong>book</strong> หนังสือ</span>
+              <span><strong>pencil</strong> ดินสอ</span>
+              <span><strong>ruler</strong> ไม้บรรทัด</span>
+            </div>
+          </article>
+          <form id="englishExercise" class="exercise-card">
+            <div>
+              <span class="mini-label">แบบฝึกหัดหลังเรียน</span>
+              <h3>ตอบ 3 ข้อเพื่อดูสรุปผล</h3>
+            </div>
+            <fieldset>
+              <legend>1. What is in the school bag?</legend>
+              <label><input type="radio" name="q1" value="correct" /> A book, a pencil, and a ruler</label>
+              <label><input type="radio" name="q1" value="wrong" /> A cat and a ball</label>
+            </fieldset>
+            <fieldset>
+              <legend>2. What color is the book?</legend>
+              <label><input type="radio" name="q2" value="correct" /> Blue</label>
+              <label><input type="radio" name="q2" value="wrong" /> Yellow</label>
+            </fieldset>
+            <fieldset>
+              <legend>3. Choose the best sentence.</legend>
+              <label><input type="radio" name="q3" value="correct" /> I have a pencil.</label>
+              <label><input type="radio" name="q3" value="wrong" /> I has a pencil.</label>
+            </fieldset>
+            <button class="button primary" type="submit">ดูสรุปผล</button>
+            <p id="englishExerciseStatus" role="status"></p>
+          </form>
+        </div>
+        <div id="englishResult" class="result-card hidden" aria-live="polite"></div>
+      </section>
+
+      <details class="login-card access-card fallback-access">
+        <summary>เข้าเรียนด้วยรหัสสำรอง</summary>
+        <div>
+          <p class="eyebrow">รหัสเข้าเรียน</p>
+          <h2>ใช้เมื่อทีมงานเปิดสิทธิ์ไว้แล้ว</h2>
+          <p>ช่องทางนี้เป็นทางสำรองสำหรับบัญชีที่เปิดสิทธิ์เรียบร้อยแล้ว</p>
+        </div>
+        <form id="accessForm" class="access-form">
+          <label>
+            เลขสมัคร
+            <input name="enrollmentId" autocomplete="off" required />
+          </label>
+          <label>
+            เบอร์โทร
+            <input name="phone" inputmode="tel" autocomplete="tel" required />
+          </label>
+          <label>
+            รหัสเข้าเรียน
+            <input name="accessCode" autocomplete="off" required />
+          </label>
+          <button class="button primary" type="submit">เปิดบทเรียน</button>
+          <p id="accessStatus" role="status"></p>
+        </form>
+      </details>
+
+      <section id="lessonPanel" class="lesson-panel hidden" aria-live="polite">
+        <div>
+          <p class="eyebrow">บทเรียนของคุณ</p>
+          <h2 id="courseTitle">บทเรียน</h2>
+          <p id="expiryText"></p>
+        </div>
+        <div id="lessonList" class="lesson-grid"></div>
+      </section>
+    </main>
+    <script src="/assets/gamification.js?v=20260608-animated-learn-v1" defer></script>
+    <script src="/learn.js?v=20260604-gamification-v1" defer></script>
+  </body>
+</html>

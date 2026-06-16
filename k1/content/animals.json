@@ -1,0 +1,161 @@
+{
+  "id": "animals",
+  "order": 6,
+  "title": "Animals",
+  "theme": "nature",
+  "standard": {
+    "earlyYears2560": [
+      "มฐ.9",
+      "มฐ.10"
+    ],
+    "core2551": "ต1.1",
+    "commonCore": "L.K.5",
+    "cefr": "Pre-A1"
+  },
+  "intro": {
+    "audio": "audio/phrases/intro-animals.mp3",
+    "text": "Let's meet the animals!"
+  },
+  "words": [
+    {
+      "id": "dog",
+      "text": "dog",
+      "image": "img/animals/dog.png",
+      "audio": "audio/words/dog.mp3",
+      "sound": "audio/sounds/dog.mp3"
+    },
+    {
+      "id": "cat",
+      "text": "cat",
+      "image": "img/animals/cat.png",
+      "audio": "audio/words/cat.mp3",
+      "sound": "audio/sounds/cat.mp3"
+    },
+    {
+      "id": "cow",
+      "text": "cow",
+      "image": "img/animals/cow.png",
+      "audio": "audio/words/cow.mp3",
+      "sound": "audio/sounds/cow.mp3"
+    },
+    {
+      "id": "pig",
+      "text": "pig",
+      "image": "img/animals/pig.png",
+      "audio": "audio/words/pig.mp3",
+      "sound": "audio/sounds/pig.mp3"
+    },
+    {
+      "id": "duck",
+      "text": "duck",
+      "image": "img/animals/duck.png",
+      "audio": "audio/words/duck.mp3",
+      "sound": "audio/sounds/duck.mp3"
+    },
+    {
+      "id": "lion",
+      "text": "lion",
+      "image": "img/animals/lion.png",
+      "audio": "audio/words/lion.mp3",
+      "sound": "audio/sounds/lion.mp3"
+    },
+    {
+      "id": "elephant",
+      "text": "elephant",
+      "image": "img/animals/elephant.png",
+      "audio": "audio/words/elephant.mp3",
+      "sound": "audio/sounds/elephant.mp3"
+    },
+    {
+      "id": "monkey",
+      "text": "monkey",
+      "image": "img/animals/monkey.png",
+      "audio": "audio/words/monkey.mp3",
+      "sound": "audio/sounds/monkey.mp3"
+    },
+    {
+      "id": "frog",
+      "text": "frog",
+      "image": "img/animals/frog.png",
+      "audio": "audio/words/frog.mp3",
+      "sound": "audio/sounds/frog.mp3"
+    },
+    {
+      "id": "fish",
+      "text": "fish",
+      "image": "img/animals/fish.png",
+      "audio": "audio/words/fish.mp3",
+      "sound": "audio/sounds/fish.mp3"
+    },
+    {
+      "id": "bird",
+      "text": "bird",
+      "image": "img/animals/bird.png",
+      "audio": "audio/words/bird.mp3",
+      "sound": "audio/sounds/bird.mp3"
+    },
+    {
+      "id": "bear",
+      "text": "bear",
+      "image": "img/animals/bear.png",
+      "audio": "audio/words/bear.mp3",
+      "sound": "audio/sounds/bear.mp3"
+    }
+  ],
+  "missions": [
+    {
+      "id": "animals-explore",
+      "type": "free-explore",
+      "items": [
+        "dog",
+        "cat",
+        "cow",
+        "pig",
+        "duck",
+        "lion",
+        "elephant",
+        "monkey",
+        "frog",
+        "fish",
+        "bird",
+        "bear"
+      ],
+      "prompt": {
+        "text": "Pop the balloons!",
+        "audioPattern": "audio/words/{id}.mp3"
+      },
+      "config": {
+        "render": "balloon"
+      }
+    },
+    {
+      "id": "animals-tap",
+      "type": "listen-and-tap",
+      "items": [
+        "dog",
+        "cat",
+        "cow",
+        "pig",
+        "duck",
+        "lion",
+        "elephant",
+        "monkey",
+        "frog",
+        "fish",
+        "bird",
+        "bear"
+      ],
+      "rounds": 12,
+      "prompt": {
+        "text": "Tap the {word}!",
+        "audioPattern": "audio/phrases/tap-{id}.mp3"
+      },
+      "config": {
+        "choices": 4
+      }
+    }
+  ],
+  "reward": {
+    "audio": "audio/praise/great-job.mp3"
+  }
+}

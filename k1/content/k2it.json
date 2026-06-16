@@ -1,0 +1,41 @@
+{
+  "id": "k2it",
+  "order": 22,
+  "level": "k2",
+  "title": "It Is...",
+  "theme": "k2-sentences",
+  "standard": {
+    "earlyYears2560": ["มฐ.9", "มฐ.10"],
+    "core2551": "ต1.1 (ฟังเข้าใจประโยคสั้น)",
+    "commonCore": "SL.K.2 / L.K (oral sentence comprehension)",
+    "cefr": "Pre-A1 → A1"
+  },
+  "intro": { "audio": "audio/phrases/intro-k2it.mp3", "text": "What is it?" },
+
+  "words": [
+    { "id": "circle",    "text": "circle",    "image": "img/shapes/circle.png",    "audio": "audio/words/circle.mp3" },
+    { "id": "square",    "text": "square",    "image": "img/shapes/square.png",    "audio": "audio/words/square.mp3" },
+    { "id": "triangle",  "text": "triangle",  "image": "img/shapes/triangle.png",  "audio": "audio/words/triangle.mp3" },
+    { "id": "star",      "text": "star",      "image": "img/shapes/star.png",      "audio": "audio/words/star.mp3" },
+    { "id": "heart",     "text": "heart",     "image": "img/shapes/heart.png",     "audio": "audio/words/heart.mp3" },
+    { "id": "rectangle", "text": "rectangle", "image": "img/shapes/rectangle.png", "audio": "audio/words/rectangle.mp3" }
+  ],
+
+  "missions": [
+    {
+      "id": "k2it-explore", "type": "free-explore",
+      "items": ["circle","square","triangle","star","heart","rectangle"],
+      "prompt": { "text": "Tap and listen!", "audioPattern": "audio/words/{id}.mp3" },
+      "config": { "render": "balloon" }
+    },
+    {
+      "id": "k2it-choose", "type": "listen-and-choose",
+      "items": ["circle","square","triangle","star","heart","rectangle"],
+      "rounds": 6,
+      "prompt": { "text": "It is a {word}!", "audioPattern": "audio/phrases/k2-it-{id}.mp3" },
+      "config": { "choices": 3 }
+    }
+  ],
+
+  "reward": { "sticker": "🔷" }
+}

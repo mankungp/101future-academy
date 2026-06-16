@@ -1,0 +1,120 @@
+{
+  "id": "emotions",
+  "order": 2,
+  "title": "Feelings",
+  "theme": "emotions",
+  "standard": {
+    "earlyYears2560": [
+      "มฐ.3",
+      "มฐ.9"
+    ],
+    "core2551": "ต1.1",
+    "commonCore": "L.K.5",
+    "cefr": "Pre-A1"
+  },
+  "intro": {
+    "audio": "audio/phrases/intro-emotions.mp3",
+    "text": "Let's learn feelings!"
+  },
+  "words": [
+    {
+      "id": "happy",
+      "text": "happy",
+      "image": "img/emotions/happy.png",
+      "audio": "audio/words/happy.mp3"
+    },
+    {
+      "id": "sad",
+      "text": "sad",
+      "image": "img/emotions/sad.png",
+      "audio": "audio/words/sad.mp3"
+    },
+    {
+      "id": "angry",
+      "text": "angry",
+      "image": "img/emotions/angry.png",
+      "audio": "audio/words/angry.mp3"
+    },
+    {
+      "id": "scared",
+      "text": "scared",
+      "image": "img/emotions/scared.png",
+      "audio": "audio/words/scared.mp3"
+    },
+    {
+      "id": "sleepy",
+      "text": "sleepy",
+      "image": "img/emotions/sleepy.png",
+      "audio": "audio/words/sleepy.mp3"
+    },
+    {
+      "id": "surprised",
+      "text": "surprised",
+      "image": "img/emotions/surprised.png",
+      "audio": "audio/words/surprised.mp3"
+    }
+  ],
+  "missions": [
+    {
+      "id": "emotions-explore",
+      "type": "free-explore",
+      "items": [
+        "happy",
+        "sad",
+        "angry",
+        "scared",
+        "sleepy",
+        "surprised"
+      ],
+      "prompt": {
+        "text": "Tap the faces!",
+        "audioPattern": "audio/words/{id}.mp3"
+      },
+      "config": {
+        "render": "balloon"
+      }
+    },
+    {
+      "id": "emotions-tap",
+      "type": "listen-and-tap",
+      "items": [
+        "happy",
+        "sad",
+        "angry",
+        "scared",
+        "sleepy",
+        "surprised"
+      ],
+      "rounds": 6,
+      "prompt": {
+        "text": "Tap the {word} face!",
+        "audioPattern": "audio/phrases/tap-emotion-{id}.mp3"
+      },
+      "config": {
+        "choices": 4
+      }
+    },
+    {
+      "id": "emotions-match",
+      "type": "match",
+      "items": [
+        "happy",
+        "sad",
+        "angry",
+        "scared",
+        "sleepy",
+        "surprised"
+      ],
+      "prompt": {
+        "text": "Tap the {word}!"
+      },
+      "config": {
+        "mode": "image-sound",
+        "pairs": 4
+      }
+    }
+  ],
+  "reward": {
+    "sticker": "😊"
+  }
+}

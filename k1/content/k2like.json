@@ -1,0 +1,41 @@
+{
+  "id": "k2like",
+  "order": 23,
+  "level": "k2",
+  "title": "I Like...",
+  "theme": "k2-sentences",
+  "standard": {
+    "earlyYears2560": ["มฐ.9", "มฐ.10"],
+    "core2551": "ต1.1 (ฟังเข้าใจประโยคสั้น)",
+    "commonCore": "SL.K.2 / L.K (oral sentence comprehension)",
+    "cefr": "Pre-A1 → A1"
+  },
+  "intro": { "audio": "audio/phrases/intro-k2like.mp3", "text": "What do you like?" },
+
+  "words": [
+    { "id": "apple",      "text": "apple",      "image": "img/fruits/apple.png",      "audio": "audio/words/apple.mp3" },
+    { "id": "banana",     "text": "banana",     "image": "img/fruits/banana.png",     "audio": "audio/words/banana.mp3" },
+    { "id": "orange",     "text": "orange",     "image": "img/fruits/orange.png",     "audio": "audio/words/orange.mp3" },
+    { "id": "grape",      "text": "grape",      "image": "img/fruits/grape.png",      "audio": "audio/words/grape.mp3" },
+    { "id": "mango",      "text": "mango",      "image": "img/fruits/mango.png",      "audio": "audio/words/mango.mp3" },
+    { "id": "strawberry", "text": "strawberry", "image": "img/fruits/strawberry.png", "audio": "audio/words/strawberry.mp3" }
+  ],
+
+  "missions": [
+    {
+      "id": "k2like-explore", "type": "free-explore",
+      "items": ["apple","banana","orange","grape","mango","strawberry"],
+      "prompt": { "text": "Tap and listen!", "audioPattern": "audio/words/{id}.mp3" },
+      "config": { "render": "balloon" }
+    },
+    {
+      "id": "k2like-choose", "type": "listen-and-choose",
+      "items": ["apple","banana","orange","grape","mango","strawberry"],
+      "rounds": 6,
+      "prompt": { "text": "I like {word}!", "audioPattern": "audio/phrases/k2-like-{id}.mp3" },
+      "config": { "choices": 3 }
+    }
+  ],
+
+  "reward": { "sticker": "😋" }
+}

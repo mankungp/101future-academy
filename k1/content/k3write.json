@@ -1,0 +1,218 @@
+{
+  "id": "k3write",
+  "order": 44,
+  "level": "k3",
+  "title": "Write small letters",
+  "theme": "k3-writing",
+  "standard": {
+    "earlyYears2560": [
+      "มฐ.9",
+      "มฐ.12"
+    ],
+    "core2551": "ต1.1",
+    "commonCore": "L.K.1a (print lowercase)",
+    "cefr": "Pre-A1"
+  },
+  "intro": {
+    "audio": "audio/phrases/intro-k3write.mp3",
+    "text": "Write small letters!"
+  },
+  "words": [
+    {
+      "id": "lc-c",
+      "text": "C",
+      "label": "c",
+      "audio": "audio/words/lc-c.mp3",
+      "trace": [
+        [
+          0.62,
+          0.4
+        ],
+        [
+          0.5,
+          0.34
+        ],
+        [
+          0.4,
+          0.42
+        ],
+        [
+          0.37,
+          0.54
+        ],
+        [
+          0.4,
+          0.66
+        ],
+        [
+          0.5,
+          0.72
+        ],
+        [
+          0.62,
+          0.66
+        ]
+      ]
+    },
+    {
+      "id": "lc-o",
+      "text": "O",
+      "label": "o",
+      "audio": "audio/words/lc-o.mp3",
+      "trace": [
+        [
+          0.5,
+          0.34
+        ],
+        [
+          0.4,
+          0.4
+        ],
+        [
+          0.37,
+          0.54
+        ],
+        [
+          0.4,
+          0.67
+        ],
+        [
+          0.5,
+          0.72
+        ],
+        [
+          0.6,
+          0.67
+        ],
+        [
+          0.63,
+          0.54
+        ],
+        [
+          0.6,
+          0.4
+        ],
+        [
+          0.5,
+          0.34
+        ]
+      ]
+    },
+    {
+      "id": "lc-s",
+      "text": "S",
+      "label": "s",
+      "audio": "audio/words/lc-s.mp3",
+      "trace": [
+        [
+          0.6,
+          0.42
+        ],
+        [
+          0.48,
+          0.37
+        ],
+        [
+          0.4,
+          0.44
+        ],
+        [
+          0.48,
+          0.53
+        ],
+        [
+          0.6,
+          0.6
+        ],
+        [
+          0.52,
+          0.69
+        ],
+        [
+          0.4,
+          0.65
+        ]
+      ]
+    },
+    {
+      "id": "lc-e",
+      "text": "E",
+      "label": "e",
+      "audio": "audio/words/lc-e.mp3",
+      "trace": [
+        [
+          0.38,
+          0.55
+        ],
+        [
+          0.62,
+          0.55
+        ],
+        [
+          0.62,
+          0.46
+        ],
+        [
+          0.5,
+          0.36
+        ],
+        [
+          0.39,
+          0.44
+        ],
+        [
+          0.36,
+          0.57
+        ],
+        [
+          0.46,
+          0.69
+        ],
+        [
+          0.6,
+          0.66
+        ]
+      ]
+    },
+    {
+      "id": "lc-l",
+      "text": "L",
+      "label": "l",
+      "audio": "audio/words/lc-l.mp3",
+      "trace": [
+        [
+          0.5,
+          0.26
+        ],
+        [
+          0.5,
+          0.5
+        ],
+        [
+          0.5,
+          0.72
+        ]
+      ]
+    }
+  ],
+  "missions": [
+    {
+      "id": "k3write-trace",
+      "type": "trace",
+      "items": [
+        "lc-c",
+        "lc-o",
+        "lc-s",
+        "lc-e",
+        "lc-l"
+      ],
+      "prompt": {
+        "text": "Trace the letter {word}!",
+        "audioPattern": "audio/words/{id}.mp3"
+      }
+    }
+  ],
+  "reward": {
+    "sticker": "🖍️"
+  }
+}

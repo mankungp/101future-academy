@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>101future Kids — Kindergarten 1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Itim&family=Baloo+2:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{--sky1:#aee7ff;--sky2:#d9f2ff;--ink:#3a2b53;--pop:#ff5fa2;--sun:#ffd23f;
+    --shadow:0 14px 0 rgba(0,0,0,.06),0 20px 38px rgba(60,40,90,.18)}
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0}
+  body{font-family:'Itim','Baloo 2',system-ui,sans-serif;color:var(--ink);min-height:100vh;
+    background:linear-gradient(180deg,var(--sky1),var(--sky2) 55%,#eafff0);
+    user-select:none;overflow-x:hidden}
+  .cloud{position:fixed;font-size:60px;opacity:.8;animation:drift 30s linear infinite;pointer-events:none;top:8%;left:-20%}
+  .cloud.c2{top:20%;font-size:42px;animation-duration:40s}
+  @keyframes drift{from{transform:translateX(0)}to{transform:translateX(130vw)}}
+  .wrap{max-width:780px;margin:0 auto;padding:24px 18px 60px;position:relative;z-index:1}
+  .hero{display:flex;align-items:center;gap:14px;justify-content:center;margin:8px 0 6px}
+  .hero img{width:96px;height:auto;animation:bob 2.4s ease-in-out infinite;transform-origin:bottom center}
+  @keyframes bob{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-8px) rotate(2deg)}}
+  .htext .t1{font-family:'Baloo 2';font-weight:800;font-size:34px;color:var(--pop);line-height:1.05}
+  .htext .t2{font-size:18px;color:#6b5e86}
+  .units{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-top:18px}
+  .ucard{position:relative;border:none;border-radius:28px;background:#fff;box-shadow:var(--shadow);
+    padding:18px 14px 16px;text-decoration:none;color:var(--ink);cursor:pointer;display:flex;flex-direction:column;
+    align-items:center;gap:10px;transition:transform .12s;min-height:190px;justify-content:center}
+  .ucard:active{transform:translateY(4px)}
+  .ucard .name{font-size:26px;font-weight:700}
+  .ucard .art{height:96px;display:flex;align-items:center;justify-content:center;gap:6px}
+  .ucard .art img{height:92px;width:auto;filter:drop-shadow(0 6px 8px rgba(0,0,0,.12))}
+  .dots{display:flex;flex-wrap:wrap;gap:8px;width:120px;justify-content:center}
+  .dots span{width:30px;height:30px;border-radius:50%;box-shadow:inset -4px -5px 0 rgba(0,0,0,.12)}
+  .go{background:var(--sun);border-radius:16px;padding:5px 16px;font-size:18px;box-shadow:0 4px 0 #e6b800}
+  .ucard.locked{opacity:.55;pointer-events:none;background:#eef2f9}
+  .ucard.locked .lock{font-size:48px}
+  .ucard.locked .soon{font-size:15px;color:#8a7ba5}
+  .footnote{text-align:center;margin-top:26px;font-size:14px;color:#8a7ba5;font-family:'Baloo 2'}
+</style>
+</head>
+<body>
+  <div class="cloud c1">☁️</div>
+  <div class="cloud c2">☁️</div>
+  <div class="wrap">
+    <div class="hero">
+      <img src="img/m-idle.png?v=9" alt="Future">
+      <div class="htext">
+        <div class="t1">Let's Play!</div>
+        <div class="t2">อนุบาล 1 · เลือกบทเรียน</div>
+      </div>
+    </div>
+
+    <div class="units">
+      <a class="ucard" href="play.html?unit=colors">
+        <div class="art"><div class="dots">
+          <span style="background:#ff5b5b"></span><span style="background:#ffd23f"></span>
+          <span style="background:#4d8bff"></span><span style="background:#5fd06a"></span>
+          <span style="background:#ff9f40"></span><span style="background:#9b6dff"></span>
+        </div></div>
+        <div class="name">Colors</div>
+        <div class="go">▶ Play</div>
+      </a>
+
+      <a class="ucard" href="play.html?unit=animals">
+        <div class="art">
+          <img src="img/animals/lion.png?v=9" alt="">
+          <img src="img/animals/dog.png?v=9" alt="">
+        </div>
+        <div class="name">Animals</div>
+        <div class="go">▶ Play</div>
+      </a>
+
+      <a class="ucard" href="play.html?unit=fruits">
+        <div class="art">
+          <img src="img/fruits/apple.png?v=10" alt="">
+          <img src="img/fruits/banana.png?v=10" alt="">
+        </div>
+        <div class="name">Fruits</div>
+        <div class="go">▶ Play</div>
+      </a>
+      <a class="ucard" href="play.html?unit=numbers">
+        <div class="art"><div style="font-family:'Baloo 2';font-weight:800;font-size:58px;color:#4d8bff;letter-spacing:2px">123</div></div>
+        <div class="name">Numbers</div><div class="go">▶ Play</div>
+      </a>
+      <a class="ucard" href="play.html?unit=family">
+        <div class="art"><img src="img/family/mom.png?v=11" alt=""><img src="img/family/dad.png?v=11" alt=""></div>
+        <div class="name">Family</div><div class="go">▶ Play</div>
+      </a>
+      <a class="ucard" href="play.html?unit=shapes">
+        <div class="art"><img src="img/shapes/star.png?v=11" alt=""><img src="img/shapes/circle.png?v=11" alt=""></div>
+        <div class="name">Shapes</div><div class="go">▶ Play</div>
+      </a>
+    </div>
+
+    <div class="footnote">101future Kids · English immersion for ages 3–4</div>
+  </div>
+</body>
+</html>

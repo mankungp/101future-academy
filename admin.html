@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>101 Future Admin</title>
-    <link rel="stylesheet" href="/styles.css" />
+    <link rel="stylesheet" href="/styles.css?v=20260530-english-preview-1" />
   </head>
   <body class="admin-body">
     <header class="topbar">
@@ -13,7 +13,8 @@
         <span class="brand-name">Future Admin</span>
       </a>
       <nav class="nav" aria-label="Admin navigation">
-        <a href="/">Website</a>
+        <a href="/">หน้าเว็บ</a>
+        <a href="/agent-hq">Agent HQ</a>
         <a href="/api/leads.csv" id="exportLink">Export CSV</a>
       </nav>
     </header>
@@ -35,16 +36,32 @@
       <section id="adminPanel" class="admin-shell hidden">
         <div class="admin-toolbar">
           <div>
-            <p class="eyebrow">Dashboard</p>
-            <h2>ผู้สมัครเรียน</h2>
+          <p class="eyebrow">Dashboard</p>
+          <h2>คนเลือกแพ็กผ่าน LINE และรายการชำระเงิน</h2>
           </div>
-          <button id="refreshButton" class="button secondary">Refresh</button>
+          <div class="toolbar-actions">
+            <button id="refreshButton" class="button secondary">โหลดข้อมูลใหม่</button>
+          </div>
         </div>
 
         <div id="metrics" class="metric-grid"></div>
+        <section class="payment-panel" aria-labelledby="interestTitle">
+          <div>
+            <p class="eyebrow">คนเลือกแพ็ก</p>
+            <h3 id="interestTitle">คนที่เลือกแพ็กผ่าน LINE</h3>
+          </div>
+          <div id="interestList" class="payment-grid"></div>
+        </section>
+        <section class="payment-panel" aria-labelledby="paymentTitle">
+          <div>
+            <p class="eyebrow">ตรวจการชำระเงิน</p>
+            <h3 id="paymentTitle">รายการที่ต้องตรวจ</h3>
+          </div>
+          <div id="paymentList" class="payment-grid"></div>
+        </section>
         <div id="leadList" class="lead-list"></div>
       </section>
     </main>
-    <script src="/admin.js" defer></script>
+    <script src="/admin.js?v=20260530-english-preview-1" defer></script>
   </body>
 </html>

@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="th">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+    <title>Pack My School Bag | 101 Future Academy</title>
+    <link rel="stylesheet" href="/styles.css?v=20260608-animated-learn-v1" />
+  </head>
+  <body class="mission-body no-zoom-body">
+    <header class="mission-topbar">
+      <a class="brand" href="/learn" aria-label="กลับหน้าเรียน 101 Future Academy">
+        <span class="brand-mark">101</span>
+        <span class="brand-name">Future Academy</span>
+      </a>
+      <a class="button secondary mission-exit-link" href="/learn">
+        <span class="exit-full">ออกจาก Mission</span>
+        <span class="exit-short">ออก</span>
+      </a>
+    </header>
+
+    <main class="mission-main">
+      <section class="mission-screen" aria-live="polite">
+        <div class="mission-screen-head">
+          <div>
+            <p class="eyebrow">English Mission · ป.1</p>
+            <h1>Pack My School Bag</h1>
+            <p>ฟังคำศัพท์ แล้วแตะรูปภาพให้ตรงกับคำที่ได้ยิน</p>
+          </div>
+          <div class="mission-score mission-score-large">
+            <span id="missionStars">0/20</span>
+            <strong>stars</strong>
+          </div>
+        </div>
+
+        <div class="mission-prompt mission-prompt-large">
+          <button id="missionSoundButton" class="sound-button start-button" type="button" aria-label="เริ่ม Mission">Start Mission</button>
+          <div>
+            <span id="missionPromptHint">กดเริ่ม แล้วฟังคำสั่งแรก</span>
+            <p id="missionPromptText">Ready to pack your school bag?</p>
+          </div>
+        </div>
+
+        <div id="missionFeedback" class="mission-feedback mission-feedback-large">
+          Mission 1: ฟังคำศัพท์ แล้วแตะรูปภาพให้ถูก
+        </div>
+
+        <div id="correctBurst" class="correct-burst hidden" aria-live="assertive">
+          <div class="correct-burst-card">
+            <span class="burst-confetti" aria-hidden="true">
+              <i></i><i></i><i></i><i></i><i></i><i></i>
+            </span>
+            <span class="mini-label">Yes, correct</span>
+            <strong>ถูกต้อง</strong>
+            <span id="correctBurstWord">book = หนังสือ</span>
+          </div>
+        </div>
+
+        <div class="mission-stage mission-stage-full">
+          <div id="missionBag" class="school-bag school-bag-large" aria-label="school bag">
+            <span>school bag</span>
+            <div id="packedItems" class="packed-items"></div>
+          </div>
+
+          <div id="missionItems" class="mission-items mission-items-large" aria-label="school items"></div>
+        </div>
+
+        <div id="missionComplete" class="result-card mission-complete hidden"></div>
+      </section>
+    </main>
+
+    <script src="/assets/gamification.js?v=20260608-animated-learn-v1" defer></script>
+    <script src="/mission-school-bag.js?v=20260606-learn-phase-v1" defer></script>
+  </body>
+</html>

@@ -1,0 +1,174 @@
+{
+  "id": "colors",
+  "order": 9,
+  "title": "Colors",
+  "theme": "things-around",
+  "standard": {
+    "earlyYears2560": [
+      "มฐ.9",
+      "มฐ.10"
+    ],
+    "core2551": "ต1.1",
+    "commonCore": "L.K.5",
+    "cefr": "Pre-A1"
+  },
+  "intro": {
+    "audio": "audio/phrases/intro-colors.mp3",
+    "text": "Let's learn colors!"
+  },
+  "words": [
+    {
+      "id": "red",
+      "text": "red",
+      "audio": "audio/words/red.mp3",
+      "meta": {
+        "hex": "#ff5b5b"
+      }
+    },
+    {
+      "id": "yellow",
+      "text": "yellow",
+      "audio": "audio/words/yellow.mp3",
+      "meta": {
+        "hex": "#ffd23f"
+      }
+    },
+    {
+      "id": "blue",
+      "text": "blue",
+      "audio": "audio/words/blue.mp3",
+      "meta": {
+        "hex": "#4d8bff"
+      }
+    },
+    {
+      "id": "green",
+      "text": "green",
+      "audio": "audio/words/green.mp3",
+      "meta": {
+        "hex": "#5fd06a"
+      }
+    },
+    {
+      "id": "orange",
+      "text": "orange",
+      "audio": "audio/words/orange.mp3",
+      "meta": {
+        "hex": "#ff9f40"
+      }
+    },
+    {
+      "id": "purple",
+      "text": "purple",
+      "audio": "audio/words/purple.mp3",
+      "meta": {
+        "hex": "#9b6dff"
+      }
+    },
+    {
+      "id": "pink",
+      "text": "pink",
+      "audio": "audio/words/pink.mp3",
+      "meta": {
+        "hex": "#ff7eb3"
+      }
+    },
+    {
+      "id": "black",
+      "text": "black",
+      "audio": "audio/words/black.mp3",
+      "meta": {
+        "hex": "#2b2b3a"
+      }
+    },
+    {
+      "id": "white",
+      "text": "white",
+      "audio": "audio/words/white.mp3",
+      "meta": {
+        "hex": "#ffffff"
+      }
+    },
+    {
+      "id": "brown",
+      "text": "brown",
+      "audio": "audio/words/brown.mp3",
+      "meta": {
+        "hex": "#a9744f"
+      }
+    },
+    {
+      "id": "gray",
+      "text": "gray",
+      "audio": "audio/words/gray.mp3",
+      "meta": {
+        "hex": "#9aa3b2"
+      }
+    },
+    {
+      "id": "turquoise",
+      "text": "turquoise",
+      "audio": "audio/words/turquoise.mp3",
+      "meta": {
+        "hex": "#16c4c0"
+      }
+    }
+  ],
+  "missions": [
+    {
+      "id": "colors-explore",
+      "type": "free-explore",
+      "items": [
+        "red",
+        "yellow",
+        "blue",
+        "green",
+        "orange",
+        "purple",
+        "pink",
+        "black",
+        "white",
+        "brown",
+        "gray",
+        "turquoise"
+      ],
+      "prompt": {
+        "text": "Pop the balloons!",
+        "audioPattern": "audio/words/{id}.mp3"
+      },
+      "config": {
+        "render": "balloon"
+      }
+    },
+    {
+      "id": "colors-tap",
+      "type": "listen-and-tap",
+      "items": [
+        "red",
+        "yellow",
+        "blue",
+        "green",
+        "orange",
+        "purple",
+        "pink",
+        "black",
+        "white",
+        "brown",
+        "gray",
+        "turquoise"
+      ],
+      "rounds": 12,
+      "prompt": {
+        "text": "Tap the {word} balloon!",
+        "audioPattern": "audio/phrases/tap-{id}.mp3"
+      },
+      "config": {
+        "choices": 4,
+        "render": "balloon"
+      }
+    }
+  ],
+  "reward": {
+    "audio": "audio/praise/great-job.mp3"
+  }
+}

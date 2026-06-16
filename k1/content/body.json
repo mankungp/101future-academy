@@ -1,0 +1,133 @@
+{
+  "id": "body",
+  "order": 1,
+  "title": "My Body",
+  "theme": "about-me",
+  "standard": {
+    "earlyYears2560": [
+      "มฐ.1",
+      "มฐ.9"
+    ],
+    "core2551": "ต1.1",
+    "commonCore": "L.K.5",
+    "cefr": "Pre-A1"
+  },
+  "intro": {
+    "audio": "audio/phrases/intro-body.mp3",
+    "text": "Let's learn body parts!"
+  },
+  "character": "img/body/kid.png",
+  "words": [
+    {
+      "id": "hair",
+      "text": "hair",
+      "audio": "audio/words/hair.mp3",
+      "x": 50,
+      "y": 8
+    },
+    {
+      "id": "eyes",
+      "text": "eyes",
+      "audio": "audio/words/eyes.mp3",
+      "x": 41,
+      "y": 25
+    },
+    {
+      "id": "nose",
+      "text": "nose",
+      "audio": "audio/words/nose.mp3",
+      "x": 49,
+      "y": 29
+    },
+    {
+      "id": "mouth",
+      "text": "mouth",
+      "audio": "audio/words/mouth.mp3",
+      "x": 48,
+      "y": 33
+    },
+    {
+      "id": "ears",
+      "text": "ears",
+      "audio": "audio/words/ears.mp3",
+      "x": 25,
+      "y": 27
+    },
+    {
+      "id": "cheeks",
+      "text": "cheeks",
+      "audio": "audio/words/cheeks.mp3",
+      "x": 61,
+      "y": 31
+    },
+    {
+      "id": "neck",
+      "text": "neck",
+      "audio": "audio/words/neck.mp3",
+      "x": 50,
+      "y": 37
+    },
+    {
+      "id": "arms",
+      "text": "arms",
+      "audio": "audio/words/arms.mp3",
+      "x": 21,
+      "y": 49
+    },
+    {
+      "id": "hands",
+      "text": "hands",
+      "audio": "audio/words/hands.mp3",
+      "x": 6,
+      "y": 50
+    },
+    {
+      "id": "tummy",
+      "text": "tummy",
+      "audio": "audio/words/tummy.mp3",
+      "x": 50,
+      "y": 60
+    },
+    {
+      "id": "knees",
+      "text": "knees",
+      "audio": "audio/words/knees.mp3",
+      "x": 48,
+      "y": 84
+    },
+    {
+      "id": "feet",
+      "text": "feet",
+      "audio": "audio/words/feet.mp3",
+      "x": 50,
+      "y": 95
+    }
+  ],
+  "missions": [
+    {
+      "id": "body-tap",
+      "type": "tap-part",
+      "items": [
+        "hair",
+        "eyes",
+        "nose",
+        "mouth",
+        "ears",
+        "cheeks",
+        "neck",
+        "arms",
+        "hands",
+        "tummy",
+        "knees",
+        "feet"
+      ],
+      "prompt": {
+        "text": "Tap the {word}!",
+        "audioPattern": "audio/phrases/tap-body-{id}.mp3"
+      }
+    }
+  ],
+  "reward": {
+    "audio": "audio/praise/great-job.mp3"
+  }
+}

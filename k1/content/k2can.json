@@ -1,0 +1,41 @@
+{
+  "id": "k2can",
+  "order": 24,
+  "level": "k2",
+  "title": "I Can...",
+  "theme": "k2-sentences",
+  "standard": {
+    "earlyYears2560": ["มฐ.2", "มฐ.9"],
+    "core2551": "ต1.1 (ฟังเข้าใจประโยคสั้น)",
+    "commonCore": "SL.K.2 / L.K (verbs + can)",
+    "cefr": "Pre-A1 → A1"
+  },
+  "intro": { "audio": "audio/phrases/intro-k2can.mp3", "text": "What can you do?" },
+
+  "words": [
+    { "id": "clap",  "text": "clap",  "image": "img/music/clap.png",  "audio": "audio/words/clap.mp3" },
+    { "id": "sing",  "text": "sing",  "image": "img/music/sing.png",  "audio": "audio/words/sing.mp3" },
+    { "id": "dance", "text": "dance", "image": "img/music/dance.png", "audio": "audio/words/dance.mp3" },
+    { "id": "jump",  "text": "jump",  "image": "img/music/jump.png",  "audio": "audio/words/jump.mp3" },
+    { "id": "run",   "text": "run",   "image": "img/music/run.png",   "audio": "audio/words/run.mp3" },
+    { "id": "drum",  "text": "drum",  "image": "img/music/drum.png",  "audio": "audio/words/drum.mp3" }
+  ],
+
+  "missions": [
+    {
+      "id": "k2can-explore", "type": "free-explore",
+      "items": ["clap","sing","dance","jump","run","drum"],
+      "prompt": { "text": "Tap and listen!", "audioPattern": "audio/words/{id}.mp3" },
+      "config": { "render": "balloon" }
+    },
+    {
+      "id": "k2can-choose", "type": "listen-and-choose",
+      "items": ["clap","sing","dance","jump","run","drum"],
+      "rounds": 6,
+      "prompt": { "text": "I can {word}!", "audioPattern": "audio/phrases/k2-can-{id}.mp3" },
+      "config": { "choices": 3 }
+    }
+  ],
+
+  "reward": { "sticker": "💪" }
+}

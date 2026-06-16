@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" role="img" aria-label="apple">
+  <rect width="240" height="180" rx="30" fill="#fff1f2"/>
+  <path d="M119 61c24-27 67-4 59 40-7 37-29 53-59 38-30 15-52-1-59-38-8-44 35-67 59-40z" fill="#ef4444" stroke="#b91c1c" stroke-width="7" stroke-linejoin="round"/>
+  <path d="M122 58c4-18 14-31 30-39" stroke="#854d0e" stroke-width="8" stroke-linecap="round"/>
+  <path d="M142 36c21-8 35 2 38 18-22 5-36-2-38-18z" fill="#22c55e" stroke="#15803d" stroke-width="5" stroke-linejoin="round"/>
+  <circle cx="94" cy="88" r="14" fill="#fecdd3" opacity=".86"/>
+  <ellipse cx="120" cy="151" rx="58" ry="10" fill="#fecdd3" opacity=".72"/>
+</svg>
