@@ -5,8 +5,8 @@
         dots = $('dots'), nextBtn = $('nextBtn');
 
   let UNIT = null, wordById = {}, missionIndex = 0, currentPrompt = null, _actx = null, _melodyTimer = null, _songTimer = null;
-  const STICKERS = { colors:'🌈', emotions:'😊', selfcare:'🧼', school:'🎒', animals:'🦁', fruits:'🍎', weather:'☀️', family:'👨‍👩‍👧', shapes:'⭐', numbers:'🔢', body:'🧒', music:'🎵', abc:'🔤', firstsounds:'👂', rhyme:'🎩', k2see:'👀', k2it:'🔷', k2like:'😋', k2can:'💪', k2where:'🔍', k2count:'🧮', k2write:'✏️', k2size:'🆚', k2have:'🙌', k2family:'🏠', k2color:'🎨', k3sight:'📖', k3read:'📕', k3long:'📚', k3write:'🖍️' };
-  const UNIT_ORDER = ['colors','emotions','selfcare','school','animals','fruits','weather','family','shapes','numbers','body','music','abc','firstsounds','rhyme','k2see','k2it','k2like','k2can','k2where','k2count','k2write','k2size','k2have','k2family','k2color','k3sight','k3read','k3long','k3write'];
+  const STICKERS = { colors:'🌈', emotions:'😊', selfcare:'🧼', school:'🎒', animals:'🦁', fruits:'🍎', weather:'☀️', family:'👨‍👩‍👧', shapes:'⭐', numbers:'🔢', body:'🧒', music:'🎵', abc:'🔤', firstsounds:'👂', rhyme:'🎩', sortcolor:'🧩', colorsong:'🎶', k2see:'👀', k2it:'🔷', k2like:'😋', k2can:'💪', k2where:'🔍', k2count:'🧮', k2write:'✏️', k2size:'🆚', k2have:'🙌', k2family:'🏠', k2color:'🎨', k3sight:'📖', k3read:'📕', k3long:'📚', k3write:'🖍️' };
+  const UNIT_ORDER = ['colors','emotions','selfcare','school','animals','fruits','weather','family','shapes','numbers','body','music','abc','firstsounds','rhyme','sortcolor','colorsong','k2see','k2it','k2like','k2can','k2where','k2count','k2write','k2size','k2have','k2family','k2color','k3sight','k3read','k3long','k3write'];
   // progress ผ่าน ProgressStore กลาง (progress-store.js) — fallback ถ้าไฟล์ไม่โหลด
   const PStore = window.FutureProgress;
   function loadProgress(){

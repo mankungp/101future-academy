@@ -935,6 +935,101 @@ window.K1_UNITS = {
       "audio": "audio/praise/great-job.mp3"
     }
   },
+  "colorsong": {
+    "id": "colorsong",
+    "order": 17,
+    "title": "Color Song",
+    "theme": "music-rhythm",
+    "level": "k1",
+    "standard": {
+      "earlyYears2560": [
+        "มฐ.4"
+      ],
+      "core2551": "-",
+      "commonCore": "-",
+      "cefr": "Pre-A1"
+    },
+    "intro": {
+      "audio": "audio/phrases/intro-music.mp3",
+      "text": "Let's sing the color song!"
+    },
+    "words": [
+      {
+        "id": "red",
+        "text": "red",
+        "audio": "audio/words/red.mp3",
+        "meta": {
+          "hex": "#ff5b5b"
+        }
+      },
+      {
+        "id": "yellow",
+        "text": "yellow",
+        "audio": "audio/words/yellow.mp3",
+        "meta": {
+          "hex": "#ffd23f"
+        }
+      },
+      {
+        "id": "blue",
+        "text": "blue",
+        "audio": "audio/words/blue.mp3",
+        "meta": {
+          "hex": "#4d8bff"
+        }
+      },
+      {
+        "id": "green",
+        "text": "green",
+        "audio": "audio/words/green.mp3",
+        "meta": {
+          "hex": "#5fd06a"
+        }
+      },
+      {
+        "id": "orange",
+        "text": "orange",
+        "audio": "audio/words/orange.mp3",
+        "meta": {
+          "hex": "#ff9f40"
+        }
+      }
+    ],
+    "missions": [
+      {
+        "id": "colorsong-explore",
+        "type": "free-explore",
+        "items": [
+          "red",
+          "yellow",
+          "blue",
+          "green",
+          "orange"
+        ],
+        "prompt": {
+          "text": "Tap and listen!",
+          "audioPattern": "audio/words/{id}.mp3"
+        },
+        "config": {
+          "render": "balloon"
+        }
+      },
+      {
+        "id": "colorsong-song",
+        "type": "song",
+        "items": [
+          "red",
+          "yellow",
+          "blue",
+          "green",
+          "orange"
+        ]
+      }
+    ],
+    "reward": {
+      "sticker": "🎵"
+    }
+  },
   "emotions": {
     "id": "emotions",
     "order": 2,
@@ -3984,6 +4079,98 @@ window.K1_UNITS = {
     ],
     "reward": {
       "audio": "audio/praise/great-job.mp3"
+    }
+  },
+  "sortcolor": {
+    "id": "sortcolor",
+    "order": 16,
+    "title": "Sort Colors",
+    "theme": "k-logic",
+    "level": "k1",
+    "standard": {
+      "earlyYears2560": [
+        "มฐ.10"
+      ],
+      "core2551": "-",
+      "commonCore": "Math K.MD.B.3 (classify & sort)",
+      "cefr": "Pre-A1"
+    },
+    "intro": {
+      "audio": "audio/phrases/intro-colors.mp3",
+      "text": "Let's sort by color!"
+    },
+    "words": [
+      {
+        "id": "red",
+        "text": "red",
+        "audio": "audio/words/red.mp3",
+        "meta": {
+          "hex": "#ff5b5b"
+        }
+      },
+      {
+        "id": "yellow",
+        "text": "yellow",
+        "audio": "audio/words/yellow.mp3",
+        "meta": {
+          "hex": "#ffd23f"
+        }
+      },
+      {
+        "id": "blue",
+        "text": "blue",
+        "audio": "audio/words/blue.mp3",
+        "meta": {
+          "hex": "#4d8bff"
+        }
+      },
+      {
+        "id": "green",
+        "text": "green",
+        "audio": "audio/words/green.mp3",
+        "meta": {
+          "hex": "#5fd06a"
+        }
+      }
+    ],
+    "missions": [
+      {
+        "id": "sortcolor-explore",
+        "type": "free-explore",
+        "items": [
+          "red",
+          "yellow",
+          "blue",
+          "green"
+        ],
+        "prompt": {
+          "text": "Tap and listen!",
+          "audioPattern": "audio/words/{id}.mp3"
+        },
+        "config": {
+          "render": "balloon"
+        }
+      },
+      {
+        "id": "sortcolor-sort",
+        "type": "sort",
+        "items": [
+          "red",
+          "yellow",
+          "blue",
+          "green"
+        ],
+        "prompt": {
+          "text": "Put it in the {word} box!",
+          "audioPattern": "audio/words/{id}.mp3"
+        },
+        "config": {
+          "objectsPerBucket": 2
+        }
+      }
+    ],
+    "reward": {
+      "sticker": "🧩"
     }
   },
   "weather": {

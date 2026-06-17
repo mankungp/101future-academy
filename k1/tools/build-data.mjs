@@ -4,7 +4,7 @@ import { readFile, readdir, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 
 const DIR = join(process.cwd(), "content");
-const files = (await readdir(DIR)).filter(f => f.endsWith(".json") && f !== "course.json");
+const files = (await readdir(DIR)).filter(f => f.endsWith(".json") && f !== "course.json" && !f.startsWith("_"));
 const units = {};
 for (const f of files) {
   const u = JSON.parse(await readFile(join(DIR, f), "utf8"));
