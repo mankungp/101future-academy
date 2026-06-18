@@ -111,7 +111,8 @@
       {id:'k3sight',label:'Reading: Words',emo:'📖',lv:'k3'},
       {id:'k3read', label:'Read the Word',img:'img/animals/cat.png',lv:'k3'},
       {id:'k3long', label:'Big Sentences',emo:'📚',lv:'k3'},
-      {id:'k3write',label:'Write small letters',emo:'🖍️',lv:'k3'}
+      {id:'k3write',label:'Write small letters',emo:'🖍️',lv:'k3'},
+      {id:'zhnum', label:'นับเลขจีน 0-10',emo:'🀄',lv:'zh'}
     ];
     var p={}; try{ p = window.FutureProgress ? window.FutureProgress.load() : JSON.parse(localStorage.getItem('k1_progress')||'{}'); }catch(e){}
     var done=p.units||{};
@@ -124,7 +125,7 @@
       var lv=u.lv||'k1';
       if(lv!==curLv){ curLv=lv; ni=0;
         var hd=document.createElement('div'); hd.className='section-hd';
-        hd.textContent=({k1:'อนุบาล 1',k2:'อนุบาล 2 · ประโยค',k3:'อนุบาล 3 · อ่าน-เขียน'})[lv]||'อนุบาล 1';
+        hd.textContent=({k1:'อนุบาล 1',k2:'อนุบาล 2 · ประโยค',k3:'อนุบาล 3 · อ่าน-เขียน',zh:'ภาษาจีน 🇨🇳'})[lv]||'อนุบาล 1';
         path.appendChild(hd);
       }
       var isDone=!!done[u.id], isNext=(u.id===nextId);

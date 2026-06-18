@@ -1,0 +1,49 @@
+{
+  "id": "zhnum",
+  "order": 40,
+  "title": "นับเลขจีน 0-10",
+  "theme": "zh-numbers",
+  "level": "zh",
+  "standard": {
+    "earlyYears2560": ["มฐ.9", "มฐ.10"],
+    "core2551": "ต1.1 (ภาษาจีน)",
+    "obecChinese2559": "ป.1 — ฟัง/พูดเลข 0-10",
+    "yct": "YCT 1",
+    "cefr": "Pre-A1"
+  },
+  "intro": {
+    "audio": "audio/zh/intro-numbers.mp3",
+    "text": "我们来数数字！"
+  },
+  "words": [
+    { "id": "ling", "text": "líng", "label": "零", "audio": "audio/zh/ling.mp3", "meta": { "hex": "#ff5b5b" } },
+    { "id": "yi",   "text": "yī",   "label": "一", "audio": "audio/zh/yi.mp3",   "meta": { "hex": "#ff9f40" } },
+    { "id": "er",   "text": "èr",   "label": "二", "audio": "audio/zh/er.mp3",   "meta": { "hex": "#ffd23f" } },
+    { "id": "san",  "text": "sān",  "label": "三", "audio": "audio/zh/san.mp3",  "meta": { "hex": "#5fd06a" } },
+    { "id": "si",   "text": "sì",   "label": "四", "audio": "audio/zh/si.mp3",   "meta": { "hex": "#16c4c0" } },
+    { "id": "wu",   "text": "wǔ",   "label": "五", "audio": "audio/zh/wu.mp3",   "meta": { "hex": "#4d8bff" } },
+    { "id": "liu",  "text": "liù",  "label": "六", "audio": "audio/zh/liu.mp3",  "meta": { "hex": "#9b6dff" } },
+    { "id": "qi",   "text": "qī",   "label": "七", "audio": "audio/zh/qi.mp3",   "meta": { "hex": "#ff7eb3" } },
+    { "id": "ba",   "text": "bā",   "label": "八", "audio": "audio/zh/ba.mp3",   "meta": { "hex": "#a9744f" } },
+    { "id": "jiu",  "text": "jiǔ",  "label": "九", "audio": "audio/zh/jiu.mp3",  "meta": { "hex": "#ff5fa2" } },
+    { "id": "shi",  "text": "shí",  "label": "十", "audio": "audio/zh/shi.mp3",  "meta": { "hex": "#7ad0ff" } }
+  ],
+  "missions": [
+    {
+      "id": "zhnum-explore",
+      "type": "free-explore",
+      "items": ["ling", "yi", "er", "san", "si", "wu", "liu", "qi", "ba", "jiu", "shi"],
+      "prompt": { "text": "ฟังเลขจีน!", "audioPattern": "audio/zh/{id}.mp3" },
+      "config": { "render": "balloon" }
+    },
+    {
+      "id": "zhnum-tap",
+      "type": "listen-and-tap",
+      "items": ["ling", "yi", "er", "san", "si", "wu", "liu", "qi", "ba", "jiu", "shi"],
+      "rounds": 8,
+      "prompt": { "text": "{word}", "audioPattern": "audio/zh/{id}.mp3" },
+      "config": { "choices": 4 }
+    }
+  ],
+  "reward": { "sticker": "🀄" }
+}
