@@ -1030,6 +1030,162 @@ window.K1_UNITS = {
       "sticker": "🎵"
     }
   },
+  "count11": {
+    "id": "count11",
+    "order": 18,
+    "title": "Count to 20",
+    "theme": "things-around",
+    "level": "k1",
+    "standard": {
+      "earlyYears2560": [
+        "มฐ.9",
+        "มฐ.10"
+      ],
+      "core2551": "ค1.1",
+      "commonCore": "Math K.CC.A (count to 20)",
+      "cefr": "Pre-A1"
+    },
+    "intro": {
+      "audio": "audio/phrases/intro-numbers.mp3",
+      "text": "Let's count more!"
+    },
+    "words": [
+      {
+        "id": "eleven",
+        "text": "eleven",
+        "label": "11",
+        "audio": "audio/words/eleven.mp3",
+        "meta": {
+          "hex": "#ff5b5b"
+        }
+      },
+      {
+        "id": "twelve",
+        "text": "twelve",
+        "label": "12",
+        "audio": "audio/words/twelve.mp3",
+        "meta": {
+          "hex": "#ff9f40"
+        }
+      },
+      {
+        "id": "thirteen",
+        "text": "thirteen",
+        "label": "13",
+        "audio": "audio/words/thirteen.mp3",
+        "meta": {
+          "hex": "#ffd23f"
+        }
+      },
+      {
+        "id": "fourteen",
+        "text": "fourteen",
+        "label": "14",
+        "audio": "audio/words/fourteen.mp3",
+        "meta": {
+          "hex": "#5fd06a"
+        }
+      },
+      {
+        "id": "fifteen",
+        "text": "fifteen",
+        "label": "15",
+        "audio": "audio/words/fifteen.mp3",
+        "meta": {
+          "hex": "#16c4c0"
+        }
+      },
+      {
+        "id": "sixteen",
+        "text": "sixteen",
+        "label": "16",
+        "audio": "audio/words/sixteen.mp3",
+        "meta": {
+          "hex": "#4d8bff"
+        }
+      },
+      {
+        "id": "seventeen",
+        "text": "seventeen",
+        "label": "17",
+        "audio": "audio/words/seventeen.mp3",
+        "meta": {
+          "hex": "#9b6dff"
+        }
+      },
+      {
+        "id": "eighteen",
+        "text": "eighteen",
+        "label": "18",
+        "audio": "audio/words/eighteen.mp3",
+        "meta": {
+          "hex": "#ff7eb3"
+        }
+      },
+      {
+        "id": "nineteen",
+        "text": "nineteen",
+        "label": "19",
+        "audio": "audio/words/nineteen.mp3",
+        "meta": {
+          "hex": "#a9744f"
+        }
+      },
+      {
+        "id": "twenty",
+        "text": "twenty",
+        "label": "20",
+        "audio": "audio/words/twenty.mp3",
+        "meta": {
+          "hex": "#ff5fa2"
+        }
+      }
+    ],
+    "missions": [
+      {
+        "id": "count11-count",
+        "type": "count",
+        "counts": [
+          11,
+          13,
+          15,
+          18,
+          20
+        ],
+        "prompt": {
+          "text": "How many?",
+          "audio": "audio/praise/howmany.mp3"
+        }
+      },
+      {
+        "id": "count11-tap",
+        "type": "listen-and-tap",
+        "items": [
+          "eleven",
+          "twelve",
+          "thirteen",
+          "fourteen",
+          "fifteen",
+          "sixteen",
+          "seventeen",
+          "eighteen",
+          "nineteen",
+          "twenty"
+        ],
+        "rounds": 8,
+        "prompt": {
+          "text": "Tap the number {word}!",
+          "audioPattern": "audio/phrases/tap-num-{id}.mp3"
+        },
+        "config": {
+          "choices": 4
+        }
+      }
+    ],
+    "reward": {
+      "sticker": "🔟"
+    }
+  },
   "emotions": {
     "id": "emotions",
     "order": 2,
@@ -3337,6 +3493,316 @@ window.K1_UNITS = {
       "sticker": "🖍️"
     }
   },
+  "livingnot": {
+    "id": "livingnot",
+    "order": 20,
+    "title": "Living or Not",
+    "theme": "k-science",
+    "level": "k1",
+    "standard": {
+      "earlyYears2560": [
+        "มฐ.10",
+        "มฐ.12"
+      ],
+      "core2551": "ว1.1",
+      "commonCore": "Science K-LS1 (living things)",
+      "cefr": "Pre-A1"
+    },
+    "intro": {
+      "audio": "audio/praise/ready.mp3",
+      "text": "Living or not living?"
+    },
+    "words": [
+      {
+        "id": "dog",
+        "text": "dog",
+        "image": "img/animals/dog.png",
+        "audio": "audio/words/dog.mp3",
+        "meta": {
+          "group": "living"
+        }
+      },
+      {
+        "id": "cat",
+        "text": "cat",
+        "image": "img/animals/cat.png",
+        "audio": "audio/words/cat.mp3",
+        "meta": {
+          "group": "living"
+        }
+      },
+      {
+        "id": "bird",
+        "text": "bird",
+        "image": "img/animals/bird.png",
+        "audio": "audio/words/bird.mp3",
+        "meta": {
+          "group": "living"
+        }
+      },
+      {
+        "id": "fish",
+        "text": "fish",
+        "image": "img/animals/fish.png",
+        "audio": "audio/words/fish.mp3",
+        "meta": {
+          "group": "living"
+        }
+      },
+      {
+        "id": "lion",
+        "text": "lion",
+        "image": "img/animals/lion.png",
+        "audio": "audio/words/lion.mp3",
+        "meta": {
+          "group": "living"
+        }
+      },
+      {
+        "id": "bear",
+        "text": "bear",
+        "image": "img/animals/bear.png",
+        "audio": "audio/words/bear.mp3",
+        "meta": {
+          "group": "living"
+        }
+      },
+      {
+        "id": "book",
+        "text": "book",
+        "image": "img/school/book.png",
+        "audio": "audio/words/book.mp3",
+        "meta": {
+          "group": "notliving"
+        }
+      },
+      {
+        "id": "bag",
+        "text": "bag",
+        "image": "img/school/bag.png",
+        "audio": "audio/words/bag.mp3",
+        "meta": {
+          "group": "notliving"
+        }
+      },
+      {
+        "id": "chair",
+        "text": "chair",
+        "image": "img/school/chair.png",
+        "audio": "audio/words/chair.mp3",
+        "meta": {
+          "group": "notliving"
+        }
+      },
+      {
+        "id": "crayon",
+        "text": "crayon",
+        "image": "img/school/crayon.png",
+        "audio": "audio/words/crayon.mp3",
+        "meta": {
+          "group": "notliving"
+        }
+      },
+      {
+        "id": "pencil",
+        "text": "pencil",
+        "image": "img/school/pencil.png",
+        "audio": "audio/words/pencil.mp3",
+        "meta": {
+          "group": "notliving"
+        }
+      },
+      {
+        "id": "scissors",
+        "text": "scissors",
+        "image": "img/school/scissors.png",
+        "audio": "audio/words/scissors.mp3",
+        "meta": {
+          "group": "notliving"
+        }
+      }
+    ],
+    "missions": [
+      {
+        "id": "livingnot-explore",
+        "type": "free-explore",
+        "items": [
+          "dog",
+          "cat",
+          "bird",
+          "book",
+          "bag",
+          "chair"
+        ],
+        "prompt": {
+          "text": "Tap and listen!",
+          "audioPattern": "audio/words/{id}.mp3"
+        }
+      },
+      {
+        "id": "livingnot-sort",
+        "type": "sort",
+        "items": [
+          "dog",
+          "cat",
+          "bird",
+          "fish",
+          "lion",
+          "bear",
+          "book",
+          "bag",
+          "chair",
+          "crayon",
+          "pencil",
+          "scissors"
+        ],
+        "prompt": {
+          "text": "{word}",
+          "audioPattern": "audio/words/{id}.mp3"
+        },
+        "config": {
+          "objectsPerBucket": 1,
+          "buckets": [
+            {
+              "id": "living",
+              "label": "Living",
+              "emo": "🌱"
+            },
+            {
+              "id": "notliving",
+              "label": "Not Living",
+              "emo": "🧱"
+            }
+          ]
+        }
+      }
+    ],
+    "reward": {
+      "sticker": "🌱"
+    }
+  },
+  "matchnum": {
+    "id": "matchnum",
+    "order": 19,
+    "title": "Match the Number",
+    "theme": "things-around",
+    "level": "k1",
+    "standard": {
+      "earlyYears2560": [
+        "มฐ.10"
+      ],
+      "core2551": "ค1.1",
+      "commonCore": "Math K.CC.B (count to tell how many)",
+      "cefr": "Pre-A1"
+    },
+    "intro": {
+      "audio": "audio/praise/howmany.mp3",
+      "text": "How many? Tap the number!"
+    },
+    "words": [
+      {
+        "id": "one",
+        "text": "one",
+        "label": "1",
+        "audio": "audio/words/one.mp3"
+      },
+      {
+        "id": "two",
+        "text": "two",
+        "label": "2",
+        "audio": "audio/words/two.mp3"
+      },
+      {
+        "id": "three",
+        "text": "three",
+        "label": "3",
+        "audio": "audio/words/three.mp3"
+      },
+      {
+        "id": "four",
+        "text": "four",
+        "label": "4",
+        "audio": "audio/words/four.mp3"
+      },
+      {
+        "id": "five",
+        "text": "five",
+        "label": "5",
+        "audio": "audio/words/five.mp3"
+      },
+      {
+        "id": "six",
+        "text": "six",
+        "label": "6",
+        "audio": "audio/words/six.mp3"
+      },
+      {
+        "id": "seven",
+        "text": "seven",
+        "label": "7",
+        "audio": "audio/words/seven.mp3"
+      },
+      {
+        "id": "eight",
+        "text": "eight",
+        "label": "8",
+        "audio": "audio/words/eight.mp3"
+      },
+      {
+        "id": "nine",
+        "text": "nine",
+        "label": "9",
+        "audio": "audio/words/nine.mp3"
+      },
+      {
+        "id": "ten",
+        "text": "ten",
+        "label": "10",
+        "audio": "audio/words/ten.mp3"
+      }
+    ],
+    "missions": [
+      {
+        "id": "matchnum-easy",
+        "type": "countmatch",
+        "counts": [
+          2,
+          3,
+          1,
+          4,
+          5
+        ],
+        "prompt": {
+          "text": "How many? Tap the number!",
+          "audio": "audio/praise/howmany.mp3"
+        },
+        "config": {
+          "choices": 3
+        }
+      },
+      {
+        "id": "matchnum-hard",
+        "type": "countmatch",
+        "counts": [
+          6,
+          8,
+          7,
+          10,
+          9
+        ],
+        "prompt": {
+          "text": "How many? Tap the number!",
+          "audio": "audio/praise/howmany.mp3"
+        },
+        "config": {
+          "choices": 4
+        }
+      }
+    ],
+    "reward": {
+      "sticker": "#️⃣"
+    }
+  },
   "music": {
     "id": "music",
     "order": 12,
@@ -3634,6 +4100,96 @@ window.K1_UNITS = {
     ],
     "reward": {
       "audio": "audio/praise/great-job.mp3"
+    }
+  },
+  "patterns": {
+    "id": "patterns",
+    "order": 17,
+    "title": "What Comes Next?",
+    "theme": "k-logic",
+    "level": "k1",
+    "standard": {
+      "earlyYears2560": [
+        "มฐ.10"
+      ],
+      "core2551": "-",
+      "commonCore": "Math K.OA (patterns / what comes next)",
+      "cefr": "Pre-A1"
+    },
+    "intro": {
+      "audio": "audio/praise/whats-next.mp3",
+      "text": "What comes next?"
+    },
+    "words": [
+      {
+        "id": "red",
+        "text": "red",
+        "audio": "audio/words/red.mp3",
+        "meta": {
+          "hex": "#ff5b5b"
+        }
+      },
+      {
+        "id": "yellow",
+        "text": "yellow",
+        "audio": "audio/words/yellow.mp3",
+        "meta": {
+          "hex": "#ffd23f"
+        }
+      },
+      {
+        "id": "blue",
+        "text": "blue",
+        "audio": "audio/words/blue.mp3",
+        "meta": {
+          "hex": "#4d8bff"
+        }
+      },
+      {
+        "id": "green",
+        "text": "green",
+        "audio": "audio/words/green.mp3",
+        "meta": {
+          "hex": "#5fd06a"
+        }
+      }
+    ],
+    "missions": [
+      {
+        "id": "patterns-explore",
+        "type": "free-explore",
+        "items": [
+          "red",
+          "yellow",
+          "blue",
+          "green"
+        ],
+        "prompt": {
+          "text": "Tap and listen!",
+          "audioPattern": "audio/words/{id}.mp3"
+        },
+        "config": {
+          "render": "balloon"
+        }
+      },
+      {
+        "id": "patterns-next",
+        "type": "pattern",
+        "items": [
+          "red",
+          "yellow",
+          "blue",
+          "green"
+        ],
+        "rounds": 6,
+        "prompt": {
+          "text": "What comes next?",
+          "audio": "audio/praise/whats-next.mp3"
+        }
+      }
+    ],
+    "reward": {
+      "sticker": "🔁"
     }
   },
   "rhyme": {

@@ -1,0 +1,46 @@
+{
+  "id": "matchnum",
+  "order": 19,
+  "title": "Match the Number",
+  "theme": "things-around",
+  "level": "k1",
+  "standard": {
+    "earlyYears2560": ["มฐ.10"],
+    "core2551": "ค1.1",
+    "commonCore": "Math K.CC.B (count to tell how many)",
+    "cefr": "Pre-A1"
+  },
+  "intro": {
+    "audio": "audio/praise/howmany.mp3",
+    "text": "How many? Tap the number!"
+  },
+  "words": [
+    { "id": "one",   "text": "one",   "label": "1",  "audio": "audio/words/one.mp3" },
+    { "id": "two",   "text": "two",   "label": "2",  "audio": "audio/words/two.mp3" },
+    { "id": "three", "text": "three", "label": "3",  "audio": "audio/words/three.mp3" },
+    { "id": "four",  "text": "four",  "label": "4",  "audio": "audio/words/four.mp3" },
+    { "id": "five",  "text": "five",  "label": "5",  "audio": "audio/words/five.mp3" },
+    { "id": "six",   "text": "six",   "label": "6",  "audio": "audio/words/six.mp3" },
+    { "id": "seven", "text": "seven", "label": "7",  "audio": "audio/words/seven.mp3" },
+    { "id": "eight", "text": "eight", "label": "8",  "audio": "audio/words/eight.mp3" },
+    { "id": "nine",  "text": "nine",  "label": "9",  "audio": "audio/words/nine.mp3" },
+    { "id": "ten",   "text": "ten",   "label": "10", "audio": "audio/words/ten.mp3" }
+  ],
+  "missions": [
+    {
+      "id": "matchnum-easy",
+      "type": "countmatch",
+      "counts": [2, 3, 1, 4, 5],
+      "prompt": { "text": "How many? Tap the number!", "audio": "audio/praise/howmany.mp3" },
+      "config": { "choices": 3 }
+    },
+    {
+      "id": "matchnum-hard",
+      "type": "countmatch",
+      "counts": [6, 8, 7, 10, 9],
+      "prompt": { "text": "How many? Tap the number!", "audio": "audio/praise/howmany.mp3" },
+      "config": { "choices": 4 }
+    }
+  ],
+  "reward": { "sticker": "#️⃣" }
+}

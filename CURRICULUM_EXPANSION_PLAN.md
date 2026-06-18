@@ -51,4 +51,13 @@ free-explore · listen-and-tap · listen-and-choose · match · count · sort(�
 
 ## สถานะ
 - ✅ P1 = สร้างแล้ว (Sort Colors + Color Song) — deploy แล้ว
-- ถัดไป: P2 (คณิตลึก) เริ่มที่ pattern mechanic + count 11-20
+- ✅ P2 #1 = **pattern mechanic + หน่วย "What Comes Next?" (patterns)** เสร็จ local (17 มิ.ย.) — renderPattern ใน engine.js (generative AB/ABC/AAB/ABB จาก tile สี, no-fail), ลงทะเบียน STICKERS🔁/UNIT_ORDER/home.html/units.js, CSS .pat-seq, bump engine v=31 style v=18 units v=16 · syntax+logic ผ่าน · **ยังไม่ deploy R2 (รออนุมัติ)**
+  - ⏳ asset ค้าง (ให้เจ้าของรัน ElevenLabs รอบเดียว): เสียง prompt `audio/praise/whats-next.mp3` (ใส่ใน gen-audio.mjs PRAISE แล้ว) — ตอนนี้เกมเล่นได้ด้วย visual+bubble แต่ไม่มีเสียงพูดโจทย์
+- ✅ P2 #2 = **หน่วย "Count to 20" (count11)** เสร็จ local (17 มิ.ย.) — ขยาย NUMWORDS ใน engine ถึง twenty, หน่วย count11 (2 มิชชัน: count บอลลูน 11/13/15/18/20 + listen-and-tap เลข 11-20 numeral tiles), reuse intro/howmany เดิม, sticker🔟, bump engine v=32 units v=17 · syntax+JSON+NUMWORDS index ผ่าน · **ยังไม่ deploy R2**
+  - ⏳ asset ค้าง (ElevenLabs รอบเดียว): teen words `audio/words/{eleven..twenty}.mp3` (10) + phrases `audio/phrases/tap-num-{eleven..twenty}.mp3` (10) — gen-audio.mjs derive อัตโนมัติจาก count11.json แล้ว
+- ✅ P2 #3 = **หน่วย "Match the Number" (matchnum)** เสร็จ local (17 มิ.ย.) — mechanic ใหม่ `countmatch` (โชว์กลุ่มจุด n ชิ้น → แตะตัวเลขที่ตรง, K.CC.B), 2 มิชชัน easy [1-5]/hard [6-10], **reuse เสียง one–ten ที่มีอยู่ → เล่นได้พร้อมเสียงทันที ไม่ติด ElevenLabs**, sticker #️⃣, CSS .cm-dot, bump engine v=33 style v=19 units v=18 · JSON+syntax+logic ผ่าน · **ยังไม่ deploy R2**
+  - (Compare ข้าม — ใช้ `size` ซ้ำกับหน่วย k2size "Big or Small?" ที่มีแล้ว)
+- ✅ P3 #7 = **หน่วย "Living or Not" (livingnot)** เสร็จ local (17 มิ.ย.) — **ต่อยอด `sort` ให้รับรูป + จัดหมวด** (config.buckets + word.meta.group, คงโหมดสีเดิม sortcolor ไว้ verify backward-compat ✅) · living=สัตว์ 6 / not-living=ของใช้ 6 (reuse รูป+เสียง animals/school ทั้งหมด → **เล่นได้พร้อมเสียงทันที**) · sticker🌱, CSS .box-cat/.obj.has-img, bump engine v=34 style v=20 units v=19 · **ยังไม่ deploy R2**
+  - 🔑 ปลดล็อก mechanic #2 ในแผน (sort รับรูป) → P3 หน่วยวิทย์/จัดหมวดอื่นต่อยอดได้เลย
+- ถัดไป: P3 ต่อ (My Senses / Explore จม-ลอย) หรือ P4 SEL — **แนะนำ: ให้เจ้าของ browser-smoke-test 4 หน่วยใหม่ + รันเสียง + deploy ก่อนสร้างเพิ่ม** (กันบั๊กระบบซ้ำหลายหน่วย)
+- 🔔 **รวบงานเจ้าของ 1 รอบ:** (ก) รัน gen-audio.mjs ผลิตเสียง whats-next + teen 11-20 (20 คลิป) · (ข) อนุมัติ deploy R2 หน่วยใหม่ patterns + count11

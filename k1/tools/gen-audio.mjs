@@ -35,6 +35,7 @@ const PRAISE = {
   "ready": "Are you ready?", "hooray": "Hooray!", "hello": "Hello, friend!", "bye": "Bye bye!",
   "song": "Let's sing the colors!",
   "howmany": "How many?",
+  "whats-next": "What comes next?",
 };
 
 const exists = (p) => access(p).then(() => true, () => false);

@@ -1,0 +1,40 @@
+{
+  "id": "patterns",
+  "order": 17,
+  "title": "What Comes Next?",
+  "theme": "k-logic",
+  "level": "k1",
+  "standard": {
+    "earlyYears2560": ["มฐ.10"],
+    "core2551": "-",
+    "commonCore": "Math K.OA (patterns / what comes next)",
+    "cefr": "Pre-A1"
+  },
+  "intro": {
+    "audio": "audio/praise/whats-next.mp3",
+    "text": "What comes next?"
+  },
+  "words": [
+    { "id": "red",    "text": "red",    "audio": "audio/words/red.mp3",    "meta": { "hex": "#ff5b5b" } },
+    { "id": "yellow", "text": "yellow", "audio": "audio/words/yellow.mp3", "meta": { "hex": "#ffd23f" } },
+    { "id": "blue",   "text": "blue",   "audio": "audio/words/blue.mp3",   "meta": { "hex": "#4d8bff" } },
+    { "id": "green",  "text": "green",  "audio": "audio/words/green.mp3",  "meta": { "hex": "#5fd06a" } }
+  ],
+  "missions": [
+    {
+      "id": "patterns-explore",
+      "type": "free-explore",
+      "items": ["red", "yellow", "blue", "green"],
+      "prompt": { "text": "Tap and listen!", "audioPattern": "audio/words/{id}.mp3" },
+      "config": { "render": "balloon" }
+    },
+    {
+      "id": "patterns-next",
+      "type": "pattern",
+      "items": ["red", "yellow", "blue", "green"],
+      "rounds": 6,
+      "prompt": { "text": "What comes next?", "audio": "audio/praise/whats-next.mp3" }
+    }
+  ],
+  "reward": { "sticker": "🔁" }
+}

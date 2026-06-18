@@ -105,6 +105,12 @@ body{
 .box.wrong{animation:wiggle .42s}
 @keyframes boxpop{0%{transform:scale(1)}50%{transform:scale(1.12)}100%{transform:scale(1)}}
 .box .lid{position:absolute;top:8px;font-size:30px;opacity:.5}
+/* sort หมวด (Living or Not) — กล่องมีป้าย + วัตถุเป็นรูป */
+.box.box-cat{flex-direction:column;align-items:center;justify-content:center;gap:4px;background:#ffffffdd;border-color:#cbd5e1;border-style:solid}
+.box-emo{font-size:34px;line-height:1}
+.box-lbl{font-size:15px;font-weight:800;color:#5b6b7a;text-align:center}
+.obj.has-img{background:#ffffffea;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.obj .item-img{width:82%;height:82%;object-fit:contain;pointer-events:none}
 
 /* confetti */
 .confetti{position:absolute;font-size:26px;pointer-events:none;animation:fall 1.1s ease-out forwards}
@@ -153,6 +159,14 @@ body{
 .match-tile.sel{box-shadow:0 0 0 5px #ffd23f,0 10px 22px rgba(60,40,120,.18);transform:scale(1.04)}
 .match-tile.matched{opacity:.35;pointer-events:none;transform:scale(.9)}
 .match-tile.wrong{animation:wiggle .42s}
+/* pattern (อะไรมาต่อ) — แถบลำดับ + ช่องคำถาม */
+.pat-seq{display:flex;gap:10px;justify-content:center;align-items:center;flex-wrap:wrap;margin:6px 0 22px}
+.pat-cell{width:min(15vw,60px);aspect-ratio:1;border-radius:16px;background:#fff;box-shadow:0 5px 0 rgba(0,0,0,.08);display:flex;align-items:center;justify-content:center;overflow:hidden}
+.pat-cell .item-img{width:88%;height:88%;object-fit:contain}
+.pat-q{background:#fff;border:3px dashed #c9c9d6;color:#b3b3c4;font-size:min(9vw,34px);font-weight:800;box-shadow:none}
+/* countmatch (จับคู่จำนวน→ตัวเลข) — กลุ่มจุดที่ต้องนับ */
+.cm-objs{margin-bottom:18px}
+.cm-dot{width:min(13vw,54px);aspect-ratio:1;border-radius:50%;box-shadow:0 4px 0 rgba(0,0,0,.12),inset -6px -8px 0 rgba(0,0,0,.10)}
 /* match แบบ "บอกแล้วกดรูป" (image-sound) = ตารางรูปอย่างเดียว */
 .match-area.single{justify-content:center}
 .match-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:min(4.5vw,22px);max-width:min(82vw,400px);margin:0 auto}

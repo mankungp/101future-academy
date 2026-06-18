@@ -5,8 +5,8 @@
         dots = $('dots'), nextBtn = $('nextBtn');
 
   let UNIT = null, wordById = {}, missionIndex = 0, currentPrompt = null, _actx = null, _melodyTimer = null, _songTimer = null;
-  const STICKERS = { colors:'🌈', emotions:'😊', selfcare:'🧼', school:'🎒', animals:'🦁', fruits:'🍎', weather:'☀️', family:'👨‍👩‍👧', shapes:'⭐', numbers:'🔢', body:'🧒', music:'🎵', abc:'🔤', firstsounds:'👂', rhyme:'🎩', sortcolor:'🧩', colorsong:'🎶', k2see:'👀', k2it:'🔷', k2like:'😋', k2can:'💪', k2where:'🔍', k2count:'🧮', k2write:'✏️', k2size:'🆚', k2have:'🙌', k2family:'🏠', k2color:'🎨', k3sight:'📖', k3read:'📕', k3long:'📚', k3write:'🖍️' };
-  const UNIT_ORDER = ['colors','emotions','selfcare','school','animals','fruits','weather','family','shapes','numbers','body','music','abc','firstsounds','rhyme','sortcolor','colorsong','k2see','k2it','k2like','k2can','k2where','k2count','k2write','k2size','k2have','k2family','k2color','k3sight','k3read','k3long','k3write'];
+  const STICKERS = { colors:'🌈', emotions:'😊', selfcare:'🧼', school:'🎒', animals:'🦁', fruits:'🍎', weather:'☀️', family:'👨‍👩‍👧', shapes:'⭐', numbers:'🔢', body:'🧒', music:'🎵', abc:'🔤', firstsounds:'👂', rhyme:'🎩', sortcolor:'🧩', colorsong:'🎶', patterns:'🔁', count11:'🔟', matchnum:'#️⃣', livingnot:'🌱', k2see:'👀', k2it:'🔷', k2like:'😋', k2can:'💪', k2where:'🔍', k2count:'🧮', k2write:'✏️', k2size:'🆚', k2have:'🙌', k2family:'🏠', k2color:'🎨', k3sight:'📖', k3read:'📕', k3long:'📚', k3write:'🖍️' };
+  const UNIT_ORDER = ['colors','emotions','selfcare','school','animals','fruits','weather','family','shapes','numbers','body','music','abc','firstsounds','rhyme','sortcolor','colorsong','patterns','count11','matchnum','livingnot','k2see','k2it','k2like','k2can','k2where','k2count','k2write','k2size','k2have','k2family','k2color','k3sight','k3read','k3long','k3write'];
   // progress ผ่าน ProgressStore กลาง (progress-store.js) — fallback ถ้าไฟล์ไม่โหลด
   const PStore = window.FutureProgress;
   function loadProgress(){
@@ -261,10 +261,12 @@
 
   // ---------- mission: sort ----------
   function renderSort(m) {
-    const colors = m.items.map(id => wordById[id]);
+    const items = m.items.map(id => wordById[id]);
     const per = m.config?.objectsPerBucket || 2;
-    let queue = shuffle(colors.flatMap(w => Array(per).fill(w)));
+    const buckets = m.config?.buckets || null;   // category mode: word.meta.group → bucket id
+    let queue = shuffle(items.flatMap(w => Array(per).fill(w)));
     let qi = 0;
+    const keyOf = (w) => buckets ? (w.meta && w.meta.group) : w.id;
 
     play.innerHTML = '';
     const area = document.createElement('div'); area.className = 'sort-area';
@@ -272,12 +274,17 @@
     const boxesEl = document.createElement('div'); boxesEl.className = 'boxes';
     area.append(tray, boxesEl); play.appendChild(area);
 
-    colors.forEach(w => {
-      const box = document.createElement('div');
-      box.className = 'box'; box.style.background = (w.meta?.hex || '#ccc') + '55';
-      box.style.borderColor = w.meta?.hex || '#fff';
-      box.innerHTML = '<div class="lid">📦</div>';
-      box.onclick = () => choose(w, box);
+    const boxDefs = buckets || items.map(w => ({ id: w.id, hex: (w.meta && w.meta.hex) }));
+    boxDefs.forEach(bd => {
+      const box = document.createElement('div'); box.className = 'box';
+      if (bd.hex) {
+        box.style.background = bd.hex + '55'; box.style.borderColor = bd.hex;
+        box.innerHTML = '<div class="lid">📦</div>';
+      } else {
+        box.classList.add('box-cat');
+        box.innerHTML = '<div class="box-emo">' + (bd.emo || '📦') + '</div><div class="box-lbl">' + (bd.label || '') + '</div>';
+      }
+      box.onclick = () => choose(bd, box);
       boxesEl.appendChild(box);
     });
 
@@ -287,13 +294,14 @@
       const w = queue[qi];
       const p = promptFor(m, w);
       say(p.text, p.audio);
-      const o = document.createElement('div');
-      o.className = 'obj'; o.style.background = w.meta?.hex || '#ccc';
+      const o = document.createElement('div'); o.className = 'obj';
+      if (buckets) fillItem(o, w);                 // วัตถุเป็นรูป (สิ่งมีชีวิต/ของใช้)
+      else o.style.background = w.meta?.hex || '#ccc';
       o.dataset.id = w.id; tray.appendChild(o);
     };
-    const choose = (boxWord, boxEl) => {
+    const choose = (bd, boxEl) => {
       const w = queue[qi]; if (!w) return;
-      if (boxWord.id === w.id) {
+      if (bd.id === keyOf(w)) {
         boxEl.classList.add('hit'); setTimeout(()=>boxEl.classList.remove('hit'),400);
         const o = tray.querySelector('.obj'); if (o) o.classList.add('gone');
         burst(boxEl); praise(PRAISE_OK, true);
@@ -356,7 +364,8 @@
   }
 
   // ---------- mission: count ----------
-  const NUMWORDS = ['', 'one','two','three','four','five','six','seven','eight','nine','ten'];
+  const NUMWORDS = ['', 'one','two','three','four','five','six','seven','eight','nine','ten',
+    'eleven','twelve','thirteen','fourteen','fifteen','sixteen','seventeen','eighteen','nineteen','twenty'];
   function renderCount(m) {
     const counts = (m.counts || [1,2,3,4,5]);
     const colors = ['#ff5b5b','#ffd23f','#4d8bff','#5fd06a','#ff9f40','#9b6dff','#ff7eb3'];
@@ -613,6 +622,92 @@
     ask();
   }
 
+  // ---------- mission: pattern (อะไรมาต่อ — numeracy/logic, มฐ.10) ----------
+  // generative: สร้างลำดับซ้ำจาก items (tile สี/รูป) แล้วถามตัวถัดไป · no-fail
+  const PAT_TEMPLATES = [['A','B'], ['A','B','C'], ['A','A','B'], ['A','B','B']];
+  function renderPattern(m) {
+    const pool = m.items.map(id => wordById[id]).filter(Boolean);
+    const rounds = m.rounds || 5;
+    let round = 0;
+    const ask = () => {
+      if (round >= rounds) { nextMission(); return; }
+      const tpl = PAT_TEMPLATES[round % PAT_TEMPLATES.length];
+      const need = new Set(tpl).size;
+      const chosen = shuffle(pool).slice(0, Math.max(need, 2));
+      const map = {}; ['A','B','C','D'].forEach((s, i) => map[s] = chosen[i] || chosen[0]);
+      const reps = tpl.length <= 2 ? 3 : 2;        // โชว์ลำดับซ้ำพอให้เด็กจับ pattern
+      const full = [];
+      for (let r = 0; r < reps; r++) tpl.forEach(s => full.push(map[s]));
+      const answer = full[full.length - 1];        // ตัวสุดท้าย = คำตอบ
+      const shown = full.slice(0, full.length - 1); // โชว์ทุกตัวก่อนช่องคำถาม
+      const distract = shuffle(pool.filter(w => w.id !== answer.id)).slice(0, 2);
+      const opts = shuffle([answer, ...distract]);
+      play.innerHTML = '';
+      const seq = document.createElement('div'); seq.className = 'pat-seq';
+      shown.forEach(w => { const c = document.createElement('div'); c.className = 'pat-cell'; fillItem(c, w); seq.appendChild(c); });
+      const q = document.createElement('div'); q.className = 'pat-cell pat-q'; q.textContent = '?'; seq.appendChild(q);
+      play.appendChild(seq);
+      const row = document.createElement('div'); row.className = 'fl-row'; play.appendChild(row);
+      say((m.prompt && m.prompt.text) || 'What comes next?', m.prompt && m.prompt.audio);
+      opts.forEach(w => {
+        const t = document.createElement('div'); t.className = 'match-tile ans'; fillItem(t, w);
+        t.onclick = () => {
+          if (t.classList.contains('matched')) return;
+          if (w.id === answer.id) {
+            t.classList.add('matched'); burst(t); popSound();
+            q.classList.remove('pat-q'); q.textContent = ''; fillItem(q, w);   // เฉลยลงช่อง ?
+            playAudio(w.audio); praise(PRAISE_OK, true); round++; setTimeout(ask, 1150);
+          } else {
+            t.classList.add('wrong'); setTimeout(() => t.classList.remove('wrong'), 420);
+            praise(PRAISE_RETRY, false);
+          }
+        };
+        row.appendChild(t);
+      });
+    };
+    ask();
+  }
+
+  // ---------- mission: countmatch (จับคู่จำนวน→ตัวเลข, มฐ.10 / K.CC.B) ----------
+  // โชว์กลุ่มของ n ชิ้น → เด็กแตะตัวเลขที่ตรง · no-fail · reuse เสียง one..twenty
+  function renderCountMatch(m) {
+    const counts = m.counts || [2,3,4,5,6];
+    const nChoices = (m.config && m.config.choices) || 3;
+    const colors = ['#ff5b5b','#ffd23f','#4d8bff','#5fd06a','#ff9f40','#9b6dff','#ff7eb3','#16c4c0'];
+    const maxN = Math.max.apply(null, counts.concat([9]));
+    let round = 0;
+    const ask = () => {
+      if (round >= counts.length) { nextMission(); return; }
+      const n = counts[round];
+      play.innerHTML = '';
+      say((m.prompt && m.prompt.text) || 'How many? Tap the number!', m.prompt && m.prompt.audio);
+      const wrap = document.createElement('div'); wrap.className = 'count-area cm-objs';
+      const color = colors[round % colors.length];
+      for (let i = 0; i < n; i++) { const d = document.createElement('div'); d.className = 'cm-dot'; d.style.background = color; wrap.appendChild(d); }
+      play.appendChild(wrap);
+      const pool = []; for (let k = 1; k <= maxN; k++) if (k !== n) pool.push(k);
+      const opts = shuffle([n].concat(shuffle(pool).slice(0, nChoices - 1)));
+      const row = document.createElement('div'); row.className = 'fl-row'; play.appendChild(row);
+      opts.forEach(k => {
+        const t = document.createElement('div'); t.className = 'match-tile ans has-label';
+        const sp = document.createElement('span'); sp.className = 'item-label'; sp.textContent = String(k); t.appendChild(sp);
+        t.onclick = () => {
+          if (t.classList.contains('matched')) return;
+          if (k === n) {
+            t.classList.add('matched'); burst(t); popSound();
+            playAudio('audio/words/' + (NUMWORDS[n] || 'one') + '.mp3');
+            praise(PRAISE_OK, true); round++; setTimeout(ask, 1100);
+          } else {
+            t.classList.add('wrong'); setTimeout(() => t.classList.remove('wrong'), 420);
+            praise(PRAISE_RETRY, false);
+          }
+        };
+        row.appendChild(t);
+      });
+    };
+    ask();
+  }
+
   // ---------- mission: trace (drag along the path — pre-writing) ----------
   // each item's word may carry w.trace = [[x,y],...] normalized 0..1 waypoints (in stroke order).
   // falls back to a simple left→right path so it is always playable. big hit radius for kid fingers.
@@ -702,6 +797,8 @@
     else if (m.type === 'rhyme') renderRhyme(m);
     else if (m.type === 'listen-and-choose') renderTap(m);   // อ.2 ประโยค (ใช้กลไกเดียวกับ listen-and-tap)
     else if (m.type === 'size') renderSize(m);
+    else if (m.type === 'pattern') renderPattern(m);
+    else if (m.type === 'countmatch') renderCountMatch(m);
     else nextMission();
   }
   function nextMission() {

@@ -1,0 +1,53 @@
+{
+  "id": "livingnot",
+  "order": 20,
+  "title": "Living or Not",
+  "theme": "k-science",
+  "level": "k1",
+  "standard": {
+    "earlyYears2560": ["มฐ.10", "มฐ.12"],
+    "core2551": "ว1.1",
+    "commonCore": "Science K-LS1 (living things)",
+    "cefr": "Pre-A1"
+  },
+  "intro": {
+    "audio": "audio/praise/ready.mp3",
+    "text": "Living or not living?"
+  },
+  "words": [
+    { "id": "dog",      "text": "dog",      "image": "img/animals/dog.png",     "audio": "audio/words/dog.mp3",      "meta": { "group": "living" } },
+    { "id": "cat",      "text": "cat",      "image": "img/animals/cat.png",     "audio": "audio/words/cat.mp3",      "meta": { "group": "living" } },
+    { "id": "bird",     "text": "bird",     "image": "img/animals/bird.png",    "audio": "audio/words/bird.mp3",     "meta": { "group": "living" } },
+    { "id": "fish",     "text": "fish",     "image": "img/animals/fish.png",    "audio": "audio/words/fish.mp3",     "meta": { "group": "living" } },
+    { "id": "lion",     "text": "lion",     "image": "img/animals/lion.png",    "audio": "audio/words/lion.mp3",     "meta": { "group": "living" } },
+    { "id": "bear",     "text": "bear",     "image": "img/animals/bear.png",    "audio": "audio/words/bear.mp3",     "meta": { "group": "living" } },
+    { "id": "book",     "text": "book",     "image": "img/school/book.png",     "audio": "audio/words/book.mp3",     "meta": { "group": "notliving" } },
+    { "id": "bag",      "text": "bag",      "image": "img/school/bag.png",      "audio": "audio/words/bag.mp3",      "meta": { "group": "notliving" } },
+    { "id": "chair",    "text": "chair",    "image": "img/school/chair.png",    "audio": "audio/words/chair.mp3",    "meta": { "group": "notliving" } },
+    { "id": "crayon",   "text": "crayon",   "image": "img/school/crayon.png",   "audio": "audio/words/crayon.mp3",   "meta": { "group": "notliving" } },
+    { "id": "pencil",   "text": "pencil",   "image": "img/school/pencil.png",   "audio": "audio/words/pencil.mp3",   "meta": { "group": "notliving" } },
+    { "id": "scissors", "text": "scissors", "image": "img/school/scissors.png", "audio": "audio/words/scissors.mp3", "meta": { "group": "notliving" } }
+  ],
+  "missions": [
+    {
+      "id": "livingnot-explore",
+      "type": "free-explore",
+      "items": ["dog", "cat", "bird", "book", "bag", "chair"],
+      "prompt": { "text": "Tap and listen!", "audioPattern": "audio/words/{id}.mp3" }
+    },
+    {
+      "id": "livingnot-sort",
+      "type": "sort",
+      "items": ["dog", "cat", "bird", "fish", "lion", "bear", "book", "bag", "chair", "crayon", "pencil", "scissors"],
+      "prompt": { "text": "{word}", "audioPattern": "audio/words/{id}.mp3" },
+      "config": {
+        "objectsPerBucket": 1,
+        "buckets": [
+          { "id": "living",    "label": "Living",     "emo": "🌱" },
+          { "id": "notliving", "label": "Not Living", "emo": "🧱" }
+        ]
+      }
+    }
+  ],
+  "reward": { "sticker": "🌱" }
+}
