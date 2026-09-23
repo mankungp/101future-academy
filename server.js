@@ -279,6 +279,7 @@ const MIME_TYPES = {
   ".mp3": "audio/mpeg",
   ".png": "image/png",
   ".svg": "image/svg+xml",
+  ".ttf": "font/ttf",
   ".webp": "image/webp",
 };
 
@@ -573,15 +574,15 @@ async function handleRequest(request, response) {
     return;
   }
 
-  // เว็บใหม่ (แพลตฟอร์ม อนุบาล→ม.6): หน้าแรกชี้ไป web/ · เสิร์ฟ /web/ + /k1/ เป็น static
+  // หน้า AI Lab เป็นหน้าแรก; เว็บเรียนเดิมยังอยู่ใต้ /web/ และ /k1/
   if ((request.method === "GET" || request.method === "HEAD") &&
       (url.pathname === "/" || url.pathname === "/index.html")) {
-    redirect(response, "/web/index.html");
+    redirect(response, "/ai-lab/index.html");
     return;
   }
 
   if ((request.method === "GET" || request.method === "HEAD") &&
-      (url.pathname.startsWith("/web/") || url.pathname.startsWith("/k1/"))) {
+      (url.pathname.startsWith("/ai-lab/") || url.pathname.startsWith("/web/") || url.pathname.startsWith("/k1/"))) {
     await serveSite(response, url.pathname, request.method === "HEAD");
     return;
   }
@@ -2761,13 +2762,14 @@ async function serveAsset(response, pathname, isHead = false) {
   sendBuffer(response, 200, content, MIME_TYPES[ext] || "application/octet-stream");
 }
 
-// เสิร์ฟไฟล์เว็บใหม่ใต้ /web/ และ /k1/ เท่านั้น (กัน path traversal เหมือน serveAsset)
+// เสิร์ฟไฟล์เว็บ public เฉพาะใต้ /ai-lab/, /web/ และ /k1/ (กัน path traversalเหมือน serveAsset)
 async function serveSite(response, pathname, isHead = false) {
   const safeName = path.normalize(decodeURIComponent(pathname)).replace(/^(\.\.[/\\])+/, "");
   const filePath = path.join(ROOT, safeName);
+  const inAiLab = filePath.startsWith(path.join(ROOT, "ai-lab") + path.sep);
   const inWeb = filePath.startsWith(path.join(ROOT, "web") + path.sep);
   const inK1 = filePath.startsWith(path.join(ROOT, "k1") + path.sep);
-  if (!inWeb && !inK1) {
+  if (!inAiLab && !inWeb && !inK1) {
     throw new HttpError(404, "Not found");
   }
   const ext = path.extname(filePath).toLowerCase();

@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "metrics": [
+    {
+      "id": "task-quality",
+      "label": "คุณภาพงานตามเกณฑ์",
+      "unit": "คะแนน",
+      "min": 0,
+      "max": 100,
+      "direction": "higher"
+    }
+  ],
+  "sources": [
+    {
+      "id": "lab",
+      "label": "ทดสอบภายในแล็บ"
+    },
+    {
+      "id": "external",
+      "label": "ผลอ้างอิงภายนอก"
+    }
+  ],
+  "protocols": [
+    {
+      "id": "task-draft-v1",
+      "version": "1-draft",
+      "label": "คุณภาพงาน · ร่างวิธีทดสอบ 1",
+      "status": "draft",
+      "dataset": "รอกำหนดชุดโจทย์ที่เปิดเผยได้",
+      "procedure": "รอกำหนดจำนวนรอบและการควบคุมเงื่อนไข",
+      "rubric": "รอกำหนดเกณฑ์และตรวจทานก่อนตรึงวิธี"
+    }
+  ],
+  "records": [
+    {
+      "id": "qwen-local-plan",
+      "model": "Qwen · การตั้งค่าภายในแล็บ",
+      "configuration": "รอยืนยันรุ่นและการตั้งค่าก่อนทดสอบ",
+      "source": "lab",
+      "metric": "task-quality",
+      "protocol": "task-draft-v1",
+      "status": "pending",
+      "score": null,
+      "date": null,
+      "provenance": null
+    },
+    {
+      "id": "gpt-review-plan",
+      "model": "Qwen + GPT ตรวจงาน · แผนเปรียบเทียบ",
+      "configuration": "รอยืนยันรุ่น วิธีตรวจ และงานที่อนุญาตออกคลาวด์ เทียบผลสำเร็จของงานทั้งกระบวนการ",
+      "source": "lab",
+      "metric": "task-quality",
+      "protocol": "task-draft-v1",
+      "status": "pending",
+      "score": null,
+      "date": null,
+      "provenance": null
+    }
+  ]
+}
