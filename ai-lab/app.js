@@ -5,8 +5,8 @@ menu.addEventListener('click', () => { const open = nav.classList.toggle('open')
 nav.querySelectorAll('a').forEach(a => a.addEventListener('click', () => closeMenu()));
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && nav.classList.contains('open')) closeMenu(true); });
 const details = {
- qwen: ['Qwen · แผนการทดลอง', 'ยังไม่ระบุรุ่นและการตั้งค่าสุดท้าย ต้องทดสอบคุณภาพ ความเร็ว และเสถียรภาพด้วยวิธีที่ตรึงแล้วก่อนเผยแพร่คะแนน'],
- amd: ['AI ภายในองค์กร · แนวคิดเพื่อหารือ', 'ข้อเสนอ AMD Radeon AI PRO R9700 สองใบ ยังไม่รับรองความเร็ว บริบท จำนวนผู้ใช้ ราคา หรือความพร้อมส่งมอบ']
+ qwen: ['Qwen3.8 27B · ผลทดสอบรอบแรก', 'ทดสอบแล้ว 8 งาน เปิดให้ดูโจทย์ คำตอบ เวลา จุดที่ผ่าน และจุดที่ต้องแก้ ยังไม่รวมเป็นคะแนนเดียวเพราะแต่ละงานใช้เกณฑ์ต่างกัน'],
+ amd: ['AI ภายในองค์กร · แนวคิดเบื้องต้น', 'แนวคิดใช้ AMD Radeon AI PRO R9700 สองใบ ต้องทดลองกับงานจริงก่อน จึงยังไม่รับรองความเร็ว จำนวนผู้ใช้ ราคา หรือวันส่งมอบ']
 };
 const dialog = document.querySelector('dialog');
 if (dialog) {
@@ -45,7 +45,7 @@ async function benchmarks() {
   d.metrics.forEach(m => { const option = node('option', m.label); option.value = m.id; metric.append(option); });
   d.sources.forEach(s => { const option = node('option', s.label); option.value = s.id; source.append(option); });
   for (const p of d.protocols) {
-   const detail = node('details', undefined, 'panel'); detail.append(node('summary', `${p.label} · ${p.version} · ${p.status === 'frozen' ? 'ตรึงวิธีแล้ว' : 'ร่าง ยังใช้เผยแพร่คะแนนไม่ได้'}`));
+   const detail = node('details', undefined, 'panel'); detail.append(node('summary', `${p.label} · ${p.version} · ${p.status === 'frozen' ? 'กำหนดวิธีแล้ว' : 'กำลังเตรียมวิธี ยังไม่ใช้ให้คะแนน'}`));
    for (const [key,label] of [['dataset','ชุดโจทย์'],['procedure','ขั้นตอน'],['rubric','เกณฑ์']]) detail.append(node('p', `${label}: ${p[key]}`));
    document.querySelector('#protocols').append(detail);
   }
@@ -54,11 +54,11 @@ async function benchmarks() {
    const m = d.metrics.find(x => x.id === metric.value);
    const records = d.records.filter(r => r.metric === m.id && (source.value === 'all' || r.source === source.value));
    const verified = records.filter(r => r.status === 'verified');
-   status.textContent = verified.length ? 'แสดงเฉพาะผลที่มีหลักฐาน · แยกแหล่งข้อมูลและวิธีทดสอบ ไม่จัดอันดับรวม' : 'รอผลทดสอบที่ตรวจสอบได้';
+   status.textContent = verified.length ? 'แสดงเฉพาะผลที่มีหลักฐานครบ และไม่รวมงานที่ใช้กติกาต่างกันเป็นอันดับเดียว' : 'ยังไม่มีคะแนนรวม — ดูผลทดสอบรอบแรก 8 งานได้จากลิงก์ด้านบน';
    for (const r of records.filter(x => x.status === 'pending')) {
-    const item = node('article', undefined, 'panel pending-record'); item.append(node('h3', r.model), node('p', 'รอผลทดสอบที่ตรวจสอบได้'), node('p', r.configuration)); pending.append(item);
+    const item = node('article', undefined, 'panel pending-record'); item.append(node('h3', r.model), node('p', 'กำลังเตรียมการทดสอบแบบให้คะแนน'), node('p', r.configuration)); pending.append(item);
    }
-   if (!pending.children.length) pending.append(node('p', 'ไม่มีรายการรอทดสอบในตัวกรองนี้'));
+   if (!pending.children.length) pending.append(node('p', 'ไม่มีงานที่กำลังรอทดสอบในตัวกรองนี้'));
    const groups = new Map();
    for (const r of verified) { const key = JSON.stringify([r.source, r.protocol]); if (!groups.has(key)) groups.set(key, []); groups.get(key).push(r); }
    for (const records of groups.values()) {
@@ -75,6 +75,6 @@ async function benchmarks() {
    }
   }
   metric.addEventListener('change', render); source.addEventListener('change', render); render();
- } catch (_) { document.querySelector('#chart').replaceChildren(); status.textContent = 'ข้อมูลไม่ผ่านการตรวจสอบ จึงไม่แสดงคะแนน'; }
+ } catch (_) { document.querySelector('#chart').replaceChildren(); status.textContent = 'ตรวจข้อมูลไม่ผ่าน จึงซ่อนคะแนนไว้เพื่อไม่ให้แสดงข้อมูลผิด'; }
 }
 benchmarks();
