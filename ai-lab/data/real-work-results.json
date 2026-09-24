@@ -1,0 +1,1091 @@
+{
+  "schema_version": "101future.real-work.public.v1",
+  "title": "Qwen3.8 27B Q8 — Real-work Agent Track",
+  "summary": {
+    "total_cells": 12,
+    "completed": 12,
+    "invalid_fixture_attempts_excluded": 6,
+    "tool_enabled_cells": 6,
+    "visual_reviewed_images": 9,
+    "ready": 5,
+    "needs_edit": 4,
+    "fail": 3,
+    "total_elapsed_minutes": 32.0277846177419
+  },
+  "checklist": [
+    {
+      "id": "matrix",
+      "pass": true,
+      "label": "รันครบ 4 งาน × 3 seeds",
+      "note": "เก็บผล valid ครบ 12/12 cells ไม่มีการเติมผลแทนงานที่ไม่ได้รัน"
+    },
+    {
+      "id": "fixture-correction",
+      "pass": true,
+      "label": "แยก fixture ที่ข้อมูลไม่ครบออกแล้ว",
+      "note": "ARTICLE/SCRIPT รุ่นแรก 6 attempts ถูกจัดเป็น INVALID_FIXTURE_EXCLUDED และรันใหม่ด้วย claim pack v2; ไม่นับเป็นความผิดของโมเดล"
+    },
+    {
+      "id": "web-tools",
+      "pass": true,
+      "label": "ค้นเว็บและเปิดแหล่งจริงครบ",
+      "note": "ทุก seed เรียก search/fetch tools และเปิด canonical NASA pages อย่างน้อย 2 แหล่ง"
+    },
+    {
+      "id": "citations",
+      "pass": true,
+      "label": "ตรวจลิงก์อ้างอิงซ้ำ",
+      "note": "ทุก URL ที่อ้างตอบ HTTP 200 และตรงกับ URL ที่ Q8 fetch จริง"
+    },
+    {
+      "id": "image-tools",
+      "pass": true,
+      "label": "ค้นภาพและตรวจไฟล์ครบ",
+      "note": "ทุก seed เรียก NASA Images API; preview URL, source page และ image MIME ผ่าน"
+    },
+    {
+      "id": "pixels",
+      "pass": true,
+      "label": "ตรวจพิกเซลภาพจริงครบ 9/9",
+      "note": "ตรวจภาพแยกจาก Q8 text-only: ผ่าน/ผ่านพร้อมหมายเหตุ 8, ไม่ตรง role 1"
+    },
+    {
+      "id": "article",
+      "pass": true,
+      "label": "เขียนและตรวจบทความครบ 3 รอบ",
+      "note": "พร้อมใช้ 1 · ต้องแก้ 1 · ไม่ผ่าน 1"
+    },
+    {
+      "id": "script",
+      "pass": true,
+      "label": "เขียนและจับเวลาบทพูดครบ 3 รอบ",
+      "note": "พร้อมใช้ 0 · ต้องแก้ 2 · ไม่ผ่าน 1 · scratch duration 106.0–120.5 วินาที"
+    },
+    {
+      "id": "policy",
+      "pass": true,
+      "label": "กติกาการรันคงที่",
+      "note": "ปิด prompt cache, retry 0 และใช้ seeds 10101 / 20202 / 30303"
+    },
+    {
+      "id": "review",
+      "pass": true,
+      "label": "Semantic review ปัจจุบันครบ",
+      "note": "ตรวจ RWEB, ARTICLE และ SCRIPT รวม 9 outputs ด้วย parent semantic review หลัง delegated review รุ่น v2 timeout; ไม่ใช่ owner/human review"
+    }
+  ],
+  "featured_images": [
+    {
+      "role": "full_aircraft",
+      "role_label": "ภาพลำเต็ม",
+      "nasa_id": "EC91-0365-7",
+      "title": "This photo shows a head-on view of NASA's SR-71B on the ramp at the Air Force's Plant 42 in Palmdale, California, shortly before delivery to DFRC",
+      "local_src": "assets/real-work/full_aircraft.jpg",
+      "source_page": "https://images.nasa.gov/details-EC91-0365-7",
+      "outcome": "ready",
+      "finding_th": "เป็น SR-71 จริง เห็นลำเต็มชัดจากด้านหน้า ไม่ใช่มุมด้านข้าง ไม่มีบุคคลหรือลายน้ำ แต่มีเครื่องหมายบนตัวเครื่องตามภาพต้นฉบับ"
+    },
+    {
+      "role": "in_flight",
+      "role_label": "ภาพขณะขึ้นบิน",
+      "nasa_id": "EC97-44295-29",
+      "title": "Linear Aerospike SR-71 Experiment (LASRE) first flight takeoff",
+      "local_src": "assets/real-work/in_flight.jpg",
+      "source_page": "https://images.nasa.gov/details-EC97-44295-29",
+      "outcome": "ready",
+      "finding_th": "เป็น SR-71 หมายเลข 844 ของ NASA ขณะลอยจากทางวิ่ง/กำลังขึ้นบิน เห็นลำเต็มด้านข้างชัด ไม่มีบุคคลหรือลายน้ำ"
+    },
+    {
+      "role": "nasa_research",
+      "role_label": "ภาพงานวิจัย NASA",
+      "nasa_id": "EC98-44413-3",
+      "title": "Linear Aerospike SR-71 Experiment (LASRE) ground cold flow test",
+      "local_src": "assets/real-work/nasa_research.jpg",
+      "source_page": "https://images.nasa.gov/details-EC98-44413-3",
+      "outcome": "ready",
+      "finding_th": "เป็นส่วนท้าย SR-71 หมายเลข 844 ในบริบททดลอง LASRE เห็นอุปกรณ์ทดลองและไอระหว่างการทดสอบชัด ไม่มีบุคคลหรือลายน้ำ"
+    }
+  ],
+  "tracks": [
+    {
+      "id": "RWEB",
+      "title": "ค้นข้อมูลจากเว็บจริง",
+      "description": "Q8 ต้องเรียก search/fetch tools เปิดแหล่งทางการจริง และคืน claim ledger พร้อม URL",
+      "ready": 2,
+      "records": [
+        {
+          "id": "RWEB-10101",
+          "track": "RWEB",
+          "seed": 10101,
+          "status": "completed",
+          "outcome": "needs_edit",
+          "elapsed_seconds": 92.08452987670898,
+          "decode_tokens_per_second": 39.40063934311752,
+          "tool_counts": {
+            "nasa_search": 1,
+            "web_search": 2,
+            "fetch_url": 2
+          },
+          "output": {
+            "topic": "SR-71 Blackbird: ความเร็ว เพดานบิน เที่ยวบินแรก และภารกิจ NASA",
+            "sources": [
+              {
+                "title": "SR-71",
+                "canonical_url": "https://www.nasa.gov/image-article/sr-71/",
+                "publisher": "NASA",
+                "fetched": true
+              },
+              {
+                "title": "Where Are They Now: SR-71A #844",
+                "canonical_url": "https://www.nasa.gov/image-article/where-are-they-now-sr-71a-844/",
+                "publisher": "NASA",
+                "fetched": true
+              }
+            ],
+            "claims": [
+              {
+                "claim_id": "C1",
+                "claim_th": "เอกสาร NASA ระบุว่า Blackbirds ถูกออกแบบให้เดินทางที่ Mach 3.2 ซึ่งมากกว่า 3 เท่าของความเร็วเสียง หรือมากกว่า 2,200 ไมล์ต่อชั่วโมง",
+                "status": "verified_fact",
+                "source_urls": [
+                  "https://www.nasa.gov/image-article/sr-71/",
+                  "https://www.nasa.gov/image-article/where-are-they-now-sr-71a-844/"
+                ],
+                "evidence_excerpt": "The Blackbirds were designed to cruise at Mach 3.2, just over three times the speed of sound or more than 2,200 miles per hour and at altitudes up to 85,000 feet."
+              },
+              {
+                "claim_id": "C2",
+                "claim_th": "เอกสาร NASA ระบุความสูงที่ Blackbirds ออกแบบให้ปฏิบัติการได้ถึง 85,000 ฟุต",
+                "status": "verified_fact",
+                "source_urls": [
+                  "https://www.nasa.gov/image-article/sr-71/",
+                  "https://www.nasa.gov/image-article/where-are-they-now-sr-71a-844/"
+                ],
+                "evidence_excerpt": "The Blackbirds were designed to cruise at Mach 3.2, just over three times the speed of sound or more than 2,200 miles per hour and at altitudes up to 85,000 feet."
+              },
+              {
+                "claim_id": "C3",
+                "claim_th": "SR-71 บินครั้งแรกเมื่อวันที่ 22 ธันวาคม ค.ศ. 1964",
+                "status": "verified_fact",
+                "source_urls": [
+                  "https://www.nasa.gov/image-article/sr-71/",
+                  "https://www.nasa.gov/image-article/where-are-they-now-sr-71a-844/"
+                ],
+                "evidence_excerpt": "The SR-71 completed its first flight on Dec. 22, 1964."
+              },
+              {
+                "claim_id": "C4",
+                "claim_th": "ในทศวรรษ 1990 NASA ใช้เครื่องบิน SR-71 Blackbird สองลำ ได้แก่ SR-71A และ SR-71B ซึ่งเป็นรุ่นฝึก เป็น testbeds สำหรับงานวิจัยการบินความเร็วสูงและเพดานสูงที่ Dryden โดยได้รับจากกองทัพอากาศสหรัฐฯ",
+                "status": "verified_fact",
+                "source_urls": [
+                  "https://www.nasa.gov/image-article/sr-71/",
+                  "https://www.nasa.gov/image-article/where-are-they-now-sr-71a-844/"
+                ],
+                "evidence_excerpt": "During the 1990s two SR-71 Blackbird aircraft were used by NASA as testbeds for high-speed and high-altitude aeronautical research at Dryden. The aircraft included an SR-71A and SR-71B (the trainer version), loaned to NASA by the U.S. Air Force."
+              },
+              {
+                "claim_id": "C5",
+                "claim_th": "กิจกรรม SR-71 ที่ Dryden เป็นส่วนหนึ่งของโครงการวิจัยการบินความเร็วสูงของ NASA และเกี่ยวข้องกับศูนย์วิจัย NASA หน่วยงานรัฐบาลอื่น มหาวิทยาลัย และบริษัทพาณิชย์",
+                "status": "verified_fact",
+                "source_urls": [
+                  "https://www.nasa.gov/image-article/sr-71/",
+                  "https://www.nasa.gov/image-article/where-are-they-now-sr-71a-844/"
+                ],
+                "evidence_excerpt": "SR-71 activities at Dryden were part of NASA’s overall high-speed aeronautical research program and involved other NASA research Centers, other government agencies, universities, and commercial firms."
+              },
+              {
+                "claim_id": "C6",
+                "claim_th": "ข้อมูลจากโครงการวิจัย SR-71 มีศักยภาพช่วยนักออกแบบอากาศยาน supersonic/hypersonic และระบบขับเคลื่อนในอนาคตตามการอธิบายของ NASA",
+                "status": "bounded_inference",
+                "source_urls": [
+                  "https://www.nasa.gov/image-article/sr-71/",
+                  "https://www.nasa.gov/image-article/where-are-they-now-sr-71a-844/"
+                ],
+                "evidence_excerpt": "Data from the SR-71 research project will aid designers of future supersonic/hypersonic aircraft and propulsion systems…"
+              }
+            ],
+            "claims_to_avoid": [
+              "ไม่ควรอ้างตัวเลขสถิติความเร็วเฉพาะ เช่น 3,529.63 กิโลเมตรต่อชั่วโมง หรือ Mach 3.35 เพราะหน้า NASA ที่เปิดอ่านไม่ได้ระบุตัวเลขนั้น",
+              "ไม่ควรกล่าวว่า 85,000 ฟุตเป็นเพดานบินที่บันทึกได้ในทุกเที่ยวบิน เพราะเอกสารระบุว่าออกแบบให้ปฏิบัติการที่ความสูงได้ถึง 85,000 ฟุต",
+              "ไม่ควรกล่าวว่า NASA เป็นเจ้าของ SR-71 โดยตรง เพราะเอกสารระบุว่าเครื่องบินถูก loaned to NASA by the U.S. Air Force",
+              "ไม่ควรขยายความว่า SR-71 มีภารกิจโจมตีหรือรบโดยตรงจากแหล่งนี้ เพราะเอกสารที่ fetch สำเร็จเน้นบทบาทวิจัยการบินและตระกูล Blackbird",
+              "ไม่ควรกล่าวว่า SR-71 ทุกลำยังบินได้หรือยังปฏิบัติการในปัจจุบัน เพราะเอกสารระบุว่าข้อมูลนี้เกี่ยวข้องกับยุค 1990 และการวิจัยหลัง retirement"
+            ],
+            "tool_work_summary": "ใช้ nasa_search ค้นคำหลัก SR-71 Blackbird NASA speed altitude first flight แล้วใช้ fetch_url เปิดหน้า NASA 2 หน้าสำเร็จ ได้แก่ https://www.nasa.gov/image-article/sr-71/ และ https://www.nasa.gov/image-article/where-are-they-now-sr-71a-844/ การค้น af.mil ด้วย web_search ไม่พบผลลัพธ์ที่นำมาอ้างได้ จึงใช้แหล่ง NASA 2 หน้าเป็น canonical sources ทั้งหมด"
+          },
+          "sources": [
+            "https://www.nasa.gov/image-article/sr-71/",
+            "https://www.nasa.gov/image-article/where-are-they-now-sr-71a-844/"
+          ],
+          "semantic_review": {
+            "alias": "f6c441818ddb",
+            "verdict": "needs_edit",
+            "factual_errors": [],
+            "edit_notes": [
+              "เปลี่ยนคำว่าได้รับจากกองทัพอากาศเป็นยืมจากกองทัพอากาศเพื่อไม่ให้คลุมเครือเรื่องกรรมสิทธิ์",
+              "เปลี่ยนสถานะ C6 จาก bounded_inference เป็น source_attributed_future_benefit"
+            ],
+            "concise_finding_th": "หลักฐานและ URL ตรงกับหน้าที่ fetch จริง แต่ควรแก้ถ้อยคำเรื่องการยืมและชนิดของคำอ้าง C6",
+            "review_method": "parent_semantic_review_after_current-v2-delegated-review-timeout"
+          },
+          "deterministic_checks": {
+            "status_completed": true,
+            "tools_used": true,
+            "schema": true,
+            "two_sources": true,
+            "citations_were_fetched": true,
+            "citations_live": true,
+            "claim_ledger": true,
+            "evidence_excerpts_in_fetched_pages": true
+          },
+          "duration_seconds": null
+        },
+        {
+          "id": "RWEB-20202",
+          "track": "RWEB",
+          "seed": 20202,
+          "status": "completed",
+          "outcome": "ready",
+          "elapsed_seconds": 256.05097484588623,
+          "decode_tokens_per_second": 38.915310916498896,
+          "tool_counts": {
+            "nasa_search": 6,
+            "web_search": 3,
+            "fetch_url": 8
+          },
+          "output": {
+            "topic": "SR-71 Blackbird: ความเร็ว เพดานบิน เที่ยวบินแรก และภารกิจ NASA ตามแหล่งทางการที่ fetch สำเร็จ",
+            "sources": [
+              {
+                "title": "Where Are They Now: SR-71A #844",
+                "canonical_url": "https://www.nasa.gov/image-article/where-are-they-now-sr-71a-844/",
+                "publisher": "NASA",
+                "fetched": true
+              },
+              {
+                "title": "Where Are They Now: SR-71B #831",
+                "canonical_url": "https://www.nasa.gov/image-article/where-are-they-now-sr-71b-831/",
+                "publisher": "NASA",
+                "fetched": true
+              },
+              {
+                "title": "Where Are They Now: SR-71 #831",
+                "canonical_url": "https://www.nasa.gov/image-article/where-are-they-now-sr-71-831/",
+                "publisher": "NASA",
+                "fetched": true
+              },
+              {
+                "title": "SR-71",
+                "canonical_url": "https://www.nasa.gov/image-article/sr-71/",
+                "publisher": "NASA",
+                "fetched": true
+              }
+            ],
+            "claims": [
+              {
+                "claim_id": "C1",
+                "claim_th": "เอกสาร NASA ระบุว่า Blackbirds ถูกออกแบบให้บินครูซที่ Mach 3.2 หรือมากกว่า 2,200 ไมล์ต่อชั่วโมง",
+                "status": "verified_fact",
+                "source_urls": [
+                  "https://www.nasa.gov/image-article/where-are-they-now-sr-71a-844/",
+                  "https://www.nasa.gov/image-article/where-are-they-now-sr-71b-831/",
+                  "https://www.nasa.gov/image-article/where-are-they-now-sr-71-831/",
+                  "https://www.nasa.gov/image-article/sr-71/"
+                ],
+                "evidence_excerpt": "The Blackbirds were designed to cruise at Mach 3.2, just over three times the speed of sound or more than 2,200 miles per hour and at altitudes up to 85,000 feet."
+              },
+              {
+                "claim_id": "C2",
+                "claim_th": "เอกสาร NASA ระบุระดับการบินที่ออกแบบไว้ว่าสูงได้ถึง 85,000 ฟุต",
+                "status": "verified_fact",
+                "source_urls": [
+                  "https://www.nasa.gov/image-article/where-are-they-now-sr-71a-844/",
+                  "https://www.nasa.gov/image-article/where-are-they-now-sr-71b-831/",
+                  "https://www.nasa.gov/image-article/where-are-they-now-sr-71-831/",
+                  "https://www.nasa.gov/image-article/sr-71/"
+                ],
+                "evidence_excerpt": "The Blackbirds were designed to cruise at Mach 3.2, just over three times the speed of sound or more than 2,200 miles per hour and at altitudes up to 85,000 feet."
+              },
+              {
+                "claim_id": "C3",
+                "claim_th": "SR-71 บินครั้งแรกเมื่อวันที่ 22 ธันวาคม 1964",
+                "status": "verified_fact",
+                "source_urls": [
+                  "https://www.nasa.gov/image-article/where-are-they-now-sr-71a-844/",
+                  "https://www.nasa.gov/image-article/where-are-they-now-sr-71b-831/",
+                  "https://www.nasa.gov/image-article/where-are-they-now-sr-71-831/",
+                  "https://www.nasa.gov/image-article/sr-71/"
+                ],
+                "evidence_excerpt": "The SR-71 completed its first flight on Dec. 22, 1964."
+              },
+              {
+                "claim_id": "C4",
+                "claim_th": "ในช่วงทศวรรษ 1990 NASA ใช้ SR-71A และ SR-71B เป็น testbed สำหรับงานวิจัยการบินความเร็วสูงและระดับสูงที่ Dryden โดยได้รับจากกองทัพอากาศสหรัฐฯ",
+                "status": "verified_fact",
+                "source_urls": [
+                  "https://www.nasa.gov/image-article/where-are-they-now-sr-71a-844/",
+                  "https://www.nasa.gov/image-article/where-are-they-now-sr-71b-831/",
+                  "https://www.nasa.gov/image-article/where-are-they-now-sr-71-831/",
+                  "https://www.nasa.gov/image-article/sr-71/"
+                ],
+                "evidence_excerpt": "During the 1990s two SR-71 Blackbird aircraft were used by NASA as testbeds for high-speed and high-altitude aeronautical research at Dryden. The aircraft included an SR-71A and SR-71B (the trainer version), loaned to NASA by the U.S. Air Force."
+              },
+              {
+                "claim_id": "C5",
+                "claim_th": "งานวิจัย SR-71 ของ NASA ครอบคลุม aerodynamics, propulsion, structures, thermal protection materials, high-speed and high-temperature instrumentation, atmospheric studies และ sonic boom characterization",
+                "status": "verified_fact",
+                "source_urls": [
+                  "https://www.nasa.gov/image-article/where-are-they-now-sr-71a-844/",
+                  "https://www.nasa.gov/image-article/where-are-they-now-sr-71b-831/",
+                  "https://www.nasa.gov/image-article/where-are-they-now-sr-71-831/",
+                  "https://www.nasa.gov/image-article/sr-71/"
+                ],
+                "evidence_excerpt": "The extreme operating environment in which they flew made the aircraft excellent platforms for conducting research and experiments in a variety of disciplines: aerodynamics, propulsion, structures, thermal protection materials, high-speed and high-temperature instrumentation, atmospheric studies, and sonic boom characterization."
+              },
+              {
+                "claim_id": "C6",
+                "claim_th": "ในกรอบของเอกสาร NASA สามารถกล่าวได้ว่า Blackbirds ยังคงเป็นเครื่องบินผลิตที่เร็วที่สุดและบินสูงที่สุดที่เคยสร้าง แต่ควรระบุว่าเป็นข้อความจากเอกสาร NASA ไม่ใช่การยืนยันค่าวัดอิสระจากหน้าเหล่านี้",
+                "status": "bounded_inference",
+                "source_urls": [
+                  "https://www.nasa.gov/image-article/where-are-they-now-sr-71a-844/",
+                  "https://www.nasa.gov/image-article/where-are-they-now-sr-71b-831/",
+                  "https://www.nasa.gov/image-article/where-are-they-now-sr-71-831/",
+                  "https://www.nasa.gov/image-article/sr-71/"
+                ],
+                "evidence_excerpt": "More than a decade after their retirement the Blackbirds remain the world’s fastest and highest-flying production aircraft ever built."
+              }
+            ],
+            "claims_to_avoid": [
+              "อย่าระบุว่า NASA เป็นผู้พัฒนาหรือสร้าง SR-71 เพราะเอกสารที่ fetch ระบุว่าทีม Lockheed ออกแบบ และ NASA ได้รับ SR-71A/B จากกองทัพอากาศสหรัฐฯ",
+              "อย่าอ้าง Mach 3.2 หรือ 85,000 ฟุตว่าเป็นสถิติจริงที่วัดได้ หากไม่ได้ระบุว่าเอกสารนี้ยืนยันค่าวัดจริง เพราะเอกสารใช้คำว่า designed to cruise",
+              "อย่าอ้างตัวเลขเฉพาะที่ไม่ปรากฏในแหล่งที่ fetch เช่น 85,069 ฟุต หรือ 3,530 กิโลเมตรต่อชั่วโมง",
+              "อย่าสรุปว่า SR-71 ทุกลำหรือทุกภารกิจเป็นของ NASA/งานวิจัย NASA เพราะหลักฐานที่ fetch ครอบคลุมเฉพาะ SR-71A และ SR-71B ที่ NASA ใช้ในทศวรรษ 1990",
+              "อย่ากล่าวถึงภารกิจลับหรือภารกิจเฉพาะเจาะจงที่ไม่ปรากฏในหน้า NASA ที่เปิดอ่านสำเร็จ"
+            ],
+            "tool_work_summary": "ใช้ nasa_search ค้นคำหลัก SR-71 Blackbird, SR-71 Project Description, first flight และ NASA Dryden research; web_search บางครั้ง timeout จึงไม่ใช้ผลลัพธ์จาก那次; ใช้ fetch_url เปิดหน้า NASA สำเร็จ 4 หน้า ได้แก่ Where Are They Now: SR-71A #844, Where Are They Now: SR-71B #831, Where Are They Now: SR-71 #831 และ SR-71 แล้วสกัดข้อความรองรับความเร็ว เพดานบิน เที่ยวบินแรก และขอบเขตภารกิจ NASA โดยอ้างเฉพาะแหล่งที่ fetch สำเร็จเท่านั้น"
+          },
+          "sources": [
+            "https://www.nasa.gov/image-article/where-are-they-now-sr-71a-844/",
+            "https://www.nasa.gov/image-article/where-are-they-now-sr-71b-831/",
+            "https://www.nasa.gov/image-article/where-are-they-now-sr-71-831/",
+            "https://www.nasa.gov/image-article/sr-71/"
+          ],
+          "semantic_review": {
+            "alias": "3d81bda1dd14",
+            "verdict": "ready",
+            "factual_errors": [],
+            "edit_notes": [
+              "ข้ออ้าง superlative ถูกจำกัดกรอบว่าเป็นข้อความจากเอกสาร NASA และระบุ production aircraft แล้ว"
+            ],
+            "concise_finding_th": "ข้ออ้างเพิ่มเติมมี evidence excerpt อยู่ในหน้าที่ Q8 fetch จริงและระบุขอบเขตของแหล่งไว้",
+            "review_method": "parent_semantic_review_after_current-v2-delegated-review-timeout"
+          },
+          "deterministic_checks": {
+            "status_completed": true,
+            "tools_used": true,
+            "schema": true,
+            "two_sources": true,
+            "citations_were_fetched": true,
+            "citations_live": true,
+            "claim_ledger": true,
+            "evidence_excerpts_in_fetched_pages": true
+          },
+          "duration_seconds": null
+        },
+        {
+          "id": "RWEB-30303",
+          "track": "RWEB",
+          "seed": 30303,
+          "status": "completed",
+          "outcome": "ready",
+          "elapsed_seconds": 149.37560725212097,
+          "decode_tokens_per_second": 40.00587909056665,
+          "tool_counts": {
+            "nasa_search": 3,
+            "web_search": 2,
+            "fetch_url": 2
+          },
+          "output": {
+            "topic": "SR-71 Blackbird: ความเร็ว เพดานบิน เที่ยวบินแรก และภารกิจ NASA ตามแหล่งทางการ",
+            "sources": [
+              {
+                "title": "SR-71 - NASA",
+                "canonical_url": "https://www.nasa.gov/image-article/sr-71/",
+                "publisher": "NASA",
+                "fetched": true
+              },
+              {
+                "title": "Lancaster Jethawks to Honor Last SR-71 Flight Crews - NASA",
+                "canonical_url": "https://www.nasa.gov/news-release/lancaster-jethawks-to-honor-last-sr-71-flight-crews/",
+                "publisher": "NASA",
+                "fetched": true
+              }
+            ],
+            "claims": [
+              {
+                "claim_id": "C1",
+                "claim_th": "เอกสาร NASA ระบุว่า Blackbirds ออกแบบให้เดินทางที่ Mach 3.2 หรือมากกว่า 2,200 ไมล์ต่อชั่วโมง และอีกแหล่ง NASA ระบุว่า SR-71 สามารถบินได้มากกว่า 2,200 ไมล์ต่อชั่วโมง หรือ Mach 3+",
+                "status": "verified_fact",
+                "source_urls": [
+                  "https://www.nasa.gov/image-article/sr-71/",
+                  "https://www.nasa.gov/news-release/lancaster-jethawks-to-honor-last-sr-71-flight-crews/"
+                ],
+                "evidence_excerpt": "The Blackbirds were designed to cruise at Mach 3.2, just over three times the speed of sound or more than 2,200 miles per hour"
+              },
+              {
+                "claim_id": "C2",
+                "claim_th": "เอกสาร NASA รองรับความสูง/เพดานบินในระดับสูงถึง 85,000 ฟุต และอีกแหล่งระบุว่ามากกว่า 85,000 ฟุต",
+                "status": "verified_fact",
+                "source_urls": [
+                  "https://www.nasa.gov/image-article/sr-71/",
+                  "https://www.nasa.gov/news-release/lancaster-jethawks-to-honor-last-sr-71-flight-crews/"
+                ],
+                "evidence_excerpt": "and at altitudes up to 85,000 feet"
+              },
+              {
+                "claim_id": "C3",
+                "claim_th": "SR-71 บินครั้งแรกเมื่อวันที่ 22 ธันวาคม 1964",
+                "status": "verified_fact",
+                "source_urls": [
+                  "https://www.nasa.gov/image-article/sr-71/"
+                ],
+                "evidence_excerpt": "The SR-71 completed its first flight on Dec. 22, 1964."
+              },
+              {
+                "claim_id": "C4",
+                "claim_th": "ในช่วงทศวรรษ 1990 NASA ใช้ SR-71A และ SR-71B เป็น testbeds สำหรับวิจัยการบินความเร็วสูงและเพดานสูงที่ Dryden โดยเครื่องบินทั้งสองลำถูกยืมจากกองทัพอากาศสหรัฐฯ",
+                "status": "verified_fact",
+                "source_urls": [
+                  "https://www.nasa.gov/image-article/sr-71/",
+                  "https://www.nasa.gov/news-release/lancaster-jethawks-to-honor-last-sr-71-flight-crews/"
+                ],
+                "evidence_excerpt": "During the 1990s two SR-71 Blackbird aircraft were used by NASA as testbeds for high-speed and high-altitude aeronautical research at Dryden. The aircraft included an SR-71A and SR-71B (the trainer version), loaned to NASA by the U.S. Air Force."
+              },
+              {
+                "claim_id": "C5",
+                "claim_th": "SR-71A ของ NASA ทำหน้าที่เป็น research platform ตั้งแต่ปี 1992 จนเที่ยวบินสุดท้ายเมื่อวันที่ 9 ตุลาคม 1999 ซึ่งเอกสารระบุว่าเป็นเที่ยวบินสุดท้ายของ SR-71 ใด ๆ",
+                "status": "verified_fact",
+                "source_urls": [
+                  "https://www.nasa.gov/news-release/lancaster-jethawks-to-honor-last-sr-71-flight-crews/"
+                ],
+                "evidence_excerpt": "NASA’s SR-71A served as a research platform from 1992 until its final flight flown by Smith and Meyer on Oct. 9, 1999, the last flight by any SR-71."
+              },
+              {
+                "claim_id": "C6",
+                "claim_th": "SR-71 ถูกพัฒนาสำหรับกองทัพอากาศในฐานะเครื่องบินลาดตระเวน และ NASA มีบทบาทในฐานะผู้ใช้ platform วิจัยมากกว่าในฐานะผู้พัฒนาหลัก",
+                "status": "bounded_inference",
+                "source_urls": [
+                  "https://www.nasa.gov/news-release/lancaster-jethawks-to-honor-last-sr-71-flight-crews/",
+                  "https://www.nasa.gov/image-article/sr-71/"
+                ],
+                "evidence_excerpt": "Developed for the Air Force as reconnaissance aircraft more than 45 years ago"
+              }
+            ],
+            "claims_to_avoid": [
+              "ไม่ควรกล่าวว่า SR-71 เป็นเครื่องบินเร็วที่สุดหรือบินสูงที่สุดโดยไม่มีคำว่า production aircraft เพราะแหล่งที่ fetch ระบุเฉพาะ fastest and highest-flying production aircraft",
+              "ไม่ควรสรุปว่า Mach 3.2 เป็นความเร็วที่วัดได้จริงในปฏิบัติการทุกครั้ง เพราะแหล่งหนึ่งระบุว่า designed to cruise at Mach 3.2",
+              "ไม่ควรกล่าวว่า NASA เป็นผู้พัฒนา SR-71 หลัก เพราะเอกสารระบุว่าพัฒนาสำหรับกองทัพอากาศ และ NASA ใช้ในฐานะ research platform",
+              "ไม่ควรกล่าวว่า SR-71 ทุกลำเป็นของ NASA เพราะเอกสารระบุว่าลำที่ NASA ใช้ในทศวรรษ 1990 ถูกยืมจาก U.S. Air Force",
+              "ไม่ควรระบุเพดานบินเป็นตัวเลขตายตัวเกินหลักฐาน ควรใช้คำว่าสูงถึงหรือมากกว่า 85,000 ฟุตตามเอกสาร"
+            ],
+            "tool_work_summary": "ใช้ nasa_search ค้นพบหน้า NASA ที่เกี่ยวข้องกับ SR-71 จากนั้นใช้ fetch_url เปิดอ่านหน้า canonical 2 หน้าสำเร็จ ได้แก่ https://www.nasa.gov/image-article/sr-71/ และ https://www.nasa.gov/news-release/lancaster-jethawks-to-honor-last-sr-71-flight-crews/ ข้อความทุก claim ถูกจำกัดเฉพาะสิ่งที่ปรากฏในหน้าเหล่านี้ และไม่อ้างแหล่งที่ไม่ได้ fetch สำเร็จ"
+          },
+          "sources": [
+            "https://www.nasa.gov/image-article/sr-71/",
+            "https://www.nasa.gov/news-release/lancaster-jethawks-to-honor-last-sr-71-flight-crews/"
+          ],
+          "semantic_review": {
+            "alias": "1bf48c398bf2",
+            "verdict": "ready",
+            "factual_errors": [],
+            "edit_notes": [],
+            "concise_finding_th": "claim ledger สอดคล้องกับ evidence excerpts ที่ตรวจพบในหน้าที่ fetch จริงและแยกข้อห้ามไว้ชัดเจน",
+            "review_method": "parent_semantic_review_after_current-v2-delegated-review-timeout"
+          },
+          "deterministic_checks": {
+            "status_completed": true,
+            "tools_used": true,
+            "schema": true,
+            "two_sources": true,
+            "citations_were_fetched": true,
+            "citations_live": true,
+            "claim_ledger": true,
+            "evidence_excerpts_in_fetched_pages": true
+          },
+          "duration_seconds": null
+        }
+      ]
+    },
+    {
+      "id": "IWEB",
+      "title": "ค้นภาพจริงและตรวจสิทธิ์",
+      "description": "Q8 text-only ค้น NASA Images จาก metadata; URL/MIME ตรวจอัตโนมัติ และตรวจพิกเซลแยก",
+      "ready": 2,
+      "records": [
+        {
+          "id": "IWEB-10101",
+          "track": "IWEB",
+          "seed": 10101,
+          "status": "completed",
+          "outcome": "ready",
+          "elapsed_seconds": 248.80820202827454,
+          "decode_tokens_per_second": 38.22164598212766,
+          "tool_counts": {
+            "nasa_image_search": 17,
+            "fetch_url": 3
+          },
+          "output": {
+            "topic": "SR-71 Blackbird ภาพจริงจาก NASA Images สำหรับบทความ",
+            "selected_images": [
+              {
+                "role": "full_aircraft",
+                "nasa_id": "EC91-0365-7",
+                "title": "This photo shows a head-on view of NASA's SR-71B on the ramp at the Air Force's Plant 42 in Palmdale, California, shortly before delivery to DFRC",
+                "source_page": "https://images.nasa.gov/details-EC91-0365-7",
+                "preview_url": "https://images-assets.nasa.gov/image/EC91-0365-7/EC91-0365-7~medium.jpg",
+                "date_created": "1991-07-24T00:00:00Z",
+                "center": "AFRC",
+                "selection_reason_th": "metadata ระบุว่าเป็นภาพ SR-71B บน ramp ในมุมมอง head-on จึงเลือกเป็นตัวแทนบทบาทภาพลำเต็ม แต่ metadata ไม่ได้ยืนยันว่าเป็นด้านข้างชัดเจน จึงต้องตรวจภาพจริงก่อนใช้"
+              },
+              {
+                "role": "in_flight",
+                "nasa_id": "EC97-44295-29",
+                "title": "Linear Aerospike SR-71 Experiment (LASRE) first flight takeoff",
+                "source_page": "https://images.nasa.gov/details-EC97-44295-29",
+                "preview_url": "https://images-assets.nasa.gov/image/EC97-44295-29/EC97-44295-29~medium.jpg",
+                "date_created": "1997-10-31T00:00:00Z",
+                "center": "AFRC",
+                "selection_reason_th": "title และ description ระบุชัดเจนว่า SR-71 กำลังขึ้นบินในภารกิจ LASRE first flight จึงตรงกับบทบาทภาพขณะบินหรือขึ้นบิน"
+              },
+              {
+                "role": "nasa_research",
+                "nasa_id": "EC98-44413-3",
+                "title": "Linear Aerospike SR-71 Experiment (LASRE) ground cold flow test",
+                "source_page": "https://images.nasa.gov/details-EC98-44413-3",
+                "preview_url": "https://images-assets.nasa.gov/image/EC98-44413-3/EC98-44413-3~medium.jpg",
+                "date_created": "1998-02-12T00:00:00Z",
+                "center": "AFRC",
+                "selection_reason_th": "description ระบุว่าเป็น ground cold flow test ของ linear aerospike rocket engine ที่ติดตั้งบนลำตัว SR-71 จึงตรงกับบทบาทงานวิจัย NASA หรืออุปกรณ์ทดลอง"
+              }
+            ],
+            "rights_boundary_th": "สื่อของ NASA โดยทั่วไปอยู่ภายใต้ NASA Media Usage Guidelines ก่อนเผยแพร่ต้องตรวจโลโก้ บุคคลที่ระบุชื่อได้ เครดิตบุคคลที่สาม และข้อจำกัดเรื่องการรับรองหรือการสนับสนุน; ข้อมูลชุดนี้เป็นการเลือกจาก metadata เท่านั้น ไม่ใช่การอนุญาตทางกฎหมายหรือการยืนยันสิทธิ์รายภาพ",
+            "visual_verification": "required_external_review",
+            "tool_work_summary": "เรียก nasa_image_search หลายชุด เช่น SR-71, Blackbird, SR-71A Edwards, SR-71 flight และ SR-71 aircraft on the ramp; ได้ metadata ภาพจริงจาก NASA Images แล้ว fetch source_page ของ 3 ภาพที่เลือกสำเร็จด้วย HTTP 200 แต่เนื้อหาคืนมาเป็น text ว่าง; URL ทั้งหมดมาจากผลลัพธ์เครื่องมือ ไม่ได้แต่งขึ้น และ runtime text-only ยังไม่ได้ตรวจพิกเซลภาพ"
+          },
+          "sources": [
+            "https://images.nasa.gov/details-EC91-0365-7",
+            "https://images.nasa.gov/details-EC97-44295-29",
+            "https://images.nasa.gov/details-EC98-44413-3"
+          ],
+          "semantic_review": null,
+          "deterministic_checks": {
+            "status_completed": true,
+            "tool_used": true,
+            "schema": true,
+            "three_roles": true,
+            "unique_assets": true,
+            "urls_and_mime": true,
+            "rights_boundary": true
+          },
+          "duration_seconds": null
+        },
+        {
+          "id": "IWEB-20202",
+          "track": "IWEB",
+          "seed": 20202,
+          "status": "completed",
+          "outcome": "ready",
+          "elapsed_seconds": 364.6834328174591,
+          "decode_tokens_per_second": 36.6556158491459,
+          "tool_counts": {
+            "nasa_image_search": 19,
+            "fetch_url": 3
+          },
+          "output": {
+            "topic": "SR-71 Blackbird ภาพจริงสำหรับบทความ 101future AI Lab",
+            "selected_images": [
+              {
+                "role": "full_aircraft",
+                "nasa_id": "EC91-0365-7",
+                "title": "This photo shows a head-on view of NASA's SR-71B on the ramp at the Air Force's Plant 42 in Palmdale, California, shortly before delivery to DFRC",
+                "source_page": "https://images.nasa.gov/details-EC91-0365-7",
+                "preview_url": "https://images-assets.nasa.gov/image/EC91-0365-7/EC91-0365-7~medium.jpg",
+                "date_created": "1991-07-24T00:00:00Z",
+                "center": "AFRC",
+                "selection_reason_th": "เลือกจาก metadata ที่ระบุว่า SR-71B บน ramp ที่ Plant 42 ก่อนส่งมอบให้ DFRC และอธิบายลักษณะลำตัว/ระบบเครื่องยนต์ แต่ metadata ระบุว่าเป็นมุมหน้า ไม่ใช่ด้านข้างชัดเจน จึงต้องตรวจภาพจริงก่อนเผยแพร่"
+              },
+              {
+                "role": "in_flight",
+                "nasa_id": "EC97-44295-29",
+                "title": "Linear Aerospike SR-71 Experiment (LASRE) first flight takeoff",
+                "source_page": "https://images.nasa.gov/details-EC97-44295-29",
+                "preview_url": "https://images-assets.nasa.gov/image/EC97-44295-29/EC97-44295-29~medium.jpg",
+                "date_created": "1997-10-31T00:00:00Z",
+                "center": "AFRC",
+                "selection_reason_th": "metadata ระบุชัดเจนว่าเป็น SR-71 ขณะ takeoff ในภารกิจ LASRE first flight วันที่ 31 ตุลาคม 1997 ที่ Dryden Flight Research Center/Edwards จึงตรงกับหน้าที่ภาพขณะขึ้นบิน"
+              },
+              {
+                "role": "nasa_research",
+                "nasa_id": "EC98-44413-3",
+                "title": "Linear Aerospike SR-71 Experiment (LASRE) ground cold flow test",
+                "source_page": "https://images.nasa.gov/details-EC98-44413-3",
+                "preview_url": "https://images-assets.nasa.gov/image/EC98-44413-3/EC98-44413-3~medium.jpg",
+                "date_created": "1998-02-12T00:00:00Z",
+                "center": "AFRC",
+                "selection_reason_th": "metadata ระบุว่าเป็น ground cold flow test ของ linear aerospike rocket engine ที่ติดตั้งบนลำ SR-71 ในโครงการ LASRE จึงตรงกับหน้าที่ภาพงานวิจัยหรืออุปกรณ์ทดลอง"
+              }
+            ],
+            "rights_boundary_th": "สื่อของ NASA โดยทั่วไปอยู่ภายใต้ NASA Media Usage Guidelines แต่ก่อนใช้ต้องตรวจสอบโลโก้ บุคคลที่ระบุตัวตนได้ เครดิตบุคคลที่สาม และข้อจำกัดเรื่องการรับรองหรือทำให้เข้าใจว่า NASA สนับสนุนสินค้า/บริการของแต่ละภาพเป็นการเฉพาะ",
+            "visual_verification": "required_external_review",
+            "tool_work_summary": "ใช้ nasa_image_search หลายคำ เช่น SR-71, Blackbird, SR-71B, SR-71A, Lockheed SR-71 และ SR-71 aircraft แล้ว fetch source_page ของ 3 ภาพที่เลือกได้สถานะ 200 แต่ข้อความที่ดึงได้ว่าง การเลือกจึงอาศัย metadata จากผลการค้นหาเท่านั้น และ runtime text-only ยังไม่ได้ตรวจพิกเซล"
+          },
+          "sources": [
+            "https://images.nasa.gov/details-EC91-0365-7",
+            "https://images.nasa.gov/details-EC97-44295-29",
+            "https://images.nasa.gov/details-EC98-44413-3"
+          ],
+          "semantic_review": null,
+          "deterministic_checks": {
+            "status_completed": true,
+            "tool_used": true,
+            "schema": true,
+            "three_roles": true,
+            "unique_assets": true,
+            "urls_and_mime": true,
+            "rights_boundary": true
+          },
+          "duration_seconds": null
+        },
+        {
+          "id": "IWEB-30303",
+          "track": "IWEB",
+          "seed": 30303,
+          "status": "completed",
+          "outcome": "fail",
+          "elapsed_seconds": 397.27153515815735,
+          "decode_tokens_per_second": 34.146205852132674,
+          "tool_counts": {
+            "nasa_image_search": 15,
+            "fetch_url": 15
+          },
+          "output": {
+            "topic": "SR-71 Blackbird ภาพจริงจาก NASA สำหรับบทความ",
+            "selected_images": [
+              {
+                "role": "full_aircraft",
+                "nasa_id": "EC03-0082-1",
+                "title": "NASA's SR-71B and F-18 HARV aircraft left Edwards Air Force Base, Calif., on March 24, 2003",
+                "source_page": "https://images.nasa.gov/details-EC03-0082-1",
+                "preview_url": "https://images-assets.nasa.gov/image/EC03-0082-1/EC03-0082-1~medium.jpg",
+                "date_created": "2003-03-24",
+                "center": "AFRC",
+                "selection_reason_th": "metadata ระบุว่าเป็น SR-71B Blackbird หมายเลข 831 ของ Dryden/AFRC ขณะออกจาก Edwards จึงเลือกเป็นภาพลำเต็มตามหน้าที่ของบทความ แต่ runtime text-only ยังไม่ได้ตรวจพิกเซลว่ามุมมองด้านข้างหรือลำเต็มชัดเจนหรือไม่"
+              },
+              {
+                "role": "in_flight",
+                "nasa_id": "EC97-44295-29",
+                "title": "Linear Aerospike SR-71 Experiment (LASRE) first flight takeoff",
+                "source_page": "https://images.nasa.gov/details-EC97-44295-29",
+                "preview_url": "https://images-assets.nasa.gov/image/EC97-44295-29/EC97-44295-29~medium.jpg",
+                "date_created": "1997-10-31",
+                "center": "AFRC",
+                "selection_reason_th": "metadata ระบุว่า A NASA SR-71 takes off ในภารกิจ LASRE first flight ที่ Dryden Flight Research Center จึงตรงกับหน้าที่ภาพขณะขึ้นบิน/บินจริงมากที่สุด"
+              },
+              {
+                "role": "nasa_research",
+                "nasa_id": "EC98-44413-3",
+                "title": "Linear Aerospike SR-71 Experiment (LASRE) ground cold flow test",
+                "source_page": "https://images.nasa.gov/details-EC98-44413-3",
+                "preview_url": "https://images-assets.nasa.gov/image/EC98-44413-3/EC98-44413-3~medium.jpg",
+                "date_created": "1998-02-12",
+                "center": "AFRC",
+                "selection_reason_th": "metadata ระบุว่าเป็น ground cold flow test ของ linear aerospike rocket engine ที่ติดตั้งบนลำ SR-71 จึงตรงกับหน้าที่ภาพงานวิจัย NASA หรืออุปกรณ์ทดลอง"
+              }
+            ],
+            "rights_boundary_th": "ภาพมาจาก NASA Images และ metadata ระบุให้ยึด NASA Media Usage Guidelines; ก่อนเผยแพร่ต้องตรวจสอบโลโก้ บุคคลที่ระบุชื่อได้ เครดิตผู้ถ่ายภาพ/บุคคลที่สาม และข้อจำกัดการรับรองหรือการทำให้เข้าใจว่า NASA สนับสนุนสินค้าหรือบริการ",
+            "visual_verification": "required_external_review",
+            "tool_work_summary": "ใช้ nasa_image_search หลายรอบ คำค้นเฉพาะเริ่มแรกไม่พบผล จึงขยายเป็น SR-71 และ Blackbird; เลือก candidate แล้ว fetch source page และ metadata.json สำเร็จสำหรับภาพที่เลือกและภาพเปรียบเทียบ; การเลือกอาศัย title, description, keywords, date_created และ center จาก metadata เท่านั้น โดย runtime text-only ยังไม่ได้ตรวจพิกเซล"
+          },
+          "sources": [
+            "https://images.nasa.gov/details-EC03-0082-1",
+            "https://images.nasa.gov/details-EC97-44295-29",
+            "https://images.nasa.gov/details-EC98-44413-3"
+          ],
+          "semantic_review": null,
+          "deterministic_checks": {
+            "status_completed": true,
+            "tool_used": true,
+            "schema": true,
+            "three_roles": true,
+            "unique_assets": true,
+            "urls_and_mime": true,
+            "rights_boundary": true
+          },
+          "duration_seconds": null
+        }
+      ]
+    },
+    {
+      "id": "ARTICLE",
+      "title": "เขียนบทความจากหลักฐาน",
+      "description": "ใช้ verified claim pack ที่ freeze จากผลค้นเว็บ เขียนบทความ 4 ส่วนโดยห้ามเพิ่มข้อเท็จจริง",
+      "ready": 1,
+      "records": [
+        {
+          "id": "ARTICLE-10101",
+          "track": "ARTICLE",
+          "seed": 10101,
+          "status": "completed",
+          "outcome": "fail",
+          "elapsed_seconds": 93.03195405006409,
+          "decode_tokens_per_second": 42.51384333460224,
+          "tool_counts": {},
+          "output": {
+            "title": "SR-71 Blackbird: จากต้นแบบลับสู่ห้องปฏิบัติการลอยฟ้าของ NASA",
+            "dek": "Blackbird ไม่ใช่เพียงชื่อเครื่องบิน แต่เป็นเส้นทางการออกแบบที่เริ่มอย่างลับในปลายทศวรรษ 1950 และถูกนำกลับมาใช้ในฐานะ testbed งานวิจัยของ NASA ในทศวรรษ 1990",
+            "sections": [
+              {
+                "heading": "ความเร็วและเพดานที่ออกแบบมา",
+                "body": "NASA ระบุว่า Blackbirds ถูกออกแบบให้เดินทางที่ Mach 3.2 ซึ่งมากกว่า 3 เท่าของความเร็วเสียง หรือมากกว่า 2,200 ไมล์ต่อชั่วโมง และถูกออกแบบให้ปฏิบัติการที่ความสูงได้ถึง 85,000 ฟุต ตัวเลขทั้งสองสะท้อนเป้าหมายทางวิศวกรรมที่ท้าทายมากในยุคนั้น เพราะการออกแบบให้บินเร็วขนาดนั้นและไต่สูงขนาดนั้นต้องแก้ปัญหาความร้อนของโครงสร้าง การออกแบบระบบขับเคลื่อน และการควบคุมการบินไปพร้อมกัน SR-71 บินครั้งแรกเมื่อวันที่ 22 ธันวาคม 1964 ซึ่งยืนยันว่าเครื่องบินตระกูลนี้ถูกสร้างขึ้นมาจริงและผ่านการทดสอบการบินในระดับที่ระบุไว้"
+              },
+              {
+                "heading": "ต้นกำเนิดลับ: สายการออกแบบ A-12",
+                "body": "NASA ระบุว่าสายการออกแบบ Blackbird เริ่มต้นอย่างลับในปลายทศวรรษ 1950 กับ A-12 ซึ่งเป็นอากาศยานลาดตระเวน A-12 บินครั้งแรกในเดือนเมษายน 1962 และยังคงเป็นความลับจนถึงปี 1976 สิ่งสำคัญที่ควรเข้าใจคือ A-12 เป็นจุดเริ่มต้นของสายการออกแบบ (design lineage) ของตระกูล Blackbird ไม่ใช่ภารกิจเฉพาะของ SR-71 ตัวเอง การที่ A-12 เป็นอากาศยานลาดตระเวนและถูกจัดเป็นความลับยาวนานกว่าทศวรรษ สะท้อนบริบททางประวัติศาสตร์ที่การออกแบบนี้เกิดขึ้น แต่แหล่งหลักฐานที่ตรึงไว้ไม่ได้ระบุรายละเอียดภารกิจทางทหารเพิ่มเติมของ A-12 หรือของ SR-71 ในยุคก่อนทศวรรษ 1990 ดังนั้นจึงไม่ควรขยายความเกินกว่าที่แหล่งระบุ"
+              },
+              {
+                "heading": "NASA กับบทบาท testbed ในทศวรรษ 1990",
+                "body": "ในทศวรรษ 1990 NASA ใช้ SR-71 สองลำ ได้แก่ SR-71A และ SR-71B รุ่นฝึก เป็น testbeds สำหรับงานวิจัยการบินความเร็วสูงและเพดานสูงที่ Dryden โดยยืมจากกองทัพอากาศสหรัฐฯ กิจกรรม SR-71 ที่ Dryden เป็นส่วนหนึ่งของโครงการวิจัยการบินความเร็วสูงของ NASA ในภาพรวม และเกี่ยวข้องกับศูนย์ NASA อื่น หน่วยงานรัฐบาล มหาวิทยาลัย และบริษัทพาณิชย์ ข้อแตกต่างสำคัญระหว่างส่วนนี้กับสายการออกแบบ A-12 คือ A-12 เป็นจุดกำเนิดของการออกแบบในปลายทศวรรษ 1950 ส่วนการใช้ SR-71 เป็น testbed เป็นการใช้งานในทศวรรษ 1990 ที่ NASA ยืมเครื่องบินมาเพื่อวัตถุประสงค์งานวิจัยทางอากาศพลศาสตร์ ไม่ใช่เพื่อปฏิบัติการลาดตระเวนหรือภารกิจใด ๆ ที่ pack ไม่ได้ระบุ"
+              },
+              {
+                "heading": "ข้อมูลวิจัยเพื่ออากาศยานแห่งอนาคต",
+                "body": "NASA ระบุว่าข้อมูลจากโครงการวิจัย SR-71 จะช่วยนักออกแบบอากาศยาน supersonic และ hypersonic รวมถึงระบบขับเคลื่อนในอนาคต กล่าวคือ เป้าหมายหลักของงานวิจัยนี้ไม่ใช่การบันทึกสถิติความเร็วหรือเพดานบิน แต่เป็นการเก็บข้อมูลทางอากาศพลศาสตร์และพฤติกรรมของระบบขับเคลื่อนในสภาวะที่เครื่องบินพาณิชย์หรืออากาศยานรุ่นถัดไปอาจต้องเผชิญ ข้อมูลเหล่านี้จึงมีคุณค่าในฐานะพื้นฐานทางวิศวกรรมมากกว่าในฐานะตัวเลขสถิติ"
+              }
+            ],
+            "caution": "ข้อควรระวังเรื่องคำอ้างเกินหลักฐาน: (1) ห้ามเรียก SR-71 ว่าเครื่องบินที่เร็วที่สุดในโลกโดยไม่มีขอบเขตและแหล่งจัดอันดับ (2) คำว่าออกแบบให้ปฏิบัติการได้ถึง 85,000 ฟุตเป็นค่าออกแบบ ไม่ใช่สถิติของทุกเที่ยวบิน (3) NASA ไม่ได้เป็นเจ้าของเครื่องบิน แหล่งระบุว่ายืมจากกองทัพอากาศสหรัฐฯ (4) ห้ามกล่าวว่า SR-71 ยังประจำการหรือยังบินอยู่ในปัจจุบันจากแหล่งประวัติศาสตร์นี้ (5) ห้ามเพิ่มตัวเลข Mach 3.35 หรือ 3,529.63 กิโลเมตรต่อชั่วโมง เพราะไม่อยู่ในแหล่งที่ตรึงไว้",
+            "source_urls": [
+              "https://www.nasa.gov/image-article/sr-71/",
+              "https://www.nasa.gov/image-article/where-are-they-now-sr-71a-844/"
+            ]
+          },
+          "sources": [
+            "https://www.nasa.gov/image-article/sr-71/",
+            "https://www.nasa.gov/image-article/where-are-they-now-sr-71a-844/"
+          ],
+          "semantic_review": {
+            "alias": "4cc5ebaf7d9f",
+            "verdict": "fail",
+            "factual_errors": [
+              "เติมกลไกเรื่องความร้อนของโครงสร้าง การควบคุมการบิน และการแก้ระบบขับเคลื่อนซึ่ง claim pack ไม่ได้ระบุ",
+              "กล่าวว่าการบินครั้งแรกยืนยันว่าเครื่องบินผ่านการทดสอบในระดับ Mach/ความสูงที่ระบุ ทั้งที่ claim pack ไม่ได้เชื่อมข้อเท็จจริงสองส่วนนี้",
+              "ขยายว่างานวิจัยเก็บข้อมูลอากาศพลศาสตร์และพฤติกรรมระบบขับเคลื่อนในสภาวะสำหรับเครื่องบินพาณิชย์หรืออากาศยานรุ่นถัดไปเกินหลักฐาน"
+            ],
+            "edit_notes": [
+              "ตัดกลไกและเหตุผลเชิงสาเหตุที่ไม่มีใน C1–C7 แล้วเขียนจาก claim pack ตรง ๆ"
+            ],
+            "concise_finding_th": "โครงสร้างดีแต่มีคำอธิบายเชิงวิศวกรรมและเหตุผลเชิงสาเหตุที่ไม่ได้อยู่ในหลักฐาน จึงไม่พร้อมใช้",
+            "review_method": "parent_semantic_review_after_current-v2-delegated-review-timeout"
+          },
+          "deterministic_checks": {
+            "status_completed": true,
+            "claim_pack_hash": true,
+            "schema": true,
+            "structure": true,
+            "numbers_bounded": true,
+            "sources_bounded": true,
+            "blocked_claims_absent": true
+          },
+          "duration_seconds": null
+        },
+        {
+          "id": "ARTICLE-20202",
+          "track": "ARTICLE",
+          "seed": 20202,
+          "status": "completed",
+          "outcome": "ready",
+          "elapsed_seconds": 80.25015902519226,
+          "decode_tokens_per_second": 43.52239318448649,
+          "tool_counts": {},
+          "output": {
+            "title": "จาก A-12 สู่ห้องปฏิบัติการบนฟ้า: บทบาท SR-71 Blackbird ในงานวิจัยของ NASA",
+            "dek": "สายการออกแบบ Blackbird เริ่มต้นอย่างลับในปลายทศวรรษ 1950 กับ A-12 reconnaissance aircraft ส่วน SR-71 สองลำถูกยืมมาเป็น testbed งานวิจัยการบินของ NASA ในทศวรรษ 1990 สองสิ่งนี้ต่างกันและควรแยกให้ออก",
+            "sections": [
+              {
+                "heading": "จุดเริ่มต้นของสายการออกแบบ: A-12 reconnaissance aircraft",
+                "body": "NASA ระบุว่าสายการออกแบบ Blackbird เริ่มต้นอย่างลับในช่วงปลายทศวรรษ 1950 กับ A-12 ซึ่งเป็นอากาศยานลาดตระเวน (reconnaissance aircraft) A-12 บินครั้งแรกในเดือนเมษายน 1962 และยังคงเป็นความลับจนถึงปี 1976 ข้อเท็จจริงนี้บอกเราว่า A-12 คือต้นทางของสายการออกแบบ Blackbird ในเชิงวิศวกรรม ไม่ใช่ภารกิจเฉพาะของ SR-71 เอง รายละเอียดทางทหารของ A-12 ไม่ได้อยู่ในขอบเขตของแหล่งข้อมูลนี้ จึงไม่สามารถขยายออกไปเป็นภารกิจหรือข้อมูลปฏิบัติการของ SR-71 ได้"
+              },
+              {
+                "heading": "SR-71: การบินครั้งแรกและขีดความสามารถที่ออกแบบไว้",
+                "body": "SR-71 บินครั้งแรกเมื่อวันที่ 22 ธันวาคม 1964 NASA ระบุว่า Blackbirds ถูกออกแบบให้เดินทางที่ Mach 3.2 ซึ่งมากกว่า 3 เท่าของความเร็วเสียง หรือมากกว่า 2,200 ไมล์ต่อชั่วโมง และถูกออกแบบให้ปฏิบัติการที่ความสูงได้ถึง 85,000 ฟุต คำว่า \"ถูกออกแบบให้\" เป็นคำสำคัญ เพราะหมายถึงขีดความสามารถที่วางไว้ในการออกแบบ ไม่ใช่สถิติหรือผลที่ทุกเที่ยวบินต้องไปถึง และไม่ได้หมายความว่า SR-71 เป็นเครื่องบินที่เร็วที่สุดในโลกโดยไม่มีขอบเขตหรือแหล่งจัดอันดับมาสนับสนุน"
+              },
+              {
+                "heading": "SR-71 สองลำในฐานะ testbed ของ NASA ในทศวรรษ 1990",
+                "body": "ในทศวรรษ 1990 NASA ใช้ SR-71 สองลำ ได้แก่ SR-71A และ SR-71B รุ่นฝึก เป็น testbeds สำหรับงานวิจัยการบินความเร็วสูงและเพดานสูงที่ Dryden เครื่องบินทั้งสองลำถูกยืมจากกองทัพอากาศสหรัฐฯ หมายความว่า NASA ไม่ได้เป็นเจ้าของอากาศยานเหล่านี้ กิจกรรม SR-71 ที่ Dryden เป็นส่วนหนึ่งของโครงการวิจัยการบินความเร็วสูงของ NASA ในภาพรวม และเกี่ยวข้องกับศูนย์ NASA อื่น หน่วยงานรัฐบาล มหาวิทยาลัย และบริษัทพาณิชย์ การยืมเครื่องบินมาใช้เป็น testbed จึงเป็นบทบาทเชิงวิจัย ไม่ใช่การประจำการหรือการปฏิบัติการทางทหาร"
+              },
+              {
+                "heading": "ข้อมูลวิจัยเพื่ออากาศยาน supersonic และ hypersonic ในอนาคต",
+                "body": "NASA ระบุว่าข้อมูลจากโครงการวิจัย SR-71 จะช่วยนักออกแบบอากาศยาน supersonic และ hypersonic ในอนาคต รวมถึงระบบขับเคลื่อน การระบุนี้จัดเป็นประโยชน์ในเชิงอนาคตตามที่แหล่งข้อมูลกล่าว ไม่ใช่ผลลัพธ์ที่วัดได้ ณ ขณะนั้น และไม่ได้หมายความว่าโครงการเสร็จสิ้นแล้วหรือมีตัวเลขผลลัพธ์เฉพาะที่ระบุไว้ในแหล่งนี้"
+              }
+            ],
+            "caution": "ข้อควรระวังเรื่องคำอ้างเกินหลักฐาน: ห้ามเรียก SR-71 ว่าเครื่องบินที่เร็วที่สุดในโลกโดยไม่มีขอบเขตและแหล่งจัดอันดับ ห้ามเปลี่ยนคำว่า \"ออกแบบให้ปฏิบัติการได้ถึง 85,000 ฟุต\" เป็นสถิติของทุกเที่ยวบิน ห้ามกล่าวว่า NASA เป็นเจ้าของเครื่องบินเพราะแหล่งระบุว่ายืมจากกองทัพอากาศสหรัฐฯ ห้ามกล่าวว่ายังประจำการหรือยังบินอยู่ในปัจจุบันจากแหล่งประวัติศาสตร์นี้ และห้ามเพิ่มตัวเลข Mach 3.35 หรือ 3,529.63 กิโลเมตรต่อชั่วโมงเพราะไม่อยู่ในแหล่งที่ตรึงไว้",
+            "source_urls": [
+              "https://www.nasa.gov/image-article/sr-71/",
+              "https://www.nasa.gov/image-article/where-are-they-now-sr-71a-844/"
+            ]
+          },
+          "sources": [
+            "https://www.nasa.gov/image-article/sr-71/",
+            "https://www.nasa.gov/image-article/where-are-they-now-sr-71a-844/"
+          ],
+          "semantic_review": {
+            "alias": "4d74abd28bfb",
+            "verdict": "ready",
+            "factual_errors": [],
+            "edit_notes": [],
+            "concise_finding_th": "แยกสายการออกแบบ A-12 ออกจากบทบาท testbed ของ NASA และรักษาขอบเขตทุกตัวเลขได้ตรง claim pack",
+            "review_method": "parent_semantic_review_after_current-v2-delegated-review-timeout"
+          },
+          "deterministic_checks": {
+            "status_completed": true,
+            "claim_pack_hash": true,
+            "schema": true,
+            "structure": true,
+            "numbers_bounded": true,
+            "sources_bounded": true,
+            "blocked_claims_absent": true
+          },
+          "duration_seconds": null
+        },
+        {
+          "id": "ARTICLE-30303",
+          "track": "ARTICLE",
+          "seed": 30303,
+          "status": "completed",
+          "outcome": "needs_edit",
+          "elapsed_seconds": 83.58580207824707,
+          "decode_tokens_per_second": 42.605949396623906,
+          "tool_counts": {},
+          "output": {
+            "title": "SR-71 Blackbird: จากสายลับแห่งปลายทศวรรษ 1950 สู่ห้องปฏิบัติการวิจัยของ NASA",
+            "dek": "เส้นทางของ Blackbird เริ่มจาก A-12 อากาศยานลาดตระเวนที่ซ่อนอยู่ในความลับจนถึงปี 1976 จากนั้น SR-71 บินครั้งแรกในปี 1964 และในทศวรรษ 1990 NASA ยืม SR-71 สองลำมาเป็น testbed วิจัยการบินความเร็วสูงที่ Dryden ทั้งหมดนี้คือสิ่งที่แหล่งข้อมูลของ NASA ระบุไว้",
+            "sections": [
+              {
+                "heading": "ต้นกำเนิดที่ซ่อนอยู่ในเงา: A-12 กับสายการออกแบบ Blackbird",
+                "body": "NASA ระบุว่าสายการออกแบบ Blackbird เริ่มต้นอย่างลับในปลายทศวรรษ 1950 กับ A-12 ซึ่งเป็นอากาศยานลาดตระเวน A-12 บินครั้งแรกในเดือนเมษายน 1962 และยังเป็นความลับจนถึงปี 1976 สิ่งที่ต้องแยกให้ออกคือ A-12 เป็นอากาศยานลาดตระเวนที่มาก่อน SR-71 ในสายการออกแบบเดียวกัน การที่ NASA ระบุข้อมูลนี้หมายความว่า Blackbird ไม่ใช่ชื่อของอากาศยานลำเดียว แต่เป็นตระกูลของอากาศยานที่พัฒนาต่อกันจาก A-12 สู่ SR-71 โดยรายละเอียดทางทหารเฉพาะของภารกิจ A-12 ไม่ได้ถูกระบุในแหล่งข้อมูลนี้ ดังนั้นการอ่านข้อมูลนี้จึงควรเข้าใจในฐานะประวัติสายการออกแบบ ไม่ใช่การเล่าภารกิจบินใดภารกิจหนึ่งของ SR-71"
+              },
+              {
+                "heading": "SR-71 บินครั้งแรกและตัวเลขที่ออกแบบไว้",
+                "body": "SR-71 บินครั้งแรกเมื่อวันที่ 22 ธันวาคม 1964 NASA ระบุว่า Blackbirds ถูกออกแบบให้เดินทางที่ Mach 3.2 ซึ่งมากกว่า 3 เท่าของความเร็วเสียง หรือมากกว่า 2,200 ไมล์ต่อชั่วโมง และถูกออกแบบให้ปฏิบัติการที่ความสูงได้ถึง 85,000 ฟุต ตัวเลขเหล่านี้เป็นสเปกที่ออกแบบไว้ ไม่ใช่สถิติของทุกเที่ยวบิน การที่แหล่งข้อมูลใช้คำว่า \"ออกแบบให้\" แสดงว่าค่าเหล่านี้เป็นเป้าหมายทางวิศวกรรม ไม่ใช่บันทึกผลการบินจริงในแต่ละครั้ง"
+              },
+              {
+                "heading": "NASA ยืม Blackbird สองลำมาเป็น testbed ในทศวรรษ 1990",
+                "body": "ในทศวรรษ 1990 NASA ใช้ SR-71 สองลำ ได้แก่ SR-71A และ SR-71B รุ่นฝึก เป็น testbeds สำหรับงานวิจัยการบินความเร็วสูงและเพดานสูงที่ Dryden โดยยืมจากกองทัพอากาศสหรัฐฯ NASA ไม่ได้เป็นเจ้าของเครื่องบินทั้งสองลำ แต่รับยืมมาเพื่อใช้งานวิจัยเฉพาะกิจ กิจกรรม SR-71 ที่ Dryden เป็นส่วนหนึ่งของโครงการวิจัยการบินความเร็วสูงของ NASA โดยรวม และเกี่ยวข้องกับศูนย์ NASA อื่น หน่วยงานรัฐบาล มหาวิทยาลัย และบริษัทพาณิชย์ การมีส่วนร่วมของหลายฝ่ายนี้ชี้ว่างานวิจัย SR-71 ในทศวรรษ 1990 ไม่ใช่โครงการที่ NASA ทำลำพัง แต่เป็นความร่วมมือข้ามองค์กร"
+              },
+              {
+                "heading": "ข้อมูลวิจัยเพื่ออากาศยานความเร็วสูงในอนาคต",
+                "body": "NASA ระบุว่าข้อมูลจากโครงการวิจัย SR-71 จะช่วยนักออกแบบอากาศยาน supersonic และ hypersonic รวมถึงระบบขับเคลื่อนในอนาคต กล่าวอีกนัยหนึ่ง การที่ NASA ยืม SR-71 มาบินวิจัยไม่ได้มีเป้าหมายเพียงการทดสอบเครื่องบินลำนั้น แต่เป็นการเก็บข้อมูลเพื่อนำไปใช้กับเทคโนโลยีการบินความเร็วสูงในรุ่นถัดไป คำว่า \"จะช่วยให้\" ในแหล่งข้อมูลเป็นคำกล่าวถึงประโยชน์ในอนาคต ไม่ใช่การยืนยันผลสำเร็จที่วัดได้ ณ จุดที่บทความถูกเขียน"
+              }
+            ],
+            "caution": "ข้อควรระวังเรื่องคำอ้างเกินหลักฐาน: (1) ห้ามเรียก SR-71 ว่าเครื่องบินที่เร็วที่สุดในโลกโดยไม่มีขอบเขตและแหล่งจัดอันดับ (2) ตัวเลข 85,000 ฟุตเป็นความสูงที่ออกแบบให้ปฏิบัติการถึง ไม่ใช่สถิติของทุกเที่ยวบิน (3) NASA ไม่ได้เป็นเจ้าของ SR-71 เพราะแหล่งระบุว่ายืมจากกองทัพอากาศสหรัฐฯ (4) ห้ามระบุว่า SR-71 ยังประจำการหรือยังบินอยู่ในปัจจุบันจากแหล่งประวัติศาสตร์นี้ (5) ห้ามเพิ่มตัวเลข Mach 3.35 หรือ 3,529.63 กิโลเมตรต่อชั่วโมง เพราะไม่อยู่ในแหล่งที่ตรึงไว้",
+            "source_urls": [
+              "https://www.nasa.gov/image-article/sr-71/",
+              "https://www.nasa.gov/image-article/where-are-they-now-sr-71a-844/"
+            ]
+          },
+          "sources": [
+            "https://www.nasa.gov/image-article/sr-71/",
+            "https://www.nasa.gov/image-article/where-are-they-now-sr-71a-844/"
+          ],
+          "semantic_review": {
+            "alias": "b1af8decc1e3",
+            "verdict": "needs_edit",
+            "factual_errors": [],
+            "edit_notes": [
+              "เปลี่ยนหัวเรื่องคำว่าสายลับเป็นอากาศยานลาดตระเวนตามแหล่ง",
+              "ลดข้อสรุปว่าหลายฝ่ายเท่ากับความร่วมมือข้ามองค์กร และระบุว่าเป็นหน่วยงานที่เกี่ยวข้องตาม NASA"
+            ],
+            "concise_finding_th": "ข้อเท็จจริงหลักถูกต้อง แต่หัวเรื่องและ framing บางส่วนแรงกว่าหลักฐาน จึงควรแก้ก่อนใช้",
+            "review_method": "parent_semantic_review_after_current-v2-delegated-review-timeout"
+          },
+          "deterministic_checks": {
+            "status_completed": true,
+            "claim_pack_hash": true,
+            "schema": true,
+            "structure": true,
+            "numbers_bounded": true,
+            "sources_bounded": true,
+            "blocked_claims_absent": true
+          },
+          "duration_seconds": null
+        }
+      ]
+    },
+    {
+      "id": "SCRIPT",
+      "title": "เขียนบทพูดจากหลักฐาน",
+      "description": "ใช้ claim pack เดียวกันเขียนบทพูด 60–75 วินาที แล้ววัดด้วย Thai system-voice scratch",
+      "ready": 0,
+      "records": [
+        {
+          "id": "SCRIPT-10101",
+          "track": "SCRIPT",
+          "seed": 10101,
+          "status": "completed",
+          "outcome": "needs_edit",
+          "elapsed_seconds": 48.62593483924866,
+          "decode_tokens_per_second": 43.150518678183275,
+          "tool_counts": {},
+          "output": {
+            "hook": "เคยลองนึกภาพไหมครับ... เครื่องบินที่ออกแบบมาให้บินได้ Mach 3.2 สูงได้ถึง 85,000 ฟุต... มันถูกสร้างมาเพื่ออะไรกันจริง ๆ?",
+            "spoken_script": "เคยลองนึกภาพไหมครับ... เครื่องบินที่ออกแบบมาให้บินได้ Mach 3.2 คือมากกว่าสามเท่าของความเร็วเสียง และสูงได้ถึง 85,000 ฟุต... มันถูกสร้างมาเพื่ออะไรกันจริง ๆ?\n\nเอาแบบนี้ครับ สายการออกแบบ Blackbird มันไม่ได้เริ่มจาก SR-71 ตรง ๆ นะ มันเริ่มต้นอย่างลับ ๆ ในปลายทศวรรษ 1950 กับ A-12 ซึ่งเป็นอากาศยานลาดตระเวน บินครั้งแรกเดือนเมษายน 1962 และยังเป็นความลับอยู่ถึงปี 1976 ก่อนที่ SR-71 จะบินครั้งแรกเมื่อวันที่ 22 ธันวาคม 1964\n\nแต่จุดที่พี่อยากให้ฟังคือ... ในทศวรรษ 1990 NASA ไม่ได้เป็นเจ้าของเครื่องบินพวกนี้ครับ มันยืมมาจากกองทัพอากาศสหรัฐฯ สองลำ SR-71A กับ SR-71B รุ่นฝึก มาเป็น testbeds สำหรับงานวิจัยการบินความเร็วสูงและเพดานสูงที่ Dryden เป็นส่วนหนึ่งของโครงการวิจัยการบินความเร็วสูงของ NASA ที่เกี่ยวข้องกับศูนย์ NASA อื่น หน่วยงานรัฐบาล มหาวิทยาลัย และบริษัทพาณิชย์\n\nแล้ว payoff คืออะไร? NASA บอกว่าข้อมูลจากโครงการวิจัย SR-71 จะช่วยนักออกแบบอากาศยาน supersonic และ hypersonic รวมถึงระบบขับเคลื่อนในอนาคต",
+            "on_screen_facts": [
+              "ออกแบบให้ cruise ที่ Mach 3.2 มากกว่า 2,200 ไมล์ต่อชั่วโมง",
+              "ออกแบบให้ปฏิบัติการที่ความสูงได้ถึง 85,000 ฟุต",
+              "A-12 reconnaissance บินครั้งแรก เม.ย. 1962 / เป็นความลับถึง 1976",
+              "SR-71 บินครั้งแรก 22 ธ.ค. 1964",
+              "ทศวรรษ 1990: NASA ยืม SR-71A + SR-71B จากกองทัพอากาศสหรัฐฯ เป็น testbeds ที่ Dryden",
+              "ข้อมูลวิจัยช่วยนักออกแบบ supersonic/hypersonic aircraft และ propulsion systems ในอนาคต"
+            ],
+            "source_urls": [
+              "https://www.nasa.gov/image-article/sr-71/",
+              "https://www.nasa.gov/image-article/where-are-they-now-sr-71a-844/"
+            ]
+          },
+          "sources": [
+            "https://www.nasa.gov/image-article/sr-71/",
+            "https://www.nasa.gov/image-article/where-are-they-now-sr-71a-844/"
+          ],
+          "semantic_review": {
+            "alias": "15da6829cf5b",
+            "verdict": "needs_edit",
+            "factual_errors": [],
+            "edit_notes": [
+              "ตัดให้เหลือ 60–75 วินาทีจากผลจับเวลา 113.41 วินาที",
+              "แก้ hook ที่ถามว่าถูกสร้างมาเพื่ออะไร เพราะบทไม่ได้ตอบภารกิจเฉพาะของ SR-71 จาก claim pack"
+            ],
+            "concise_finding_th": "ข้อมูลหลักตรงแหล่ง แต่บทพูดยาวเกินเป้าและ hook ชวนให้คาดหวังคำตอบที่หลักฐานชุดนี้ไม่ได้ให้",
+            "review_method": "parent_semantic_review_after_current-v2-delegated-review-timeout"
+          },
+          "deterministic_checks": {
+            "status_completed": true,
+            "claim_pack_hash": true,
+            "schema": true,
+            "structure": true,
+            "numbers_bounded": true,
+            "sources_bounded": true,
+            "blocked_claims_absent": true
+          },
+          "duration_seconds": 113.411111
+        },
+        {
+          "id": "SCRIPT-20202",
+          "track": "SCRIPT",
+          "seed": 20202,
+          "status": "completed",
+          "outcome": "needs_edit",
+          "elapsed_seconds": 56.24188804626465,
+          "decode_tokens_per_second": 43.663721473199,
+          "tool_counts": {},
+          "output": {
+            "hook": "เคยสงสัยไหมว่า เครื่องบินที่ออกแบบมาครุยซ์ที่ Mach 3.2 มันถูกยืมไปทำวิจัยให้ NASA ได้ยังไง?",
+            "spoken_script": "เคยสงสัยไหมว่า เครื่องบินที่ออกแบบมาครุยซ์ที่ Mach 3.2 — เกินสามเท่าของเสียง มากกว่า 2,200 ไมล์ต่อชั่วโมง — มันถูกยืมไปทำวิจัยให้ NASA ได้ยังไง? Blackbirds ถูกออกแบบให้ปฏิบัติการที่ความสูงได้ถึง 85,000 ฟุตนะ และสายการออกแบบของมันเริ่มอย่างลับในปลายทศวรรษ 1950 กับ A-12 อากาศยานลาดตระเวน บินครั้งแรกเมษายน 1962 ยังเป็นความลับถึงปี 1976 ส่วน SR-71 บินครั้งแรก 22 ธันวาคม 1964 แต่จุดที่อยากเล่าคือ ในทศวรรษ 1990 NASA ไม่ได้เป็นเจ้าของเครื่องนี้นะ กองทัพอากาศสหรัฐฯ ยืม SR-71A กับ SR-71B รุ่นฝึกมาให้สองลำ เป็น testbeds สำหรับงานวิจัยการบินความเร็วสูงและเพดานสูงที่ Dryden เป็นส่วนหนึ่งของโครงการวิจัยการบินความเร็วสูงของ NASA ที่เกี่ยวข้องกับศูนย์ NASA อื่น หน่วยงานรัฐบาล มหาวิทยาลัย และบริษัทพาณิชย์ และ payoff คือ ข้อมูลจากโครงการนี้ NASA ระบุว่าจะช่วยนักออกแบบอากาศยาน supersonic กับ hypersonic ในอนาคต รวมถึงระบบขับเคลื่อน",
+            "on_screen_facts": [
+              "ออกแบบครุยซ์ Mach 3.2 / >2,200 mph / สูงได้ถึง 85,000 ft",
+              "A-12 reconnaissance บินครั้งแรก เม.ย. 1962 / เป็นความลับถึง 1976",
+              "SR-71 บินครั้งแรก 22 ธ.ค. 1964",
+              "ทศวรรษ 1990: ยืม SR-71A + SR-71B จาก USAF → testbed ที่ Dryden",
+              "ข้อมูลช่วยออกแบบ supersonic/hypersonic และระบบขับเคลื่อนอนาคต"
+            ],
+            "source_urls": [
+              "https://www.nasa.gov/image-article/sr-71/",
+              "https://www.nasa.gov/image-article/where-are-they-now-sr-71a-844/"
+            ]
+          },
+          "sources": [
+            "https://www.nasa.gov/image-article/sr-71/",
+            "https://www.nasa.gov/image-article/where-are-they-now-sr-71a-844/"
+          ],
+          "semantic_review": {
+            "alias": "f5466be4076b",
+            "verdict": "needs_edit",
+            "factual_errors": [],
+            "edit_notes": [
+              "ตัดให้เหลือ 60–75 วินาทีจากผลจับเวลา 105.97 วินาที",
+              "แก้ข้อความบนจอให้คงคำว่าออกแบบให้ปฏิบัติการได้ถึง 85,000 ฟุต"
+            ],
+            "concise_finding_th": "ข้อเท็จจริงและการระบุว่า NASA ยืมเครื่องบินถูกต้อง แต่ความยาวเกินเป้าและข้อความบนจอต้องรักษาคำกำกับค่าออกแบบ",
+            "review_method": "parent_semantic_review_after_current-v2-delegated-review-timeout"
+          },
+          "deterministic_checks": {
+            "status_completed": true,
+            "claim_pack_hash": true,
+            "schema": true,
+            "structure": true,
+            "numbers_bounded": true,
+            "sources_bounded": true,
+            "blocked_claims_absent": true
+          },
+          "duration_seconds": 105.969116
+        },
+        {
+          "id": "SCRIPT-30303",
+          "track": "SCRIPT",
+          "seed": 30303,
+          "status": "completed",
+          "outcome": "fail",
+          "elapsed_seconds": 51.65705704689026,
+          "decode_tokens_per_second": 42.23795426853307,
+          "tool_counts": {},
+          "output": {
+            "hook": "เคยสงสัยไหมว่า เครื่องบินที่ออกแบบมาเพื่อครุยที่ Mach 3.2 เกิน 3 เท่าของเสียง… วันนี้กลายเป็นห้องแล็บลอยฟ้าของ NASA ได้ยังไง?",
+            "spoken_script": "ลองนึกภาพนะ พี่น้อง… NASA ระบุว่า Blackbirds ถูกออกแบบให้ครุยที่ Mach 3.2 ซึ่งเร็วกว่า 3 เท่าของเสียง หรือมากกว่า 2,200 ไมล์ต่อชั่วโมง แล้วก็ออกแบบให้ปฏิบัติการที่ความสูงได้ถึง 85,000 ฟุตนะ\n\nแล้วรู้ไหมว่าสายการออกแบบนี้ไม่ได้เริ่มที่ SR-71 ตรงๆ มันเริ่มอย่างลับในปลายทศวรรษ 1950 กับ A-12 อากาศยานลาดตระเวนที่บินครั้งแรกเมษายน 1962 และเป็นความลับจนกระทั่งปี 1976 ส่วน SR-71 เองบินครั้งแรก 22 ธันวาคม 1964\n\nแต่หักมุมตรงนี้… ในทศวรรษ 1990 กองทัพอากาศสหรัฐฯ ยืม SR-71 สองลำ — SR-71A กับ SR-71B รุ่นฝึก — ให้ NASA ใช้เป็น testbeds สำหรับงานวิจัยการบินความเร็วสูงและเพดานสูงที่ Dryden นะ ไม่ใช่ NASA เป็นเจ้าของ แต่ยืมมา\n\nกิจกรรมนี้เป็นส่วนหนึ่งของโครงการวิจัยการบินความเร็วสูงของ NASA ทั้งระบบ มีศูนย์ NASA อื่น หน่วยงานรัฐบาล มหาวิทยาลัย และบริษัทพาณิชย์ร่วมด้วย\n\nและ payoff ที่สำคัญคือ NASA ระบุว่าข้อมูลจากโครงการวิจัย SR-71 จะช่วยนักออกแบบอากาศยาน supersonic กับ hypersonic รวมถึงระบบขับเคลื่อนในอนาคต",
+            "on_screen_facts": [
+              "ออกแบบครุย Mach 3.2 | มากกว่า 2,200 ไมล์/ชม. (C1)",
+              "ออกแบบปฏิบัติการได้ถึง 85,000 ฟุต (C2)",
+              "A-12 reconnaissance บินครั้งแรก เม.ย. 1962 | เป็นความลับถึง 1976 (C7)",
+              "SR-71 first flight 22 ธ.ค. 1964 (C3)",
+              "ทศวรรษ 1990: SR-71A + SR-71B ยืมจาก USAF → NASA Dryden (C4)",
+              "ข้อมูลวิจัยช่วยออกแบบ supersonic/hypersonic aircraft & propulsion ในอนาคต (C6)"
+            ],
+            "source_urls": [
+              "https://www.nasa.gov/image-article/sr-71/",
+              "https://www.nasa.gov/image-article/where-are-they-now-sr-71a-844/"
+            ]
+          },
+          "sources": [
+            "https://www.nasa.gov/image-article/sr-71/",
+            "https://www.nasa.gov/image-article/where-are-they-now-sr-71a-844/"
+          ],
+          "semantic_review": {
+            "alias": "99ec3552028f",
+            "verdict": "fail",
+            "factual_errors": [
+              "hook ใช้คำว่าวันนี้กลายเป็นห้องแล็บลอยฟ้าของ NASA ซึ่งสื่อสถานะปัจจุบัน ทั้งที่หลักฐานรองรับการใช้ในทศวรรษ 1990 เท่านั้น"
+            ],
+            "edit_notes": [
+              "เปลี่ยนวันนี้เป็นในทศวรรษ 1990",
+              "ตัดให้เหลือ 60–75 วินาทีจากผลจับเวลา 120.52 วินาที"
+            ],
+            "concise_finding_th": "เนื้อหาส่วนใหญ่ตรง claim pack แต่ hook ทำให้สถานะเวลาผิดสาระสำคัญและบทพูดยาวเกินเป้า",
+            "review_method": "parent_semantic_review_after_current-v2-delegated-review-timeout"
+          },
+          "deterministic_checks": {
+            "status_completed": true,
+            "claim_pack_hash": true,
+            "schema": true,
+            "structure": true,
+            "numbers_bounded": true,
+            "sources_bounded": true,
+            "blocked_claims_absent": true
+          },
+          "duration_seconds": 120.516417
+        }
+      ]
+    }
+  ],
+  "disclosures": [
+    "Separate from the closed-pack 24×3 benchmark.",
+    "Q8 is text-only; pixel review is external and disclosed.",
+    "Semantic review uses current parent review because delegated review of fixture v2 timed out; it is not owner/human review.",
+    "NASA media usage requires per-asset credit, logo/personality/non-endorsement checks."
+  ]
+}
