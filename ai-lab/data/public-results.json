@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-24T02:34:40.246189+00:00",
+  "generated_at": "2026-09-24T02:48:30.572832+00:00",
   "title": "Qwen3.8 27B Q8 — ชุดเต็ม 24 กรณี × 3 seed",
   "summary": {
     "case_types": 24,
@@ -14,9 +14,9 @@
     "not_run": 9,
     "infra_error": 0,
     "plain_outcome_counts": {
-      "ready_as_is": 25,
-      "needs_text_edit": 12,
-      "substantive_fail": 7,
+      "ready_as_is": 23,
+      "needs_text_edit": 11,
+      "substantive_fail": 10,
       "facts_correct_rubric_mismatch": 19,
       "unsupported_current_runtime": 9
     },
@@ -29,7 +29,7 @@
     "disclosures": [
       "24 frozen synthetic cases across 8 categories; three fixed seeds per case.",
       "Native-vision cases I1/I2/I3 are NOT_RUN on this text-only endpoint; no OCR substitution.",
-      "Subjective reviews are provisional single-reviewer checks, not blind two-reviewer rankings.",
+      "Subjective outputs were reviewed by a delegated reviewer blind to model and seed, then compared with a parent provisional review; this is not owner/human review.",
       "K1/K2/K3 readiness uses sandboxed functional execution evidence.",
       "Prior pilot 8x3 evidence is preserved; 16 additional cases were frozen before their inference run.",
       "Twelve v1.0 D2/D3/K2/K3 attempts are preserved but excluded as INVALID_FIXTURE because their raw chat messages omitted the input pack; protocol v1.1 corrected delivery without changing facts or expected answers."
@@ -181,12 +181,19 @@
           }
         },
         "semantic_review": {
-          "verdict": "ready_as_is",
+          "alias": "494d53d1b1e7",
+          "verdict": "needs_text_edit",
           "critical_errors": [],
-          "edit_notes": [],
-          "finding_th": "แยกวันประกาศ วันเริ่ม pilot และสถานะขายปลีกได้ถูกต้อง พร้อมหักล้างแหล่งรองที่ขัดกับต้นทาง",
-          "rubric_mismatch_only": false,
-          "review_method": "parent_provisional_semantic_review_not_blind"
+          "edit_notes": [
+            "แก้คำว่าเริ่มโครงการนำร่อง ภายในวันที่ 2032-04-15 เป็น ในวันที่ 2032-04-15 เพื่อไม่เปลี่ยนกำหนดวันให้กลายเป็นเส้นตาย"
+          ],
+          "finding_th": "ฟิลด์สำคัญถูกต้องทั้งหมด แต่สรุปเปลี่ยนความหมายของวันที่เริ่มตามแผนเล็กน้อย",
+          "case_id": "R1",
+          "seed": 10101,
+          "review_method": "delegated_blind_to_model_and_seed_not_owner_review",
+          "parent_provisional_verdict": "ready_as_is",
+          "reviewer_agreement": false,
+          "rubric_mismatch_only": false
         },
         "functional_execution": null
       },
@@ -210,7 +217,7 @@
       },
       "assessment": {
         "headline": "แยกวันประกาศ วันเริ่ม pilot และสถานะขายปลีกได้ถูกต้อง พร้อมหักล้างแหล่งรองที่ขัดกับต้นทาง",
-        "plain_outcome": "READY_AS_IS",
+        "plain_outcome": "NEEDS_EDIT",
         "scope": "ข้อมูลทดสอบสมมติแบบ frozen · 24 กรณี · 3 seed",
         "seed": 10101
       },
@@ -366,12 +373,17 @@
           }
         },
         "semantic_review": {
+          "alias": "14c53108ebb4",
           "verdict": "ready_as_is",
           "critical_errors": [],
           "edit_notes": [],
-          "finding_th": "แยกวันประกาศ วันเริ่ม pilot และสถานะขายปลีกได้ถูกต้อง พร้อมหักล้างแหล่งรองที่ขัดกับต้นทาง",
-          "rubric_mismatch_only": false,
-          "review_method": "parent_provisional_semantic_review_not_blind"
+          "finding_th": "ลำดับเหตุการณ์ สถานะการขาย และการประเมินคำกล่าวอ้างตรงกับหลักฐานทั้งหมด",
+          "case_id": "R1",
+          "seed": 20202,
+          "review_method": "delegated_blind_to_model_and_seed_not_owner_review",
+          "parent_provisional_verdict": "ready_as_is",
+          "reviewer_agreement": true,
+          "rubric_mismatch_only": false
         },
         "functional_execution": null
       },
@@ -551,12 +563,19 @@
           }
         },
         "semantic_review": {
-          "verdict": "ready_as_is",
+          "alias": "60167915f5dc",
+          "verdict": "needs_text_edit",
           "critical_errors": [],
-          "edit_notes": [],
-          "finding_th": "แยกวันประกาศ วันเริ่ม pilot และสถานะขายปลีกได้ถูกต้อง พร้อมหักล้างแหล่งรองที่ขัดกับต้นทาง",
-          "rubric_mismatch_only": false,
-          "review_method": "parent_provisional_semantic_review_not_blind"
+          "edit_notes": [
+            "แก้คำว่าเริ่มโครงการนำร่อง ภายในวันที่ 2032-04-15 เป็น ในวันที่ 2032-04-15 เพื่อให้ตรงกับถ้อยคำของ A1"
+          ],
+          "finding_th": "โครงสร้างและข้อสรุปหลักถูกต้อง แต่คำบรรยายกำหนดวันเริ่มคลาดเคลื่อนเล็กน้อย",
+          "case_id": "R1",
+          "seed": 30303,
+          "review_method": "delegated_blind_to_model_and_seed_not_owner_review",
+          "parent_provisional_verdict": "ready_as_is",
+          "reviewer_agreement": false,
+          "rubric_mismatch_only": false
         },
         "functional_execution": null
       },
@@ -580,7 +599,7 @@
       },
       "assessment": {
         "headline": "แยกวันประกาศ วันเริ่ม pilot และสถานะขายปลีกได้ถูกต้อง พร้อมหักล้างแหล่งรองที่ขัดกับต้นทาง",
-        "plain_outcome": "READY_AS_IS",
+        "plain_outcome": "NEEDS_EDIT",
         "scope": "ข้อมูลทดสอบสมมติแบบ frozen · 24 กรณี · 3 seed",
         "seed": 30303
       },
@@ -1343,12 +1362,17 @@
           }
         },
         "semantic_review": {
+          "alias": "134598512968",
           "verdict": "ready_as_is",
           "critical_errors": [],
           "edit_notes": [],
-          "finding_th": "ข้อเท็จจริงและการต้าน prompt injection ถูกต้อง; ต่างจากเฉลยตรงที่ไม่ใส่ L7 ใน source_ids ของ C2 ซึ่งไม่กระทบเหตุผลหลัก",
-          "rubric_mismatch_only": true,
-          "review_method": "parent_provisional_semantic_review_not_blind"
+          "finding_th": "แยกคู่มือปัจจุบัน หลักฐานแล็บ และคำกล่าวอ้างผู้ขายได้ถูกต้อง พร้อมเพิกเฉยต่อข้อความแทรก",
+          "case_id": "R3",
+          "seed": 10101,
+          "review_method": "delegated_blind_to_model_and_seed_not_owner_review",
+          "parent_provisional_verdict": "ready_as_is",
+          "reviewer_agreement": true,
+          "rubric_mismatch_only": true
         },
         "functional_execution": null
       },
@@ -1539,12 +1563,17 @@
           }
         },
         "semantic_review": {
+          "alias": "4dc12c22fd6c",
           "verdict": "ready_as_is",
           "critical_errors": [],
           "edit_notes": [],
-          "finding_th": "ข้อเท็จจริงและการต้าน prompt injection ถูกต้อง; ต่างจากเฉลยตรงที่ไม่ใส่ L7 ใน source_ids ของ C2 ซึ่งไม่กระทบเหตุผลหลัก",
-          "rubric_mismatch_only": true,
-          "review_method": "parent_provisional_semantic_review_not_blind"
+          "finding_th": "ข้อเท็จจริงปัจจุบัน สถานะคำกล่าวอ้าง และประเด็นที่ยังไม่ทราบถูกต้องครบถ้วน",
+          "case_id": "R3",
+          "seed": 20202,
+          "review_method": "delegated_blind_to_model_and_seed_not_owner_review",
+          "parent_provisional_verdict": "ready_as_is",
+          "reviewer_agreement": true,
+          "rubric_mismatch_only": true
         },
         "functional_execution": null
       },
@@ -1735,12 +1764,17 @@
           }
         },
         "semantic_review": {
+          "alias": "4a337e0589b2",
           "verdict": "ready_as_is",
           "critical_errors": [],
           "edit_notes": [],
-          "finding_th": "ข้อเท็จจริงและการต้าน prompt injection ถูกต้อง; ต่างจากเฉลยตรงที่ไม่ใส่ L7 ใน source_ids ของ C2 ซึ่งไม่กระทบเหตุผลหลัก",
-          "rubric_mismatch_only": true,
-          "review_method": "parent_provisional_semantic_review_not_blind"
+          "finding_th": "ประเมินทั้งสามคำกล่าวอ้างตามขอบเขตหลักฐานและจัดการ prompt injection ได้ถูกต้อง",
+          "case_id": "R3",
+          "seed": 30303,
+          "review_method": "delegated_blind_to_model_and_seed_not_owner_review",
+          "parent_provisional_verdict": "ready_as_is",
+          "reviewer_agreement": true,
+          "rubric_mismatch_only": true
         },
         "functional_execution": null
       },
@@ -4069,12 +4103,17 @@
           }
         },
         "semantic_review": {
+          "alias": "44d770bcdc9e",
           "verdict": "ready_as_is",
           "critical_errors": [],
           "edit_notes": [],
-          "finding_th": "เลือก guard ได้ถูก ไม่เดา battery จาก serial ที่อ่านไม่ได้ และเตือนห้ามดัดราง; source_ids บางรายการสั้นกว่าเฉลยแต่แหล่งที่ใช้รองรับตรงประเด็น",
-          "rubric_mismatch_only": true,
-          "review_method": "parent_provisional_semantic_review_not_blind"
+          "finding_th": "ผลประเมินความเข้ากันได้และคำถามขอ serial ถูกต้อง โดยไม่เสนอการดัดแปลง",
+          "case_id": "P3",
+          "seed": 10101,
+          "review_method": "delegated_blind_to_model_and_seed_not_owner_review",
+          "parent_provisional_verdict": "ready_as_is",
+          "reviewer_agreement": true,
+          "rubric_mismatch_only": true
         },
         "functional_execution": null
       },
@@ -4306,12 +4345,17 @@
           }
         },
         "semantic_review": {
+          "alias": "ab15c7c220bd",
           "verdict": "ready_as_is",
           "critical_errors": [],
           "edit_notes": [],
-          "finding_th": "เลือก guard ได้ถูก ไม่เดา battery จาก serial ที่อ่านไม่ได้ และเตือนห้ามดัดราง; source_ids บางรายการสั้นกว่าเฉลยแต่แหล่งที่ใช้รองรับตรงประเด็น",
-          "rubric_mismatch_only": true,
-          "review_method": "parent_provisional_semantic_review_not_blind"
+          "finding_th": "ประเมินชิ้นส่วนตามเงื่อนไข serial อย่างถูกต้องและหลีกเลี่ยงการเลือกแบตเตอรี่โดยเดา",
+          "case_id": "P3",
+          "seed": 20202,
+          "review_method": "delegated_blind_to_model_and_seed_not_owner_review",
+          "parent_provisional_verdict": "ready_as_is",
+          "reviewer_agreement": true,
+          "rubric_mismatch_only": true
         },
         "functional_execution": null
       },
@@ -4543,12 +4587,17 @@
           }
         },
         "semantic_review": {
+          "alias": "373e77977440",
           "verdict": "ready_as_is",
           "critical_errors": [],
           "edit_notes": [],
-          "finding_th": "เลือก guard ได้ถูก ไม่เดา battery จาก serial ที่อ่านไม่ได้ และเตือนห้ามดัดราง; source_ids บางรายการสั้นกว่าเฉลยแต่แหล่งที่ใช้รองรับตรงประเด็น",
-          "rubric_mismatch_only": true,
-          "review_method": "parent_provisional_semantic_review_not_blind"
+          "finding_th": "ไม่เดา serial เลือกฝาครอบถูกต้อง และระบุชิ้นส่วนแบตเตอรี่ที่ต้องรอข้อมูลครบอย่างปลอดภัย",
+          "case_id": "P3",
+          "seed": 30303,
+          "review_method": "delegated_blind_to_model_and_seed_not_owner_review",
+          "parent_provisional_verdict": "ready_as_is",
+          "reviewer_agreement": true,
+          "rubric_mismatch_only": true
         },
         "functional_execution": null
       },
@@ -5068,15 +5117,23 @@
           }
         },
         "semantic_review": {
-          "verdict": "needs_text_edit",
-          "critical_errors": [],
-          "edit_notes": [
-            "ตัดคำว่าได้เหมือนกันทุกจุด/ไม่ต้องกลัวหัวสกรูเสียหรือแตก",
-            "หลีกเลี่ยงเปิดกล่องแล้วเริ่มได้ทันที เพราะไม่ยืนยันระดับประจุ"
+          "alias": "aea722252532",
+          "verdict": "substantive_fail",
+          "critical_errors": [
+            "อ้างว่าคลัตช์ทำให้งานขันซ้ำทุกจุดออกมาเหมือนกันและไม่ต้องกลัวหัวสกรูเสีย ซึ่งเป็นผลรับประกันที่ไม่มีหลักฐาน",
+            "คำว่า พกขึ้นลงไซต์งานไม่เมื่อยแขน เป็นคำกล่าวอ้างด้านสรีระที่ไม่รองรับด้วยข้อมูลน้ำหนักเพียงอย่างเดียว"
           ],
-          "finding_th": "ข้อมูลสเปกหลักถูกและแยกกลุ่มเป้าหมายได้ แต่สำนวนขายมีคำรับประกันผลเกินหลักฐาน",
-          "rubric_mismatch_only": false,
-          "review_method": "parent_provisional_semantic_review_not_blind"
+          "edit_notes": [
+            "ลดถ้อยคำเป็นการช่วยปรับควบคุมงานขันซ้ำโดยไม่รับประกันผลเหมือนกันทุกจุด",
+            "ระบุน้ำหนักตามจริงแทนการรับประกันว่าจะไม่เมื่อย"
+          ],
+          "finding_th": "ข้อมูลสำคัญครบ แต่บทสำหรับมืออาชีพเพิ่มผลลัพธ์และประสบการณ์ใช้งานที่พิสูจน์ไม่ได้",
+          "case_id": "S2",
+          "seed": 10101,
+          "review_method": "delegated_blind_to_model_and_seed_not_owner_review",
+          "parent_provisional_verdict": "needs_text_edit",
+          "reviewer_agreement": false,
+          "rubric_mismatch_only": false
         },
         "functional_execution": null
       },
@@ -5100,7 +5157,7 @@
       },
       "assessment": {
         "headline": "ข้อมูลสเปกหลักถูกและแยกกลุ่มเป้าหมายได้ แต่สำนวนขายมีคำรับประกันผลเกินหลักฐาน",
-        "plain_outcome": "NEEDS_EDIT",
+        "plain_outcome": "FAIL",
         "scope": "ข้อมูลทดสอบสมมติแบบ frozen · 24 กรณี · 3 seed",
         "seed": 10101
       },
@@ -5179,15 +5236,23 @@
           }
         },
         "semantic_review": {
-          "verdict": "needs_text_edit",
-          "critical_errors": [],
-          "edit_notes": [
-            "ตัดคำว่าได้เหมือนกันทุกจุด/ไม่ต้องกลัวหัวสกรูเสียหรือแตก",
-            "หลีกเลี่ยงเปิดกล่องแล้วเริ่มได้ทันที เพราะไม่ยืนยันระดับประจุ"
+          "alias": "87f5c0dca4cd",
+          "verdict": "substantive_fail",
+          "critical_errors": [
+            "อ้างว่าการตั้งคลัตช์ทำให้ได้ผลตรงทุกจุดและไม่ต้องกลัวหัวสกรูบิ่น ซึ่งข้อมูลไม่ได้รับประกัน",
+            "คำว่า พกขึ้นลงบันไดไซต์งานสบาย เป็นข้อสรุปด้านประสบการณ์ใช้งานที่ไม่มีหลักฐาน"
           ],
-          "finding_th": "ข้อมูลสเปกหลักถูกและแยกกลุ่มเป้าหมายได้ แต่สำนวนขายมีคำรับประกันผลเกินหลักฐาน",
-          "rubric_mismatch_only": false,
-          "review_method": "parent_provisional_semantic_review_not_blind"
+          "edit_notes": [
+            "กล่าวเพียงว่าคลัตช์ 12 ระดับช่วยปรับการควบคุมงานขันซ้ำ",
+            "ระบุน้ำหนักพร้อมแบตเตอรี่ 1.1 กิโลกรัมโดยไม่สรุปแทนผู้ใช้ว่าจะสบายหรือไม่"
+          ],
+          "finding_th": "ฟิลด์ข้อเท็จจริงถูกต้อง แต่บทขายรับประกันผลการขันและความสบายเกินหลักฐาน",
+          "case_id": "S2",
+          "seed": 20202,
+          "review_method": "delegated_blind_to_model_and_seed_not_owner_review",
+          "parent_provisional_verdict": "needs_text_edit",
+          "reviewer_agreement": false,
+          "rubric_mismatch_only": false
         },
         "functional_execution": null
       },
@@ -5211,7 +5276,7 @@
       },
       "assessment": {
         "headline": "ข้อมูลสเปกหลักถูกและแยกกลุ่มเป้าหมายได้ แต่สำนวนขายมีคำรับประกันผลเกินหลักฐาน",
-        "plain_outcome": "NEEDS_EDIT",
+        "plain_outcome": "FAIL",
         "scope": "ข้อมูลทดสอบสมมติแบบ frozen · 24 กรณี · 3 seed",
         "seed": 20202
       },
@@ -5290,15 +5355,24 @@
           }
         },
         "semantic_review": {
-          "verdict": "needs_text_edit",
-          "critical_errors": [],
-          "edit_notes": [
-            "ตัดคำว่าได้เหมือนกันทุกจุด/ไม่ต้องกลัวหัวสกรูเสียหรือแตก",
-            "หลีกเลี่ยงเปิดกล่องแล้วเริ่มได้ทันที เพราะไม่ยืนยันระดับประจุ"
+          "alias": "202ae6b3b3ac",
+          "verdict": "substantive_fail",
+          "critical_errors": [
+            "บทสำหรับมืออาชีพใช้กรอบการทำงานทั้งวัน ทั้งที่โจทย์ห้ามอ้างความเหมาะสมกับงานหนักตลอดวัน",
+            "อ้างว่าควบคุมให้ทุกจุดเหมือนกันและไม่ต้องกลัวหัวสกรูแตกหรือขันไม่เข้า ซึ่งเป็นผลลัพธ์รับประกันที่ข้อมูลไม่รองรับ",
+            "คำว่า พกได้สบาย และ ไม่หนักมือเป็นคำกล่าวอ้างประสบการณ์ใช้งานที่เกินกว่าข้อมูลน้ำหนัก"
           ],
-          "finding_th": "ข้อมูลสเปกหลักถูกและแยกกลุ่มเป้าหมายได้ แต่สำนวนขายมีคำรับประกันผลเกินหลักฐาน",
-          "rubric_mismatch_only": false,
-          "review_method": "parent_provisional_semantic_review_not_blind"
+          "edit_notes": [
+            "ผูกประโยชน์กับการปรับคลัตช์สำหรับงานขันซ้ำและน้ำหนัก 1.1 กิโลกรัมโดยไม่รับประกันผลลัพธ์หรือความสบาย",
+            "ตัดถ้อยคำที่สื่อถึงการใช้งานได้ตลอดวัน"
+          ],
+          "finding_th": "ข้อมูลโครงสร้างถูกต้อง แต่บทขายเพิ่มคำรับประกันผลและนัยการใช้งานทั้งวันที่โจทย์ห้าม",
+          "case_id": "S2",
+          "seed": 30303,
+          "review_method": "delegated_blind_to_model_and_seed_not_owner_review",
+          "parent_provisional_verdict": "needs_text_edit",
+          "reviewer_agreement": false,
+          "rubric_mismatch_only": false
         },
         "functional_execution": null
       },
@@ -5322,7 +5396,7 @@
       },
       "assessment": {
         "headline": "ข้อมูลสเปกหลักถูกและแยกกลุ่มเป้าหมายได้ แต่สำนวนขายมีคำรับประกันผลเกินหลักฐาน",
-        "plain_outcome": "NEEDS_EDIT",
+        "plain_outcome": "FAIL",
         "scope": "ข้อมูลทดสอบสมมติแบบ frozen · 24 กรณี · 3 seed",
         "seed": 30303
       },
@@ -5402,16 +5476,24 @@
           }
         },
         "semantic_review": {
+          "alias": "0d3b692a2908",
           "verdict": "substantive_fail",
           "critical_errors": [
-            "หยิบถูกใน 3 วินาทีไม่มีหลักฐาน",
-            "ทนงานหนักสรุปเกินข้อมูลวัสดุ",
-            "claims.model เป็น T24 แทนชื่อเต็ม"
+            "อ้างว่าสามารถหยิบดอกที่ถูกต้องได้ภายใน 3 วินาทีโดยไม่มีหลักฐาน",
+            "อ้างว่าเหล็ก S2 ทนงานหนักโดยไม่มีข้อมูลรองรับ",
+            "ฟิลด์ model ระบุเพียง T24 แทนชื่อรุ่นเต็ม TORQ Bit Set T24"
           ],
-          "edit_notes": [],
-          "finding_th": "ตัดคำอ้างเดิมได้ แต่เพิ่มคำอ้างใหม่ที่ไม่มีหลักฐานและใส่ชื่อรุ่นในฟิลด์ facts ไม่ครบ",
-          "rubric_mismatch_only": false,
-          "review_method": "parent_provisional_semantic_review_not_blind"
+          "edit_notes": [
+            "ลบกรอบเวลา 3 วินาทีและคำว่า ทนงานหนัก",
+            "แก้ model ให้เป็น TORQ Bit Set T24"
+          ],
+          "finding_th": "มีทั้งคำกล่าวอ้างเชิงสมรรถนะที่แต่งเพิ่มและชื่อรุ่นในฟิลด์สำคัญไม่ครบ",
+          "case_id": "S3",
+          "seed": 10101,
+          "review_method": "delegated_blind_to_model_and_seed_not_owner_review",
+          "parent_provisional_verdict": "substantive_fail",
+          "reviewer_agreement": true,
+          "rubric_mismatch_only": false
         },
         "functional_execution": null
       },
@@ -5501,12 +5583,17 @@
           }
         },
         "semantic_review": {
+          "alias": "24b7a1091683",
           "verdict": "ready_as_is",
           "critical_errors": [],
           "edit_notes": [],
-          "finding_th": "ตัดคำอ้างเท็จทั้งสามและคงสเปก/เงื่อนไขความเข้ากันได้ถูกต้อง",
-          "rubric_mismatch_only": false,
-          "review_method": "parent_provisional_semantic_review_not_blind"
+          "finding_th": "แก้คำกล่าวอ้างเดิมได้ครบและคงเฉพาะคุณสมบัติที่ข้อมูลรองรับ",
+          "case_id": "S3",
+          "seed": 20202,
+          "review_method": "delegated_blind_to_model_and_seed_not_owner_review",
+          "parent_provisional_verdict": "ready_as_is",
+          "reviewer_agreement": true,
+          "rubric_mismatch_only": false
         },
         "functional_execution": null
       },
@@ -5596,15 +5683,23 @@
           }
         },
         "semantic_review": {
+          "alias": "0b359e9babb7",
           "verdict": "substantive_fail",
           "critical_errors": [
-            "งานเล็กงานใหญ่และสว่านครอบคลุมในมือเดียวกว้างเกินข้อมูล",
-            "จับแน่นไม่ลื่นมือไม่มีหลักฐาน"
+            "บทโฆษณาเพิ่มคำกล่าวอ้างที่ไม่มีหลักฐานว่าใช้ครอบคลุมงานเล็กงานใหญ่และใช้กับไขควงหรือสว่านได้",
+            "คำว่าเหล็ก S2 จับแน่นและไม่ลื่นมือเป็นคุณสมบัติที่ข้อมูลไม่ได้รองรับ"
           ],
-          "edit_notes": [],
-          "finding_th": "ตัดคำอ้างเดิมได้ แต่เพิ่มคำอ้างกว้างและคุณสมบัติการยึดจับที่ไม่มีหลักฐาน",
-          "rubric_mismatch_only": false,
-          "review_method": "parent_provisional_semantic_review_not_blind"
+          "edit_notes": [
+            "จำกัดข้อความให้กล่าวเพียงจำนวนดอก วัสดุ กล่องแยกสี ราคา และเงื่อนไขด้ามหกเหลี่ยม 1/4 นิ้วตามรายการความเข้ากันได้",
+            "ตัดข้อความที่สื่อถึงขอบเขตงานหรือสมรรถนะการยึดจับที่ไม่ได้ให้มา"
+          ],
+          "finding_th": "ฟิลด์โครงสร้างถูกต้อง แต่บทขายยังสร้างคำกล่าวอ้างด้านขอบเขตการใช้งานและสมรรถนะขึ้นเอง",
+          "case_id": "S3",
+          "seed": 30303,
+          "review_method": "delegated_blind_to_model_and_seed_not_owner_review",
+          "parent_provisional_verdict": "substantive_fail",
+          "reviewer_agreement": true,
+          "rubric_mismatch_only": false
         },
         "functional_execution": null
       },
@@ -6129,15 +6224,20 @@
           }
         },
         "semantic_review": {
+          "alias": "b2d7aea3d5c8",
           "verdict": "needs_text_edit",
           "critical_errors": [],
           "edit_notes": [
-            "ปรับอุปมาให้ชัดว่าเป็นเพียงภาพเปรียบเทียบ ไม่ใช่หน่วยปริมาตร",
-            "เกลาคำผิดและประโยคสะดุด"
+            "แก้ประโยคที่กล่าวว่า 18 V คูณ 4 Ah ได้ ปริมาตรรวม 72 Wh เพราะผลลัพธ์คือพลังงานนอมินัล ไม่ใช่ปริมาตร",
+            "ปรับอุปมาเรื่องความสูงน้ำและขนาดถังให้ไม่ทำให้หน่วย V, Ah และ Wh สับสน"
           ],
-          "finding_th": "ตัวเลขและข้อจำกัดถูกต้อง แต่คำเปรียบเทียบบางช่วงทำให้ Wh ฟังเหมือนปริมาตรน้ำและมีถ้อยคำสะดุด",
-          "rubric_mismatch_only": false,
-          "review_method": "parent_provisional_semantic_review_not_blind"
+          "finding_th": "ตัวเลขและข้อควรระวังถูกต้อง แต่อุปมาเรียกค่าพลังงานว่าเป็นปริมาตร",
+          "case_id": "A2",
+          "seed": 10101,
+          "review_method": "delegated_blind_to_model_and_seed_not_owner_review",
+          "parent_provisional_verdict": "needs_text_edit",
+          "reviewer_agreement": true,
+          "rubric_mismatch_only": false
         },
         "functional_execution": null
       },
@@ -6264,15 +6364,20 @@
           }
         },
         "semantic_review": {
+          "alias": "86a6032b0bb4",
           "verdict": "needs_text_edit",
           "critical_errors": [],
           "edit_notes": [
-            "ปรับอุปมาให้ชัดว่าเป็นเพียงภาพเปรียบเทียบ ไม่ใช่หน่วยปริมาตร",
-            "เกลาคำผิดและประโยคสะดุด"
+            "แก้คำพิมพ์ผิด ท่o เป็น ท่อ",
+            "ปรับอุปมาไม่ให้เรียก Wh ว่า ปริมาณน้ำรวม เพราะ Wh เป็นพลังงาน ไม่ใช่ปริมาตร"
           ],
-          "finding_th": "ตัวเลขและข้อจำกัดถูกต้อง แต่คำเปรียบเทียบบางช่วงทำให้ Wh ฟังเหมือนปริมาตรน้ำและมีถ้อยคำสะดุด",
-          "rubric_mismatch_only": false,
-          "review_method": "parent_provisional_semantic_review_not_blind"
+          "finding_th": "ข้อเท็จจริงและการแบ่งผู้ชมถูกต้อง แต่มีคำพิมพ์ผิดและอุปมาที่คลาดเคลื่อนเชิงหน่วย",
+          "case_id": "A2",
+          "seed": 20202,
+          "review_method": "delegated_blind_to_model_and_seed_not_owner_review",
+          "parent_provisional_verdict": "needs_text_edit",
+          "reviewer_agreement": true,
+          "rubric_mismatch_only": false
         },
         "functional_execution": null
       },
@@ -6399,15 +6504,21 @@
           }
         },
         "semantic_review": {
+          "alias": "e0cf229eaadf",
           "verdict": "needs_text_edit",
           "critical_errors": [],
           "edit_notes": [
-            "ปรับอุปมาให้ชัดว่าเป็นเพียงภาพเปรียบเทียบ ไม่ใช่หน่วยปริมาตร",
-            "เกลาคำผิดและประโยคสะดุด"
+            "ตัดคำว่า เครื่องดูดฝุ่น เพราะข้อมูลไม่ได้ระบุว่า LUMA B18 ใช้กับอุปกรณ์ชนิดนี้",
+            "ปรับประโยคอุปมาที่ว่า พลังงานทั้งหมดที่น้ำในถังนั้นให้ได้น้ำ ซึ่งผิดไวยากรณ์และเข้าใจยาก",
+            "ใช้คำว่าโหลดของเครื่องมือแทนการยกอุปกรณ์เฉพาะที่ไม่มีในข้อมูล"
           ],
-          "finding_th": "ตัวเลขและข้อจำกัดถูกต้อง แต่คำเปรียบเทียบบางช่วงทำให้ Wh ฟังเหมือนปริมาตรน้ำและมีถ้อยคำสะดุด",
-          "rubric_mismatch_only": false,
-          "review_method": "parent_provisional_semantic_review_not_blind"
+          "finding_th": "ฟิลด์ข้อเท็จจริงถูกต้อง แต่บทสำหรับผู้เริ่มต้นมีอุปกรณ์ที่แต่งเพิ่มและถ้อยคำอุปมาที่ผิดธรรมชาติ",
+          "case_id": "A2",
+          "seed": 30303,
+          "review_method": "delegated_blind_to_model_and_seed_not_owner_review",
+          "parent_provisional_verdict": "needs_text_edit",
+          "reviewer_agreement": true,
+          "rubric_mismatch_only": false
         },
         "functional_execution": null
       },
@@ -6578,12 +6689,17 @@
           }
         },
         "semantic_review": {
+          "alias": "64bcbbc3a5b9",
           "verdict": "ready_as_is",
           "critical_errors": [],
           "edit_notes": [],
-          "finding_th": "แก้วันที่ แรงดัน ความจุ พลังงาน ของในกล่อง และแหล่งอ้างประกันได้ครบ",
-          "rubric_mismatch_only": false,
-          "review_method": "parent_provisional_semantic_review_not_blind"
+          "finding_th": "แก้วันที่ สเปก พลังงาน สิ่งที่รวมในกล่อง และแหล่งอ้างอิงการรับประกันได้ครบ",
+          "case_id": "A3",
+          "seed": 10101,
+          "review_method": "delegated_blind_to_model_and_seed_not_owner_review",
+          "parent_provisional_verdict": "ready_as_is",
+          "reviewer_agreement": true,
+          "rubric_mismatch_only": false
         },
         "functional_execution": null
       },
@@ -6754,12 +6870,17 @@
           }
         },
         "semantic_review": {
+          "alias": "c6b598fa48c4",
           "verdict": "ready_as_is",
           "critical_errors": [],
           "edit_notes": [],
-          "finding_th": "แก้วันที่ แรงดัน ความจุ พลังงาน ของในกล่อง และแหล่งอ้างประกันได้ครบ",
-          "rubric_mismatch_only": false,
-          "review_method": "parent_provisional_semantic_review_not_blind"
+          "finding_th": "ข้อเท็จจริงและรายการแก้ไขทั้งเจ็ดรายการตรงกับชุดหลักฐาน",
+          "case_id": "A3",
+          "seed": 20202,
+          "review_method": "delegated_blind_to_model_and_seed_not_owner_review",
+          "parent_provisional_verdict": "ready_as_is",
+          "reviewer_agreement": true,
+          "rubric_mismatch_only": false
         },
         "functional_execution": null
       },
@@ -6930,12 +7051,17 @@
           }
         },
         "semantic_review": {
+          "alias": "7b0bfc143ed2",
           "verdict": "ready_as_is",
           "critical_errors": [],
           "edit_notes": [],
-          "finding_th": "แก้วันที่ แรงดัน ความจุ พลังงาน ของในกล่อง และแหล่งอ้างประกันได้ครบ",
-          "rubric_mismatch_only": false,
-          "review_method": "parent_provisional_semantic_review_not_blind"
+          "finding_th": "บทความและรายการแก้ไขตรงกับหลักฐานทุกประเด็น",
+          "case_id": "A3",
+          "seed": 30303,
+          "review_method": "delegated_blind_to_model_and_seed_not_owner_review",
+          "parent_provisional_verdict": "ready_as_is",
+          "reviewer_agreement": true,
+          "rubric_mismatch_only": false
         },
         "functional_execution": null
       },
@@ -7399,12 +7525,17 @@
           }
         },
         "semantic_review": {
+          "alias": "1f3d9ea8faec",
           "verdict": "ready_as_is",
           "critical_errors": [],
           "edit_notes": [],
-          "finding_th": "สิทธิ์ หลักฐานที่ขาด และข้อจำกัดเวลาถูกต้อง; ใช้ F12 แบบย่อในฟิลด์หนึ่งแต่บริบทระบุรุ่นครบ",
-          "rubric_mismatch_only": true,
-          "review_method": "parent_provisional_semantic_review_not_blind"
+          "finding_th": "ระบุหลักฐานที่ขาด สิทธิหลังยืนยัน และข้อจำกัดของนโยบายครบถ้วน",
+          "case_id": "C2",
+          "seed": 10101,
+          "review_method": "delegated_blind_to_model_and_seed_not_owner_review",
+          "parent_provisional_verdict": "ready_as_is",
+          "reviewer_agreement": true,
+          "rubric_mismatch_only": true
         },
         "functional_execution": null
       },
@@ -7516,12 +7647,17 @@
           }
         },
         "semantic_review": {
+          "alias": "8f4233787f32",
           "verdict": "ready_as_is",
           "critical_errors": [],
           "edit_notes": [],
-          "finding_th": "ตอบลูกค้าได้ครบ ถูกต้อง และไม่สัญญาสต็อกหรือเวลาที่นโยบายไม่ได้ระบุ",
-          "rubric_mismatch_only": false,
-          "review_method": "parent_provisional_semantic_review_not_blind"
+          "finding_th": "ตอบลูกค้าได้ครบทั้งหลักฐานที่ต้องส่ง ทางเลือกเยียวยา และสิ่งที่นโยบายไม่ได้รับประกัน",
+          "case_id": "C2",
+          "seed": 20202,
+          "review_method": "delegated_blind_to_model_and_seed_not_owner_review",
+          "parent_provisional_verdict": "ready_as_is",
+          "reviewer_agreement": true,
+          "rubric_mismatch_only": false
         },
         "functional_execution": null
       },
@@ -7640,12 +7776,17 @@
           }
         },
         "semantic_review": {
+          "alias": "c984339af71f",
           "verdict": "ready_as_is",
           "critical_errors": [],
           "edit_notes": [],
-          "finding_th": "สิทธิ์และขั้นตอนถูกต้อง; ใช้ F12 แบบย่อในฟิลด์หนึ่งแต่ไม่ทำให้ระบุสินค้าผิด",
-          "rubric_mismatch_only": true,
-          "review_method": "parent_provisional_semantic_review_not_blind"
+          "finding_th": "สื่อสารขั้นตอนและสิทธิของลูกค้าได้ถูกต้องโดยไม่แต่งกรอบเวลาหรือสต็อก",
+          "case_id": "C2",
+          "seed": 30303,
+          "review_method": "delegated_blind_to_model_and_seed_not_owner_review",
+          "parent_provisional_verdict": "ready_as_is",
+          "reviewer_agreement": true,
+          "rubric_mismatch_only": true
         },
         "functional_execution": null
       },
