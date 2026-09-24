@@ -1,8 +1,9 @@
 /* Public values are text only, never HTML or executable links. */
 'use strict';
 (() => {
- const fields = [['final_output','คำตอบจากโมเดล'],['prompt','โจทย์ที่ใช้ทดสอบ'],['inputs','ข้อมูลที่ให้โมเดล'],['checks','ตรวจแล้วพบอะไร'],['elapsed_seconds','เวลาที่ใช้ (วินาที)'],['provenance','ที่มาของผลและข้อจำกัด'],['settings','รุ่น เครื่อง และการตั้งค่า'],['assessment','รายละเอียดจากรายงานผล'],['not_run_reason','ทำไมจึงไม่ได้ทดสอบ']];
+ const fields = [['final_output','คำตอบจากโมเดล'],['prompt','โจทย์ที่ใช้ทดสอบ'],['inputs','ข้อมูลที่ให้โมเดล'],['checks','ผลตรวจและหลักฐาน'],['provenance','ที่มาของผลและข้อจำกัด'],['settings','รุ่น เครื่อง และการตั้งค่า'],['assessment','รายละเอียดจากรายงานผล'],['not_run_reason','ทำไมจึงไม่ได้ทดสอบ']];
  const statusLabel={pending:'กำลังรอทดสอบ',not_run:'ไม่ได้ทดสอบ',completed:'ทดสอบแล้ว',failed:'ทดสอบไม่สำเร็จ',partial:'ทดสอบได้บางส่วน'};
+ const outcomeLabel={READY_AS_IS:'พร้อมใช้ตามโจทย์',NEEDS_EDIT:'ต้องแก้ข้อความ',FAIL:'พบข้อผิดพลาด',FACTS_CORRECT_RUBRIC_MISMATCH:'ข้อมูลถูก แต่เกณฑ์ตรวจคลาดเคลื่อน',UNSUPPORTED:'ระบบนี้ยังทำงานนี้ไม่ได้'};
  const simpleTitle={
   R2:'อ่านคู่มือและแยกรุ่นสินค้า',
   I2:'อ่านป้ายจากภาพ',
@@ -13,16 +14,7 @@
   D1:'คำนวณยอดคืน ส่วนลด และภาษีจากตาราง',
   K1:'เขียนโปรแกรมอ่านตารางข้อมูล'
  };
- const simpleSummary={
-  R2:'ข้อมูลหลักถูกต้อง แต่ระบบตรวจคำตอบเข้มเกินไปเรื่องชื่อเอกสาร',
-  I2:'ไม่ได้ทดสอบงานอ่านภาพ เพราะโมเดลชุดนี้รับภาพไม่ได้',
-  P1:'เลือกสินค้าตามเงื่อนไขได้ถูกต้อง',
-  S1:'บทขายมีคำโฆษณาหนึ่งจุดที่ไม่มีข้อมูลรองรับ',
-  A1:'อธิบายข้อมูลได้ แต่แปลศัพท์สำคัญผิดหนึ่งจุด',
-  C1:'เข้าใจเงื่อนไขคืนเงินถูกต้อง แต่สำนวนยังรอตรวจ',
-  D1:'คำนวณยอดคืน ส่วนลด และภาษีได้ตรงเฉลย',
-  K1:'โค้ดผ่านการทดสอบ 10 ข้อ โดยปิดการเข้าถึงเครือข่ายและไฟล์ส่วนตัว'
- };
+ const caseOrder=['R2','I2','P1','S1','A1','C1','D1','K1'];
  function modelName(v){return typeof v==='string' && v.startsWith('Qwen3.8-27B') ? 'Qwen3.8 27B (Q8)' : text(v);}
  const privateKey=/reason|analysis|chain.?of.?thought|secret|access.?token|password|api.?key|authorization/i;
  function clean(v) {
@@ -36,8 +28,9 @@
   return data.records.map(r=>{
    if (!r || typeof r!=='object' || Array.isArray(r) || ![undefined,null,'pending','not_run','completed','failed','partial'].includes(r.status)) throw Error('Invalid record');
    if(r.elapsed_seconds!=null && (typeof r.elapsed_seconds!=='number' || !Number.isFinite(r.elapsed_seconds) || r.elapsed_seconds<0)) throw Error('Invalid timing');
+   if(r.seed!=null && (!Number.isInteger(r.seed) || r.seed<0)) throw Error('Invalid seed');
    const row={};
-   for(const k of ['id','model','case_id','case_title','status',...fields.map(x=>x[0])]) if(Object.hasOwn(r,k)) row[k]=clean(r[k]);
+   for(const k of ['id','model','case_id','case_title','seed','status','elapsed_seconds',...fields.map(x=>x[0])]) if(Object.hasOwn(r,k)) row[k]=clean(r[k]);
    row.score=null; return row;
   });
  }
@@ -45,15 +38,31 @@
  function node(tag,value) {const e=document.createElement(tag);e.textContent=value;return e;}
  function render(data) {
   const records=parse(data), root=document.querySelector('#pilot-results'); root.replaceChildren();
-  const tested=records.filter(r=>r.status==='completed').length, notRun=records.filter(r=>r.status==='not_run').length;
-  document.querySelector('#pilot-status').textContent=records.length ? `อัปผลแล้ว ${records.length} งาน: ทดสอบแล้ว ${tested} งาน · ไม่ได้ทดสอบ ${notRun} งาน (งานอ่านภาพ)` : 'ยังไม่มีผลทดสอบ และจะไม่ใส่คะแนนแทนข้อมูลที่ขาด';
-  for(const r of records) {
+  const completed=records.filter(r=>r.status==='completed').length;
+  const notRun=records.filter(r=>r.status==='not_run').length;
+  const outcomes=records.reduce((acc,r)=>{const k=r.assessment && r.assessment.plain_outcome;if(k)acc[k]=(acc[k]||0)+1;return acc;},{});
+  document.querySelector('#pilot-status').textContent=records.length ? `ครบ ${records.length} ผล: รันจริง ${completed} ผล · ระบบนี้อ่านภาพไม่ได้ ${notRun} ผล` : 'ยังไม่มีผลทดสอบ และจะไม่ใส่คะแนนแทนข้อมูลที่ขาด';
+  const summary=document.querySelector('#plain-summary');
+  if(summary) summary.textContent=`พร้อมใช้ตามโจทย์ ${outcomes.READY_AS_IS||0} · ต้องแก้ข้อความ ${outcomes.NEEDS_EDIT||0} · พบคำอ้างเกินข้อมูล ${outcomes.FAIL||0} · ข้อมูลถูกแต่เกณฑ์ตรวจคลาดเคลื่อน ${outcomes.FACTS_CORRECT_RUBRIC_MISMATCH||0} · ระบบนี้ยังอ่านภาพไม่ได้ ${outcomes.UNSUPPORTED||0}`;
+  const grouped=Object.groupBy ? Object.groupBy(records,r=>r.case_id) : records.reduce((a,r)=>((a[r.case_id]??=[]).push(r),a),{});
+  for(const caseId of caseOrder) {
+   const rounds=(grouped[caseId]||[]).sort((a,b)=>(a.seed||0)-(b.seed||0));
+   if(!rounds.length) continue;
    const card=node('article','');card.className='panel pilot-record';
-   card.append(node('h2',simpleTitle[r.case_id] || text(r.case_title)),node('p',`โมเดล: ${modelName(r.model)} · รหัสงาน: ${text(r.case_id)}`),node('p',`สถานะ: ${statusLabel[r.status] || 'ยังไม่มีข้อมูล'} · ${r.elapsed_seconds == null ? 'ไม่มีข้อมูลเวลา' : 'ใช้เวลา '+r.elapsed_seconds.toFixed(2)+' วินาที'} · ยังไม่รวมเป็นคะแนนเดียว`));
-   card.append(node('p',simpleSummary[r.case_id] || 'เปิดรายละเอียดด้านล่างเพื่อดูผลตรวจ'));
-   for(const [key,label] of fields) {
-    const detail=node('details','');detail.append(node('summary',label),node('pre',text(r[key])));card.append(detail);
-   }
+   card.append(node('h2',simpleTitle[caseId] || text(rounds[0].case_title)),node('p',`โมเดล: ${modelName(rounds[0].model)} · ทดสอบ ${rounds.length} รอบ`));
+   rounds.forEach((r,index)=>{
+    const outcome=r.assessment && r.assessment.plain_outcome;
+    const block=node('section','');block.className='round-result';
+    block.append(node('h3',`รอบ ${index+1} · ${outcomeLabel[outcome] || statusLabel[r.status] || 'ยังไม่มีข้อมูล'}`));
+    block.append(node('p',r.assessment && r.assessment.headline ? r.assessment.headline : 'เปิดรายละเอียดเพื่อดูผลตรวจ'));
+    block.append(node('p',`สถานะ: ${statusLabel[r.status] || 'ยังไม่มีข้อมูล'} · ${r.elapsed_seconds == null ? 'ไม่มีข้อมูลเวลา' : 'ใช้เวลา '+r.elapsed_seconds.toFixed(2)+' วินาที'} · seed ${text(r.seed)}`));
+    const detailWrap=node('details','');detailWrap.className='round-details';
+    detailWrap.append(node('summary','เปิดโจทย์ คำตอบ และหลักฐานทั้งหมด'));
+    for(const [key,label] of fields) {
+     const detail=node('details','');detail.append(node('summary',label),node('pre',text(r[key])));detailWrap.append(detail);
+    }
+    block.append(detailWrap);card.append(block);
+   });
    root.append(card);
   }
  }
