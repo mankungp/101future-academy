@@ -41,30 +41,42 @@
   const completed=records.filter(r=>r.status==='completed').length;
   const notRun=records.filter(r=>r.status==='not_run').length;
   const outcomes=records.reduce((acc,r)=>{const k=r.assessment && r.assessment.plain_outcome;if(k)acc[k]=(acc[k]||0)+1;return acc;},{});
-  document.querySelector('#pilot-status').textContent=records.length ? `ครบ ${records.length} ผล: รันจริง ${completed} ผล · ระบบนี้อ่านภาพไม่ได้ ${notRun} ผล` : 'ยังไม่มีผลทดสอบ และจะไม่ใส่คะแนนแทนข้อมูลที่ขาด';
-  const summary=document.querySelector('#plain-summary');
-  if(summary) summary.textContent=`พร้อมใช้ตามโจทย์ ${outcomes.READY_AS_IS||0} · ต้องแก้ข้อความ ${outcomes.NEEDS_EDIT||0} · พบคำอ้างเกินข้อมูล ${outcomes.FAIL||0} · ข้อมูลถูกแต่เกณฑ์ตรวจคลาดเคลื่อน ${outcomes.FACTS_CORRECT_RUBRIC_MISMATCH||0} · ระบบนี้ยังอ่านภาพไม่ได้ ${outcomes.UNSUPPORTED||0}`;
+  document.querySelector('#pilot-status').textContent=records.length ? `ผลทั้งหมด ${records.length} รายการ · รันจริง ${completed} · งานภาพที่ระบบยังไม่รองรับ ${notRun}` : 'ยังไม่มีผลทดสอบ และจะไม่ใส่คะแนนแทนข้อมูลที่ขาด';
+  const summary=document.querySelector('#plain-summary'); summary.replaceChildren();
+  const metrics=[['READY_AS_IS','พร้อมใช้','ใช้ต่อได้ตามโจทย์'],['NEEDS_EDIT','ควรแก้ข้อความ','ข้อมูลหลักใช้ได้'],['FAIL','มีข้อผิดพลาด','ควรตรวจใหม่ก่อนใช้'],['FACTS_CORRECT_RUBRIC_MISMATCH','ข้อมูลถูก','แต่รูปแบบไม่ตรงเกณฑ์'],['UNSUPPORTED','ยังไม่ได้ทดสอบ','ระบบนี้รับภาพไม่ได้']];
+  for(const [key,label,sub] of metrics){const card=node('div','');card.className=`metric metric-${key.toLowerCase()}`;card.append(node('strong',String(outcomes[key]||0)),node('span',label),node('small',sub));summary.append(card);}
   const grouped=Object.groupBy ? Object.groupBy(records,r=>r.case_id) : records.reduce((a,r)=>((a[r.case_id]??=[]).push(r),a),{});
+  const category={R:'ค้นและตรวจข้อมูล',I:'งานภาพ',P:'เลือกสินค้า',S:'งานเขียนขาย',A:'อธิบายและปรับภาษา',C:'บริการลูกค้า',D:'เอกสารและตาราง',K:'โค้ดและไฟล์'};
   for(const caseId of caseOrder) {
    const rounds=(grouped[caseId]||[]).sort((a,b)=>(a.seed||0)-(b.seed||0));
    if(!rounds.length) continue;
-   const card=node('article','');card.className='panel pilot-record';
-   card.append(node('h2',simpleTitle[caseId] || text(rounds[0].case_title)),node('p',`โมเดล: ${modelName(rounds[0].model)} · ทดสอบ ${rounds.length} รอบ`));
+   const outcomesInCase=rounds.map(r=>r.assessment && r.assessment.plain_outcome).filter(Boolean);
+   const card=node('details','');card.className='case-card pilot-record';card.dataset.outcomes=outcomesInCase.join(',');
+   const caseSummary=node('summary','');caseSummary.className='case-summary';
+   const titleWrap=node('span','');titleWrap.className='case-title';titleWrap.append(node('small',`${category[caseId[0]] || 'งานทดสอบ'} · ${caseId}`),node('strong',simpleTitle[caseId] || text(rounds[0].case_title)));
+   const chips=node('span','');chips.className='case-chips';
+   rounds.forEach((r,index)=>{const outcome=r.assessment && r.assessment.plain_outcome;const chip=node('span',`รอบ ${index+1}: ${outcomeLabel[outcome] || statusLabel[r.status] || 'ไม่มีข้อมูล'}`);chip.className=`status-chip outcome-${String(outcome||r.status).toLowerCase()}`;chips.append(chip);});
+   caseSummary.append(titleWrap,chips);card.append(caseSummary);
+   const body=node('div','');body.className='case-body';body.append(node('p',`โมเดล ${modelName(rounds[0].model)} · เปิดดูผลแต่ละรอบด้านล่าง`));
    rounds.forEach((r,index)=>{
     const outcome=r.assessment && r.assessment.plain_outcome;
-    const block=node('section','');block.className='round-result';
-    block.append(node('h3',`รอบ ${index+1} · ${outcomeLabel[outcome] || statusLabel[r.status] || 'ยังไม่มีข้อมูล'}`));
-    block.append(node('p',r.assessment && r.assessment.headline ? r.assessment.headline : 'เปิดรายละเอียดเพื่อดูผลตรวจ'));
-    block.append(node('p',`สถานะ: ${statusLabel[r.status] || 'ยังไม่มีข้อมูล'} · ${r.elapsed_seconds == null ? 'ไม่มีข้อมูลเวลา' : 'ใช้เวลา '+r.elapsed_seconds.toFixed(2)+' วินาที'} · seed ${text(r.seed)}`));
+    const block=node('section','');block.className=`round-result outcome-${String(outcome||r.status).toLowerCase()}`;
+    const roundHead=node('div','');roundHead.className='round-heading';roundHead.append(node('h3',`รอบ ${index+1}`),node('span',outcomeLabel[outcome] || statusLabel[r.status] || 'ยังไม่มีข้อมูล'));
+    block.append(roundHead,node('p',r.assessment && r.assessment.headline ? r.assessment.headline : 'เปิดรายละเอียดเพื่อดูผลตรวจ'));
+    block.append(node('p',`${r.elapsed_seconds == null ? 'ไม่มีข้อมูลเวลา' : 'ใช้เวลา '+r.elapsed_seconds.toFixed(2)+' วินาที'} · seed ${text(r.seed)}`));
     const detailWrap=node('details','');detailWrap.className='round-details';
-    detailWrap.append(node('summary','เปิดโจทย์ คำตอบ และหลักฐานทั้งหมด'));
-    for(const [key,label] of fields) {
-     const detail=node('details','');detail.append(node('summary',label),node('pre',text(r[key])));detailWrap.append(detail);
-    }
-    block.append(detailWrap);card.append(block);
+    detailWrap.append(node('summary','ดูโจทย์ คำตอบ และหลักฐาน'));
+    for(const [key,label] of fields) {const detail=node('details','');detail.append(node('summary',label),node('pre',text(r[key])));detailWrap.append(detail);}
+    block.append(detailWrap);body.append(block);
    });
-   root.append(card);
+   card.append(body);root.append(card);
   }
+  const controls=document.querySelector('#result-controls');controls.replaceChildren();
+  const filterDefs=[['all','ทั้งหมด'],['issues','ควรตรวจหรือแก้'],['FAIL','มีข้อผิดพลาด'],['NEEDS_EDIT','ต้องแก้ข้อความ'],['READY_AS_IS','พร้อมใช้'],['FACTS_CORRECT_RUBRIC_MISMATCH','ข้อมูลถูก แต่รูปแบบต่าง'],['UNSUPPORTED','ยังไม่ได้ทดสอบ']];
+  const cards=[...root.querySelectorAll('.case-card')];
+  function applyFilter(filter){let shown=0;for(const card of cards){const values=card.dataset.outcomes.split(',');const visible=filter==='all'||(filter==='issues'&&(values.includes('FAIL')||values.includes('NEEDS_EDIT')))||values.includes(filter);card.hidden=!visible;if(visible)shown++;else card.open=false;}for(const b of controls.querySelectorAll('button')){const active=b.dataset.filter===filter;b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active));}document.querySelector('#result-filter-note').textContent=`แสดง ${shown} จาก ${cards.length} กรณี · แตะชื่อกรณีเพื่อเปิดดูสามรอบ`;}
+  for(const [key,label] of filterDefs){const button=node('button',label);button.type='button';button.dataset.filter=key;button.addEventListener('click',()=>applyFilter(key));controls.append(button);}
+  applyFilter('all');
  }
  window.PilotResults=Object.freeze({parse,render});
  if(location.protocol==='file:') {document.querySelector('#pilot-status').textContent='ไฟล์ตัวอย่างในเครื่องโหลดผลทดสอบไม่ได้ กรุณาเปิดผ่านเว็บไซต์';return;}
