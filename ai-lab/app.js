@@ -5,7 +5,7 @@ menu.addEventListener('click', () => { const open = nav.classList.toggle('open')
 nav.querySelectorAll('a').forEach(a => a.addEventListener('click', () => closeMenu()));
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && nav.classList.contains('open')) closeMenu(true); });
 const details = {
- qwen: ['Qwen3.8 27B · ผลทดสอบครบสามรอบ', 'ทดสอบครบ 8 งาน × 3 รอบ รวม 24 ผล เปิดให้ดูโจทย์ คำตอบ เวลา จุดที่ผ่าน และจุดที่ต้องแก้ พร้อมใช้เป็นฐานเทียบโมเดลรุ่นถัดไป'],
+ qwen: ['Qwen3.8 27B · ผลชุดนำร่องสามรอบ', 'ทดสอบชุดนำร่อง 8 งาน × 3 seed รวม 24 ผล ชุดเต็มยังต้องเพิ่มอีก 16 กรณีก่อนใช้เทียบโมเดล'],
  amd: ['AI ภายในองค์กร · แนวคิดเบื้องต้น', 'แนวคิดใช้ AMD Radeon AI PRO R9700 สองใบ ต้องทดลองกับงานจริงก่อน จึงยังไม่รับรองความเร็ว จำนวนผู้ใช้ ราคา หรือวันส่งมอบ']
 };
 const dialog = document.querySelector('dialog');
@@ -54,7 +54,7 @@ async function benchmarks() {
    const m = d.metrics.find(x => x.id === metric.value);
    const records = d.records.filter(r => r.metric === m.id && (source.value === 'all' || r.source === source.value));
    const verified = records.filter(r => r.status === 'verified');
-   status.textContent = verified.length ? 'แสดงเฉพาะผลที่มีหลักฐานครบ และไม่รวมงานที่ใช้กติกาต่างกันเป็นอันดับเดียว' : 'ยังไม่มีคะแนนรวม — ดูผลทดสอบครบ 24 ผลได้จากลิงก์ด้านบน';
+   status.textContent = verified.length ? 'แสดงเฉพาะผลที่มีหลักฐานครบ และไม่รวมงานที่ใช้กติกาต่างกันเป็นอันดับเดียว' : 'ยังไม่มีคะแนนรวม — ดูผลชุดนำร่อง 24 ผลได้จากลิงก์ด้านบน';
    for (const r of records.filter(x => x.status === 'pending')) {
     const item = node('article', undefined, 'panel pending-record'); item.append(node('h3', r.model), node('p', 'กำลังเตรียมการทดสอบแบบให้คะแนน'), node('p', r.configuration)); pending.append(item);
    }
