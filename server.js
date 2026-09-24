@@ -583,7 +583,8 @@ async function handleRequest(request, response) {
 
   if ((request.method === "GET" || request.method === "HEAD") &&
       (url.pathname.startsWith("/ai-lab/") || url.pathname.startsWith("/web/") || url.pathname.startsWith("/k1/"))) {
-    await serveSite(response, url.pathname, request.method === "HEAD");
+    const sitePath = url.pathname === "/ai-lab/" ? "/ai-lab/index.html" : url.pathname;
+    await serveSite(response, sitePath, request.method === "HEAD");
     return;
   }
 
