@@ -1,0 +1,201 @@
+{
+  "groups": [
+    {
+      "id": "all",
+      "label": "ทุกประเภท",
+      "models": [
+        {
+          "id": "v100",
+          "label": "Qwen3.8 27B Q8",
+          "hardware": "V100 32GB × 2 · llama.cpp",
+          "ready": 23,
+          "total": 63,
+          "ready_pct": 36.507936507936506,
+          "tokens_per_second": 42.137715448017374
+        },
+        {
+          "id": "dgx",
+          "label": "Qwen3.8 Flash Next",
+          "hardware": "GB10 · vLLM · NVFP4",
+          "ready": 18,
+          "total": 63,
+          "ready_pct": 28.571428571428573,
+          "tokens_per_second": 30.7539744768421
+        }
+      ]
+    },
+    {
+      "id": "R",
+      "label": "ค้นข้อมูลจากเอกสาร",
+      "models": [
+        {
+          "id": "v100",
+          "label": "Qwen3.8 27B Q8",
+          "hardware": "V100 32GB × 2 · llama.cpp",
+          "ready": 1,
+          "total": 9,
+          "ready_pct": 11.11111111111111,
+          "tokens_per_second": 42.51081509527324
+        },
+        {
+          "id": "dgx",
+          "label": "Qwen3.8 Flash Next",
+          "hardware": "GB10 · vLLM · NVFP4",
+          "ready": 2,
+          "total": 9,
+          "ready_pct": 22.22222222222222,
+          "tokens_per_second": 31.870338308074572
+        }
+      ]
+    },
+    {
+      "id": "P",
+      "label": "เปรียบเทียบสินค้า",
+      "models": [
+        {
+          "id": "v100",
+          "label": "Qwen3.8 27B Q8",
+          "hardware": "V100 32GB × 2 · llama.cpp",
+          "ready": 6,
+          "total": 9,
+          "ready_pct": 66.66666666666667,
+          "tokens_per_second": 43.715190104132375
+        },
+        {
+          "id": "dgx",
+          "label": "Qwen3.8 Flash Next",
+          "hardware": "GB10 · vLLM · NVFP4",
+          "ready": 6,
+          "total": 9,
+          "ready_pct": 66.66666666666667,
+          "tokens_per_second": 36.316650084086966
+        }
+      ]
+    },
+    {
+      "id": "S",
+      "label": "ข้อความขาย",
+      "models": [
+        {
+          "id": "v100",
+          "label": "Qwen3.8 27B Q8",
+          "hardware": "V100 32GB × 2 · llama.cpp",
+          "ready": 2,
+          "total": 9,
+          "ready_pct": 22.22222222222222,
+          "tokens_per_second": 40.579494124372395
+        },
+        {
+          "id": "dgx",
+          "label": "Qwen3.8 Flash Next",
+          "hardware": "GB10 · vLLM · NVFP4",
+          "ready": 0,
+          "total": 9,
+          "ready_pct": 0.0,
+          "tokens_per_second": 26.1716715126829
+        }
+      ]
+    },
+    {
+      "id": "A",
+      "label": "บทความ",
+      "models": [
+        {
+          "id": "v100",
+          "label": "Qwen3.8 27B Q8",
+          "hardware": "V100 32GB × 2 · llama.cpp",
+          "ready": 3,
+          "total": 9,
+          "ready_pct": 33.333333333333336,
+          "tokens_per_second": 40.75643560491597
+        },
+        {
+          "id": "dgx",
+          "label": "Qwen3.8 Flash Next",
+          "hardware": "GB10 · vLLM · NVFP4",
+          "ready": 3,
+          "total": 9,
+          "ready_pct": 33.333333333333336,
+          "tokens_per_second": 28.20199683986313
+        }
+      ]
+    },
+    {
+      "id": "C",
+      "label": "บริการลูกค้า",
+      "models": [
+        {
+          "id": "v100",
+          "label": "Qwen3.8 27B Q8",
+          "hardware": "V100 32GB × 2 · llama.cpp",
+          "ready": 2,
+          "total": 9,
+          "ready_pct": 22.22222222222222,
+          "tokens_per_second": 39.870892305983574
+        },
+        {
+          "id": "dgx",
+          "label": "Qwen3.8 Flash Next",
+          "hardware": "GB10 · vLLM · NVFP4",
+          "ready": 3,
+          "total": 9,
+          "ready_pct": 33.333333333333336,
+          "tokens_per_second": 28.17371965633708
+        }
+      ]
+    },
+    {
+      "id": "D",
+      "label": "ข้อมูลและตัวเลข",
+      "models": [
+        {
+          "id": "v100",
+          "label": "Qwen3.8 27B Q8",
+          "hardware": "V100 32GB × 2 · llama.cpp",
+          "ready": 3,
+          "total": 9,
+          "ready_pct": 33.333333333333336,
+          "tokens_per_second": 43.69486512231707
+        },
+        {
+          "id": "dgx",
+          "label": "Qwen3.8 Flash Next",
+          "hardware": "GB10 · vLLM · NVFP4",
+          "ready": 3,
+          "total": 9,
+          "ready_pct": 33.333333333333336,
+          "tokens_per_second": 38.77156009967114
+        }
+      ]
+    },
+    {
+      "id": "K",
+      "label": "เขียนโค้ด",
+      "models": [
+        {
+          "id": "v100",
+          "label": "Qwen3.8 27B Q8",
+          "hardware": "V100 32GB × 2 · llama.cpp",
+          "ready": 6,
+          "total": 9,
+          "ready_pct": 66.66666666666667,
+          "tokens_per_second": 42.375778957594896
+        },
+        {
+          "id": "dgx",
+          "label": "Qwen3.8 Flash Next",
+          "hardware": "GB10 · vLLM · NVFP4",
+          "ready": 1,
+          "total": 9,
+          "ready_pct": 11.11111111111111,
+          "tokens_per_second": 30.943288974604613
+        }
+      ]
+    }
+  ],
+  "speed_definition": "median(completion_tokens / whole_request_wall_seconds), includes reasoning and waiting, not native decode speed",
+  "source_hashes": {
+    "dgx-full-results.json": "9b58d333eab895bf150f185577ed4470e01196391f50a379c600d66375a392c1",
+    "dgx-v100-timings.json": "6e575ec9219358c790e00bd9819f64a3ad43fed69966f58fce5814ad851c2678"
+  }
+}
